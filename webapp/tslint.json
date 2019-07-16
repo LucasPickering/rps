@@ -1,0 +1,16 @@
+{
+  "defaultSeverity": "error",
+  "extends": ["tslint:recommended", "tslint-config-prettier"],
+  "jsRules": {},
+  "rules": {
+    "interface-name": false,
+    "match-default-export-name": true,
+    "max-classes-per-file": false,
+    "no-constant-condition": true,
+    "no-empty-interface": false,
+    "object-literal-sort-keys": false,
+    "react-hooks/exhaustive-deps": true,
+    "@typescript-eslint/no-unused-vars": true
+  },
+  "rulesDirectory": ["node_modules/tslint-eslint-rules/dist/rules"]
+}

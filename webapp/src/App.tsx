@@ -1,26 +1,28 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
 
 const App: React.FC = () => {
+  console.log('render');
+  const [isOpen, setIsOpen] = useState(false);
+  const ws = new WebSocket(`ws://${window.location.host}/ws/match/a`);
+  ws.onopen = () => {
+    console.log('open');
+    ws.send(JSON.stringify({ message: 'asdf' }));
+    setIsOpen(true);
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <button
+        disabled={!isOpen}
+        onClick={() => {
+          ws.send(JSON.stringify({ message: 'click!' }));
+        }}
+      >
+        Click!
+      </button>
     </div>
   );
-}
+};
 
 export default App;

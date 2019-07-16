@@ -37,6 +37,6 @@ services:
       - node_modules:/app/webapp/node_modules
     environment:
       - NODE_ENV=development
-      - RPS_API_HOST=http://api:5000/
+      - RPS_API_HOST=http://api:8000/
     ports:
       - "3000:3000"
