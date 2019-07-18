@@ -8,18 +8,20 @@ class Match(models.Model):
     start_time = models.DateTimeField()
     duration = models.PositiveIntegerField()
     best_of = models.PositiveSmallIntegerField()
-
-
-class UserMatch(models.Model):
-    match = models.ForeignKey(Match, on_delete=models.CASCADE)
-    outcome = models.CharField(
-        choices=tuple((oc, oc) for oc in (util.OUTCOME_WIN, util.OUTCOME_LOSS)),
-        max_length=20,
+    players = models.ManyToManyField(User)  # Always len=2
+    # Null for incomplete matches, i.e. when Nick rage quits
+    winner = models.ForeignKey(
+        User, related_name="match_wins", null=True, on_delete=models.PROTECT
     )
 
 
 class Game(models.Model):
     match = models.ForeignKey(Match, on_delete=models.CASCADE)
+    players = models.ManyToManyField(User, through="UserMove")  # Always len=2
+    # Null for ties
+    winner = models.ForeignKey(
+        User, related_name="game_wins", null=True, on_delete=models.PROTECT
+    )
 
 
 class UserMove(models.Model):
@@ -27,11 +29,4 @@ class UserMove(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     move = models.CharField(
         choices=tuple((mv, mv) for mv in util.MOVES), max_length=20
-    )
-    outcome = models.CharField(
-        choices=tuple(
-            (oc, oc)
-            for oc in (util.OUTCOME_WIN, util.OUTCOME_LOSS, util.OUTCOME_TIE)
-        ),
-        max_length=20,
     )
