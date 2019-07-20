@@ -1,19 +1,54 @@
 import json
 from channels.generic.websocket import WebsocketConsumer
-from enum import Enum
+from django.db import transaction
 
 from core import util
 from core.models import LiveMatch
 
-
-class MessageId(Enum):
-    GAME_FULL = "game_full"
-    GAME_JOINED = "game_joined"
+from .message import MessageGameFull, MessageGameJoined, MessageAlreadyInGame
 
 
 class MatchConsumer(WebsocketConsumer):
-    def send_json(self, data, *args, **kwargs):
-        self.send(*args, text_data=json.dumps({data}), **kwargs)
+    def send_message(self, message):
+        self.send(
+            text_data=json.dumps(
+                {
+                    "id": message.ID,
+                    "is_error": message.is_error,
+                    "body": message.body,
+                }
+            )
+        )
+
+    def add_player(self, user):
+        # Try to join the game
+        message = None
+        with transaction.atomic():
+            this_player = None
+            other_player = None
+            # Check if there is a slot available in the match
+            if self.player1 is None:
+                this_player = self.player1 = user
+                other_player = self.player2
+            elif self.player2 is None:
+                this_player = self.player2 = user
+                other_player = self.player1
+
+            if this_player is None:
+                # Neither slot was open
+                message = MessageGameFull()
+            else:
+                if this_player == other_player:
+                    # This player is already in the game
+                    message = MessageAlreadyInGame()
+                else:
+                    message = MessageGameJoined()
+                    self.update()  # Write to DB
+
+        self.send_message(message)
+        if message.is_error:
+            # Not joining the game, so close the socket
+            self.close()
 
     def connect(self):
         match_id = self.scope["url_route"]["kwargs"]["match_id"]
@@ -21,21 +56,12 @@ class MatchConsumer(WebsocketConsumer):
             self.accept()
             user = self.scope["user"]
 
-            # TODO row locking
-            self.live_match = LiveMatch.objects.get_or_create(id=match_id)
+            # Get the row and lock it
+            self.live_match = LiveMatch.objects.select_for_update().get_or_create(
+                id=match_id
+            )
 
-            # Check if there is a slot available in the match
-            if self.live_match.player1 is None:
-                self.live_match.player1 = user
-            elif self.live_match.player2 is None:
-                self.live_match.player2 = user
-            else:
-                # Already taken, locked out
-                self.send_json({"id": MessageId.GAME_FULL})
-                self.close()
-            self.live_match.update()  # Write to DB
-            # TODO release lock
-            self.send_json({"id": MessageId.GAME_JOINED})
+            self.add_player(user)
         else:
             self.close()  # Invalid UUID, no go
 
