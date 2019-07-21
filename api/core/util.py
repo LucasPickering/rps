@@ -19,4 +19,21 @@ class Move(DbEnum):
 
 
 def is_uuid(s):
-    return UUID_RGX.matches(s)
+    return bool(UUID_RGX.match(s))
+
+
+def register(registry, name, field=None):
+    def inner(cls):
+        if name in registry:
+            raise ValueError(
+                "Cannot register '{}' under '{}'."
+                " '{}' is already registered under that name.".format(
+                    cls, name, registry[name]
+                )
+            )
+        if field:
+            setattr(cls, field, name)
+        registry[name] = cls
+        return cls
+
+    return inner
