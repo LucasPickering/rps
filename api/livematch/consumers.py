@@ -2,8 +2,8 @@ from channels.generic.websocket import JsonWebsocketConsumer
 from django.db import transaction
 
 from core import util
-from core.models import LiveMatch
 
+from .models import LiveMatch
 from .serializers import (
     get_msg_serializer,
     ErrorAlreadyInGameSerializer,
@@ -18,12 +18,11 @@ class MatchConsumer(JsonWebsocketConsumer):
     def send_data(self, serializer):
         self.send_json(serializer.data)
 
-    def join_player(self, user):
+    def user_join(self):
         """
-        Tries to add the given player to this match.
+        Tries to add the authenticated user to this match.
 
         Arguments:
-            user {User} -- The user to add
 
         Returns:
             bool -- True if the join was successful, False if there was an error
@@ -32,15 +31,19 @@ class MatchConsumer(JsonWebsocketConsumer):
         # Try to join the game
         serializer = None
         with transaction.atomic():
+            # Get the row and lock it
+            live_match, _ = LiveMatch.objects.select_for_update().get_or_create(
+                id=self.match_id
+            )
             this_player = None
             other_player = None
             # Check if there is a slot available in the match
-            if self.player1 is None:
-                this_player = self.player1 = user
-                other_player = self.player2
-            elif self.player2 is None:
-                this_player = self.player2 = user
-                other_player = self.player1
+            if live_match.player1 is None:
+                this_player = live_match.player1 = self.user
+                other_player = live_match.player2
+            elif live_match.player2 is None:
+                this_player = live_match.player2 = self.user
+                other_player = live_match.player1
 
             if this_player is None:
                 # Neither slot was open
@@ -51,23 +54,18 @@ class MatchConsumer(JsonWebsocketConsumer):
                     serializer = ErrorAlreadyInGameSerializer()
                 else:
                     serializer = MessageGameJoinedSerializer()
-                    self.update()  # Write to DB
+                    live_match.update()  # Write to DB
 
         self.send_data(serializer)
         return serializer.data["is_error"]
 
     def connect(self):
         self.accept()
-        match_id = self.scope["url_route"]["kwargs"]["match_id"]
-        if util.is_uuid(match_id):
-            user = self.scope["user"]
+        self.match_id = self.scope["url_route"]["kwargs"]["match_id"]
+        if util.is_uuid(self.match_id):
+            self.user = self.scope["user"]
 
-            # Get the row and lock it
-            self.live_match = LiveMatch.objects.select_for_update().get_or_create(
-                id=match_id
-            )
-
-            if not self.join_player(user):
+            if not self.user_join():
                 self.close()
         else:
             self.send_data(ErrorInvalidUuidSerializer())

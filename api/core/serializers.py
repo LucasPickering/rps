@@ -20,3 +20,7 @@ class MatchSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     games = GameSerializer(many=True)
+
+
+class NewMatchSerailizer(serializers.Serializer):
+    match_id = serializers.CharField()

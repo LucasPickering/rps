@@ -1,14 +1,17 @@
 import uuid
 from rest_framework import generics, views
-from django.http import HttpResponseRedirect
+from rest_framework.response import Response
 
 from . import models, serializers
 
 
-class MatchRedirectView(views.APIView):
+class NewMatchView(views.APIView):
     def get(self, request):
+        # Generate a new match ID and return it
         match_id = uuid.uuid4().hex
-        return HttpResponseRedirect(f"/match/{match_id}")
+        return Response(
+            serializers.NewMatchSerailizer({"match_id": match_id}).data
+        )
 
 
 class MatchesView(generics.ListAPIView):

@@ -1,8 +1,15 @@
-from django.urls import path
+from django.urls import include, path
 
 from . import views
 
 urlpatterns = [
-    path("match", views.MatchRedirectView.as_view()),
-    path("matches", views.MatchesView.as_view()),
+    path(
+        "matches/",
+        include(
+            [
+                path("new", views.NewMatchView.as_view()),
+                path("", views.MatchesView.as_view()),
+            ]
+        ),
+    )
 ]
