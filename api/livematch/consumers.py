@@ -5,87 +5,100 @@ from core import util
 
 from .models import LiveMatch
 from .serializers import (
-    get_msg_serializer,
-    ErrorAlreadyInGameSerializer,
-    ErrorInvalidUuidSerializer,
-    ErrorGameFullSerializer,
-    ErrorMalformedMessageSerializer,
+    get_serializer,
+    ErrorSerializer,
     MessageGameJoinedSerializer,
 )
+from .error import ClientError, ClientErrorType
 
 
 class MatchConsumer(JsonWebsocketConsumer):
     def send_data(self, serializer):
         self.send_json(serializer.data)
 
+    def handle_error(self, error):
+        """
+        Processes the given error. An error message is send over the socket,
+        then if the error is marked as fatal, the socket is closed.
+
+        Arguments:
+            error {ClientError} -- The error
+        """
+        self.send_data(ErrorSerializer(dict(error)))
+        if error.fatal:
+            self.close()
+
+    def validate_match_id(self):
+        """
+        Checks if the match ID from the URL is valid.
+
+        Raises:
+            ClientError: If the match ID is invalid
+        """
+        if not util.is_uuid(self.match_id):
+            raise ClientError(ClientErrorType.INVALID_MATCH_ID, fatal=True)
+
     def user_join(self):
         """
         Tries to add the authenticated user to this match.
 
-        Arguments:
-
-        Returns:
-            bool -- True if the join was successful, False if there was an error
+        Raises:
+            ClientError: If the game is full or this player is already in it
         """
 
         # Try to join the game
-        serializer = None
         with transaction.atomic():
             # Get the row and lock it
             live_match, _ = LiveMatch.objects.select_for_update().get_or_create(
                 id=self.match_id
             )
-            this_player = None
-            other_player = None
-            # Check if there is a slot available in the match
-            if live_match.player1 is None:
-                this_player = live_match.player1 = self.user
-                other_player = live_match.player2
-            elif live_match.player2 is None:
-                this_player = live_match.player2 = self.user
-                other_player = live_match.player1
 
-            if this_player is None:
-                # Neither slot was open
-                serializer = ErrorGameFullSerializer()
-            else:
-                if this_player == other_player:
-                    # This player is already in the game
-                    serializer = ErrorAlreadyInGameSerializer()
-                else:
-                    serializer = MessageGameJoinedSerializer()
-                    live_match.update()  # Write to DB
+            # If the player is already in the game, we don't want to do anything
+            if not live_match.is_player_in_game(self.user):
+                if not live_match.add_player(self.user):
+                    # Get up on outta here with your game hijacking
+                    raise ClientError(ClientErrorType.GAME_FULL, fatal=True)
+                # Player was successfully added - write it to the DB
+                live_match.update()
 
-        self.send_data(serializer)
-        return serializer.data["is_error"]
+        self.send_data(MessageGameJoinedSerializer())
+
+    def process_content(self, content):
+        # Get the message type
+        try:
+            msg_type = content["msg_type"]
+        except KeyError:
+            raise ClientError(
+                ClientErrorType.MALFORMED_MESSAGE, detail="Missing type"
+            )
+
+        # Look up the correct serializer for this type and try to deserialize
+        serializer = get_serializer(msg_type)
+        if not serializer.is_valid():
+            raise ClientError(
+                ClientErrorType.MALFORMED_MESSAGE, detail=serializer.errors
+            )
+
+        print("Got this data: ", serializer.validated_data)
 
     def connect(self):
+        print("connect")
         self.accept()
         self.match_id = self.scope["url_route"]["kwargs"]["match_id"]
-        if util.is_uuid(self.match_id):
-            self.user = self.scope["user"]
-
-            if not self.user_join():
-                self.close()
-        else:
-            self.send_data(ErrorInvalidUuidSerializer())
-            self.close()  # Invalid UUID, no go
+        self.user = self.scope["user"]
+        try:
+            self.validate_match_id()
+            self.user_join()
+        except ClientError as e:
+            self.handle_error(e)
 
     def disconnect_json(self, close_code):
+        print("disconnect")
         pass
 
     def receive_json(self, content):
+        print("receive")
         try:
-            msg_type = content["type"]
-        except KeyError:
-            self.send_data(
-                ErrorMalformedMessageSerializer({"message": "Missing type"})
-            )
-            return
-
-        serializer = get_msg_serializer(msg_type)
-        if not serializer.is_valid():
-            return
-
-        data = serializer.data
-        print(data)
+            self.process_content(content)
+        except ClientError as e:
+            self.handle_error(e)
