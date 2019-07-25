@@ -4,6 +4,11 @@ from rest_framework import serializers
 from . import models
 
 
+class LoginSerializer(serializers.Sierializer):
+    username = serializers.CharField(default=None)
+    password = serializers.CharField(default=None)
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
