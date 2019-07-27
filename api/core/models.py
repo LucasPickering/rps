@@ -6,7 +6,7 @@ from . import util
 
 class Match(models.Model):
     start_time = models.DateTimeField()
-    duration = models.PositiveIntegerField()
+    end_time = models.DateTimeField()
     best_of = models.PositiveSmallIntegerField()
     players = models.ManyToManyField(User)  # Always len=2
     # Null for incomplete matches, i.e. when Nick rage quits

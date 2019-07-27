@@ -1,27 +1,29 @@
 import withRouteParams from 'hoc/withRouteParams';
-import React, { useEffect, useState } from 'react';
+import useSocket from 'hooks/useSocket';
+import React, { useReducer } from 'react';
+import { defaultMatchState, MatchAction, matchReducer } from 'state/match';
 
 interface Props {
   matchId: string;
 }
 
 const Match: React.FC<Props> = ({ matchId }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  useEffect(() => {
-    const ws = new WebSocket(
-      `ws://${window.location.host}/ws/match/${matchId}`
-    );
-    ws.onopen = () => {
-      console.log('open');
-      ws.send(JSON.stringify({ message: 'asdf' }));
-      setIsOpen(true);
-    };
-    ws.onmessage = event => {
-      console.log('Received: ', event.data);
-    };
-  }, [matchId]);
+  const [state, dispatch] = useReducer(matchReducer, defaultMatchState);
+  const [isOpen, send] = useSocket(`/ws/match/${matchId}`, {
+    onMessage: event => {
+      // Let's just pray our data format agrees with the API
+      dispatch(event.data as MatchAction);
+    },
+    onError: event => {
+      console.error('Socket error: ', event);
+    },
+  });
 
-  return <div>{matchId}</div>;
+  return (
+    <div>
+      {matchId} - WS: {isOpen ? 'Open' : 'Closed'}
+    </div>
+  );
 };
 
 export default withRouteParams(Match);

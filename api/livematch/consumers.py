@@ -66,7 +66,7 @@ class MatchConsumer(JsonWebsocketConsumer):
     def process_content(self, content):
         # Get the message type
         try:
-            msg_type = content["msg_type"]
+            msg_type = content["type"]
         except KeyError:
             raise ClientError(
                 ClientErrorType.MALFORMED_MESSAGE, detail="Missing type"

@@ -24,10 +24,10 @@ class ErrorSerializer(serializers.Serializer):
 
 
 class MessageSerializer(serializers.Serializer):
-    msg_type = serializers.CharField()
+    type = serializers.CharField()
 
     def __init__(self, data={}, *args, **kwargs):
-        data["msg_type"] = self._TYPE
+        data["type"] = self._TYPE
         super().__init__(data, *args, **kwargs)
 
 
