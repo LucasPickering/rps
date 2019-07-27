@@ -1,23 +1,23 @@
 import uuid
 from django.contrib import auth
 from rest_framework import generics, status, views
-from rest_framework.response import Response, HttpRedirectResponse
+from rest_framework.response import Response
 
 from . import models, serializers
 
 
 class LoginView(views.APIView):
     def post(self, request):
-        serializer = serializers.LoginSerializer(request.data)
+        serializer = serializers.LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         login = serializer.validated_data
 
         user = auth.authenticate(
-            request, username=login.username, password=login.password
+            request, username=login["username"], password=login["password"]
         )
         if user is not None:
-            auth.login(user)
-            return HttpRedirectResponse("/")  # Back to the home page
+            auth.login(request, user)
+            return Response({})  # Back to the home page
         else:
             return Response(
                 {"detail": "incorrect username or password"},
@@ -28,7 +28,7 @@ class LoginView(views.APIView):
 class LogoutView(views.APIView):
     def post(self, request):
         auth.logout(request)
-        return HttpRedirectResponse("/")  # Back to the home page
+        return Response({})  # Back to the home page
 
 
 class NewMatchView(views.APIView):
