@@ -4,6 +4,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import routes from 'util/routes';
 import Home from './Home';
+import Login from './Login';
 import Match from './Match';
 
 const theme = createMuiTheme({
@@ -16,6 +17,9 @@ const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <Grid container direction="column" alignItems="center">
+        <Grid item>
+          <Login />
+        </Grid>
         <Grid item>
           <Router>
             <CssBaseline />

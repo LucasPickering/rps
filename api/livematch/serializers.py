@@ -19,7 +19,7 @@ def get_serializer(serializer_type):
 
 
 class ErrorSerializer(serializers.Serializer):
-    error_type = serializers.CharField()
+    error = serializers.CharField()
     detail = serializers.CharField()
 
 

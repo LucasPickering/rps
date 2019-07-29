@@ -1,9 +1,14 @@
+import axios from 'axios'; // tslint:disable-line match-default-export-name
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './components/App';
 
 import './index.css';
 import * as serviceWorker from './serviceWorker';
+
+// axios setup to cooperate with Django's CSRF policy
+axios.defaults.xsrfCookieName = 'csrftoken';
+axios.defaults.xsrfHeaderName = 'X-CSRFTOKEN';
 
 ReactDOM.render(<App />, document.getElementById('root'));
 

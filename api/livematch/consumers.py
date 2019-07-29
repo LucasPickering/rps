@@ -24,7 +24,7 @@ class MatchConsumer(JsonWebsocketConsumer):
         Arguments:
             error {ClientError} -- The error
         """
-        self.send_data(ErrorSerializer(dict(error)))
+        self.send_data(ErrorSerializer(error.to_dict()))
         if error.fatal:
             self.close()
 
@@ -59,7 +59,7 @@ class MatchConsumer(JsonWebsocketConsumer):
                     # Get up on outta here with your game hijacking
                     raise ClientError(ClientErrorType.GAME_FULL, fatal=True)
                 # Player was successfully added - write it to the DB
-                live_match.update()
+                live_match.save()
 
         self.send_data(MessageGameJoinedSerializer())
 
@@ -97,7 +97,7 @@ class MatchConsumer(JsonWebsocketConsumer):
         pass
 
     def receive_json(self, content):
-        print("receive")
+        print("receive", content)
         try:
             self.process_content(content)
         except ClientError as e:
