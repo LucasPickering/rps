@@ -2,11 +2,19 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 type Send = (data: any) => void;
 type EventConsumer<T = Event> = (event: T) => void;
+
 interface Callbacks {
   onOpen?: EventConsumer;
   onMessage?: EventConsumer<MessageEvent>;
   onError?: EventConsumer;
-  onClose?: EventConsumer;
+  onClose?: EventConsumer<CloseEvent>;
+}
+
+export enum ConnectionStatus {
+  Connecting,
+  Connected,
+  ClosedError,
+  ClosedNormal,
 }
 
 /**
@@ -15,8 +23,10 @@ interface Callbacks {
 export default (
   addr: string,
   callbacks: Callbacks
-): { isOpen: boolean; send: Send } => {
-  const [isOpen, setIsOpen] = useState(false);
+): { status: ConnectionStatus; send: Send } => {
+  const [status, setStatus] = useState<ConnectionStatus>(
+    ConnectionStatus.Connecting
+  );
   const wsRef = useRef<WebSocket | undefined>(undefined);
 
   // Memoized send function
@@ -42,7 +52,7 @@ export default (
     const { current: ws } = wsRef;
 
     wsRef.current.onopen = event => {
-      setIsOpen(true);
+      setStatus(ConnectionStatus.Connected);
       if (callbacks.onOpen) {
         callbacks.onOpen(event);
       }
@@ -61,7 +71,12 @@ export default (
     };
 
     ws.onclose = event => {
-      setIsOpen(false);
+      // code === 1000 indicates normal closure
+      setStatus(
+        event.code === 1000
+          ? ConnectionStatus.ClosedNormal
+          : ConnectionStatus.ClosedError
+      );
       if (callbacks.onClose) {
         callbacks.onClose(event);
       }
@@ -73,5 +88,5 @@ export default (
     };
   }, [addr, callbacks]);
 
-  return { isOpen, send };
+  return { status, send };
 };
