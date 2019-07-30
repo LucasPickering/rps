@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-type Send = (data: any) => void;
+export type Send = (data: any) => void;
 type EventConsumer<T = Event> = (event: T) => void;
 
 interface Callbacks {

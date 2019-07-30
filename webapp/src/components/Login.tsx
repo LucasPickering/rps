@@ -2,9 +2,7 @@ import { Box, Button, TextField } from '@material-ui/core';
 import axios from 'axios'; // tslint:disable-line match-default-export-name
 import React, { useState } from 'react';
 
-interface Props {}
-
-const Login: React.FC<Props> = ({}) => {
+const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   return (

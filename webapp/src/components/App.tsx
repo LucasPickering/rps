@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Route } from 'react-router-dom';
 import routes from 'util/routes';
 import Home from './Home';
 import Login from './Login';
-import Match from './Match';
+import MatchView from './MatchView';
 
 const theme = createMuiTheme({
   palette: {
@@ -24,7 +24,7 @@ const App: React.FC = () => {
           <Router>
             <CssBaseline />
             <Route path={routes.home.route} component={Home} exact />
-            <Route path={routes.match.route} component={Match} exact />
+            <Route path={routes.match.route} component={MatchView} exact />
           </Router>
         </Grid>
       </Grid>

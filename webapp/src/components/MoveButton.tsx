@@ -1,6 +1,6 @@
 import { Button } from '@material-ui/core';
 import React from 'react';
-import { Move } from 'util/match';
+import { Move } from 'state/match';
 import MoveIcon from './MoveIcon';
 
 interface Props extends React.ComponentProps<typeof Button> {

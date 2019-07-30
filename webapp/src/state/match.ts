@@ -1,3 +1,6 @@
+import { ConnectionStatus, Send } from 'hooks/useWebSocket';
+import React from 'react';
+
 export enum Move {
   Rock = 'rock',
   Paper = 'paper',
@@ -12,17 +15,23 @@ export enum GameOutcome {
   Tie = 'tie',
 }
 
+export enum MatchOutcome {
+  Win = 'win',
+  Loss = 'loss',
+}
+
 export interface MatchState {
-  opponentName?: string;
+  bestOf: number;
+  opponentName?: string; // undef if waiting on opponent
   gameInProgress: boolean;
-  selectedMove?: Move;
+  selectedMove?: Move; // undef if no move selected yet
   gameHistory: GameOutcome[];
+  matchOutcome?: MatchOutcome; // undef if match in progress
 }
 
 export const defaultMatchState: MatchState = {
-  opponentName: undefined,
+  bestOf: 0,
   gameInProgress: false,
-  selectedMove: undefined,
   gameHistory: [],
 };
 
@@ -65,3 +74,13 @@ export const matchReducer: React.Reducer<MatchState, MatchAction> = (
       };
   }
 };
+
+export interface MatchContextType {
+  connectionStatus: ConnectionStatus;
+  send: Send;
+  state: MatchState;
+}
+
+export const MatchContext = React.createContext<MatchContextType>(
+  {} as MatchContextType // ...sigh - we shouldn't have to do this, but alas
+);

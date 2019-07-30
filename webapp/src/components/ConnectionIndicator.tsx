@@ -12,7 +12,8 @@ import {
 } from '@material-ui/icons';
 import classNames from 'classnames';
 import { ConnectionStatus } from 'hooks/useWebSocket';
-import React from 'react';
+import React, { useContext } from 'react';
+import { MatchContext } from 'state/match';
 
 const statusLabels = {
   [ConnectionStatus.Connecting]: 'Connecting',
@@ -49,20 +50,17 @@ const getStatusIcon = (status: ConnectionStatus): React.ReactElement<any> => {
   }
 };
 
-interface Props {
-  status: ConnectionStatus;
-}
-
-const ConnectionIndicator: React.FC<Props> = ({ status }) => {
+const ConnectionIndicator: React.FC = () => {
+  const { connectionStatus } = useContext(MatchContext);
   const localClasses = useLocalStyles();
   return (
     <Chip
       className={classNames(localClasses.root, {
-        [localClasses.success]: status === ConnectionStatus.Connected,
-        [localClasses.error]: status === ConnectionStatus.ClosedError,
+        [localClasses.success]: connectionStatus === ConnectionStatus.Connected,
+        [localClasses.error]: connectionStatus === ConnectionStatus.ClosedError,
       })}
-      icon={getStatusIcon(status)}
-      label={statusLabels[status]}
+      icon={getStatusIcon(connectionStatus)}
+      label={statusLabels[connectionStatus]}
     />
   );
 };
