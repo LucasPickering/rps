@@ -1,4 +1,3 @@
-import { Container } from '@material-ui/core';
 import withRouteParams from 'hoc/withRouteParams';
 import useWebSocket from 'hooks/useWebSocket';
 import React, { useMemo, useReducer } from 'react';

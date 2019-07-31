@@ -8,25 +8,25 @@ const getMatchInProgressChild = (
   // Game is running
   if (state.gameInProgress) {
     if (state.selectedMove) {
-      return <WaitingForOpponentMove />;
+      return <div>Waiting for opponent to go</div>; // TODO
     }
-    return <SelectAMove />;
+    return <div>Select a move</div>; // TODO
   }
 
   // Game is over
   if (state.matchOutcome) {
-    return <MatchEnd />;
+    return <div>Match over</div>; // TODO
   }
-  return <GameEnd />;
+  return <div>Game over</div>; // TODO
 };
 
 const Match: React.FC = () => {
   const { state } = useContext(MatchContext);
 
   // No opponent
-  if (!state.opponentName) {
-    return <WaitingForOpponent />;
-  }
+  // if (!state.opponentName) {
+  //   return <p>Waiting for opponent...</p>; // TODO
+  // }
 
   return <MatchOutline>{getMatchInProgressChild(state)}</MatchOutline>;
 };

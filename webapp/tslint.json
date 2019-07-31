@@ -1,6 +1,9 @@
 {
   "defaultSeverity": "error",
-  "extends": ["tslint:recommended", "tslint-config-prettier"],
+  "extends": [
+    "tslint:recommended",
+    "tslint-config-prettier"
+  ],
   "jsRules": {},
   "rules": {
     "interface-name": false,
@@ -10,7 +13,9 @@
     "no-empty-interface": false,
     "object-literal-sort-keys": false,
     "react-hooks/exhaustive-deps": true,
-    "@typescript-eslint/no-unused-vars": true
+    "no-unused-variable": true
   },
-  "rulesDirectory": ["node_modules/tslint-eslint-rules/dist/rules"]
+  "rulesDirectory": [
+    "node_modules/tslint-eslint-rules/dist/rules"
+  ]
 }

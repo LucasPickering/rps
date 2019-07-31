@@ -25,14 +25,15 @@ export interface MatchState {
   opponentName?: string; // undef if waiting on opponent
   gameInProgress: boolean;
   selectedMove?: Move; // undef if no move selected yet
-  gameHistory: GameOutcome[];
+  gameLog: GameOutcome[];
   matchOutcome?: MatchOutcome; // undef if match in progress
 }
 
 export const defaultMatchState: MatchState = {
-  bestOf: 0,
+  bestOf: 5, // TODO revert to 0
+  opponentName: 'Nick', // TODO remove
   gameInProgress: false,
-  gameHistory: [],
+  gameLog: [],
 };
 
 export enum MatchActionType {
@@ -45,7 +46,7 @@ export enum MatchActionType {
 export type MatchAction =
   | { type: MatchActionType.MatchJoin; state: MatchState }
   | { type: MatchActionType.GameStart }
-  | { type: MatchActionType.GameEnd; gameHistory: GameOutcome[] }
+  | { type: MatchActionType.GameEnd; gameLog: GameOutcome[] }
   | { type: MatchActionType.Move; move: Move };
 
 export const matchReducer: React.Reducer<MatchState, MatchAction> = (
@@ -65,13 +66,15 @@ export const matchReducer: React.Reducer<MatchState, MatchAction> = (
       return {
         ...state,
         gameInProgress: false,
-        gameHistory: action.gameHistory,
+        gameLog: action.gameLog,
       };
     case MatchActionType.Move:
       return {
         ...state,
         selectedMove: action.move,
       };
+    default:
+      return state;
   }
 };
 

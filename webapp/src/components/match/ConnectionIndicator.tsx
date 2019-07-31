@@ -1,10 +1,4 @@
-import {
-  Chip,
-  CircularProgress,
-  Icon,
-  makeStyles,
-  Theme,
-} from '@material-ui/core';
+import { Chip, CircularProgress, makeStyles, Theme } from '@material-ui/core';
 import {
   Cancel as CancelIcon,
   CheckCircle as CheckCircleIcon,

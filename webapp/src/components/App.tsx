@@ -1,11 +1,9 @@
-import { createMuiTheme, CssBaseline, Grid } from '@material-ui/core';
+import { createMuiTheme, CssBaseline } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/styles';
 import React from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-import routes from 'util/routes';
-import Home from './Home';
-import Login from './Login';
-import MatchView from './MatchView';
+import { BrowserRouter as Router } from 'react-router-dom';
+import HeaderBar from './HeaderBar';
+import PageRouteContainer from './PageRouteContainer';
 
 const theme = createMuiTheme({
   palette: {
@@ -16,18 +14,11 @@ const theme = createMuiTheme({
 const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
-      <Grid container direction="column" alignItems="center">
-        <Grid item>
-          <Login />
-        </Grid>
-        <Grid item>
-          <Router>
-            <CssBaseline />
-            <Route path={routes.home.route} component={Home} exact />
-            <Route path={routes.match.route} component={MatchView} exact />
-          </Router>
-        </Grid>
-      </Grid>
+      <Router>
+        <CssBaseline />
+        <HeaderBar />
+        <PageRouteContainer />
+      </Router>
     </ThemeProvider>
   );
 };
