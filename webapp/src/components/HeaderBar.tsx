@@ -1,13 +1,18 @@
-import { AppBar, Toolbar } from '@material-ui/core';
-import React, { useState } from 'react';
-import Login from './Login';
+import { AppBar, Button, Toolbar } from '@material-ui/core';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import routes from 'util/routes';
 
 const HeaderBar: React.FC = () => {
-  const [loginVisible, setLoginVisible] = useState(false);
-
   return (
     <AppBar position="static">
-      <Toolbar>{loginVisible && <Login />}</Toolbar>
+      <Toolbar>
+        <Link to={routes.login.build({})}>
+          <Button variant="contained" color="secondary">
+            Log In
+          </Button>
+        </Link>
+      </Toolbar>
     </AppBar>
   );
 };

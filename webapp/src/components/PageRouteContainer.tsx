@@ -4,10 +4,13 @@ import React from 'react';
 import { Route } from 'react-router-dom';
 import routes from 'util/routes';
 import Home from './Home';
+import LoginView from './login/LoginView';
 import MatchView from './match/MatchView';
 
 const useLocalStyles = makeStyles(({ spacing }: Theme) => ({
   root: {
+    display: 'flex',
+    flexDirection: 'column',
     padding: spacing(4),
   },
 }));
@@ -17,6 +20,7 @@ const PageRouteContainer: React.FC = () => {
   return (
     <Container className={localClasses.root} maxWidth={false}>
       <Route path={routes.home.route} component={Home} exact />
+      <Route path={routes.login.route} component={LoginView} exact />
       <Route path={routes.match.route} component={MatchView} exact />
     </Container>
   );

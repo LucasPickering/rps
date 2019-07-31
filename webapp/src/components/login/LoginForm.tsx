@@ -2,7 +2,7 @@ import { Box, Button, TextField } from '@material-ui/core';
 import axios from 'axios'; // tslint:disable-line match-default-export-name
 import React, { useState } from 'react';
 
-const Login: React.FC = () => {
+const LoginForm: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   return (
@@ -26,7 +26,7 @@ const Login: React.FC = () => {
           }}
         />
         <TextField
-          id="username"
+          id="password"
           label="Password"
           type="password"
           value={password}
@@ -47,4 +47,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default LoginForm;

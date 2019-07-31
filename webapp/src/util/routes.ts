@@ -16,5 +16,6 @@ class RouteLocation<Params = {}> {
 
 export default {
   home: new RouteLocation('/'),
+  login: new RouteLocation('/login'),
   match: new RouteLocation<{ matchId: string }>('/match/:matchId'),
 };
