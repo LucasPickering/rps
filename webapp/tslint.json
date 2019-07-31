@@ -1,9 +1,6 @@
 {
   "defaultSeverity": "error",
-  "extends": [
-    "tslint:recommended",
-    "tslint-config-prettier"
-  ],
+  "extends": ["tslint:recommended", "tslint-config-prettier"],
   "jsRules": {},
   "rules": {
     "interface-name": false,
@@ -11,11 +8,7 @@
     "max-classes-per-file": false,
     "no-constant-condition": true,
     "no-empty-interface": false,
-    "object-literal-sort-keys": false,
-    "react-hooks/exhaustive-deps": true,
-    "no-unused-variable": true
+    "object-literal-sort-keys": false
   },
-  "rulesDirectory": [
-    "node_modules/tslint-eslint-rules/dist/rules"
-  ]
+  "rulesDirectory": ["node_modules/tslint-eslint-rules/dist/rules"]
 }

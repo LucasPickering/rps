@@ -1,9 +1,9 @@
-import { makeStyles, Theme } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import Paper from 'components/mui/Paper';
 import React from 'react';
 import LoginForm from './LoginForm';
 
-const useLocalStyles = makeStyles(({ spacing }: Theme) => ({
+const useLocalStyles = makeStyles(() => ({
   root: {
     width: 300,
     alignSelf: 'center',
