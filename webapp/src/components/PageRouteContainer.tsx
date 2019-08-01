@@ -19,9 +19,9 @@ const PageRouteContainer: React.FC = () => {
   const localClasses = useLocalStyles();
   return (
     <Container className={localClasses.root} maxWidth={false}>
-      <Route path={routes.home.route} component={Home} exact />
-      <Route path={routes.login.route} component={LoginView} exact />
-      <Route path={routes.match.route} component={MatchView} exact />
+      <Route path={routes.home.templateRoute} component={Home} exact />
+      <Route path={routes.login.templateRoute} component={LoginView} exact />
+      <Route path={routes.match.templateRoute} component={MatchView} exact />
     </Container>
   );
 };

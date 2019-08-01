@@ -17,7 +17,7 @@ class LoginView(views.APIView):
         )
         if user is not None:
             auth.login(request, user)
-            return Response({})  # Back to the home page
+            return Response(serializers.UserSerializer(user).data)
         else:
             return Response(
                 {"detail": "incorrect username or password"},
@@ -28,7 +28,7 @@ class LoginView(views.APIView):
 class LogoutView(views.APIView):
     def post(self, request):
         auth.logout(request)
-        return Response({})  # Back to the home page
+        return Response({})
 
 
 class NewMatchView(views.APIView):

@@ -1,19 +1,43 @@
 import { Box, Button, TextField } from '@material-ui/core';
 import axios from 'axios'; // tslint:disable-line match-default-export-name
-import React, { useState } from 'react';
+import useUser from 'hooks/useUser';
+import React, { useContext, useState } from 'react';
+import { Redirect } from 'react-router';
+import { UserActionType, UserDispatchContext } from 'state/user';
+import routes from 'util/routes';
 
 const LoginForm: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState();
+  const user = useUser();
+  const userDispatch = useContext(UserDispatchContext);
+
+  // Already logged in - get up on outta here
+  if (user) {
+    return <Redirect to={routes.home.build({})} />;
+  }
+
   return (
     <form
-      onSubmit={e => {
-        axios.post('/api/login', {
-          username,
-          password,
-        });
+      onSubmit={event => {
+        axios
+          .post('/api/login', {
+            username,
+            password,
+          })
+          .then(response => {
+            userDispatch({
+              type: UserActionType.Login,
+              user: response.data,
+            });
+          })
+          .catch(err => {
+            setError(err);
+          });
+        setError(undefined);
 
-        e.preventDefault(); // Don't reload the page
+        event.preventDefault(); // Don't reload the page
       }}
     >
       <Box display="flex" flexDirection="column">
@@ -42,6 +66,7 @@ const LoginForm: React.FC = () => {
         >
           Log In
         </Button>
+        {error && <p>{JSON.stringify(error)}</p>}
       </Box>
     </form>
   );

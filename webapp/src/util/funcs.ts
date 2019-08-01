@@ -1,3 +1,5 @@
+import React from 'react';
+
 /**
  * Wraps the given HoC in logic that will add a better name to all
  * components created by it, reflecting how that component has been
@@ -30,3 +32,20 @@ export const makeHoc = <InnerProps, OuterProps>(
  */
 export const freq = <T>(arr: T[], el: T): number =>
   arr.filter(e => e === el).length;
+
+/**
+ * Creates a pair of contexts for the state and dispatch of a useReducer.
+ * Splitting the two is recommended by the React docs.
+ * @return The two contexts
+ */
+export const makeReducerContexts = <State, Action>(): {
+  StateContext: React.Context<State>;
+  DispatchContext: React.Context<React.Dispatch<Action>>;
+} => {
+  return {
+    StateContext: React.createContext<State>({} as State),
+    DispatchContext: React.createContext<React.Dispatch<Action>>(
+      {} as React.Dispatch<Action>
+    ),
+  };
+};

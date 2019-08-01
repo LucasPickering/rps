@@ -1,15 +1,15 @@
 class RouteLocation<Params = {}> {
-  public readonly route: string;
+  public readonly templateRoute: string;
 
   constructor(route: string) {
-    this.route = route;
+    this.templateRoute = route;
   }
 
   public build(params: Params): string {
     // Replace each instance of `:<param>` with the param value
     return Object.entries(params).reduce(
       (acc, [k, v]) => acc.replace(`:${k}`, v),
-      this.route
+      this.templateRoute
     );
   }
 }

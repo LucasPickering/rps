@@ -12,6 +12,7 @@ class LoginSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
+        fields = ("username", "email")
 
 
 class GameSerializer(serializers.ModelSerializer):
