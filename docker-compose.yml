@@ -13,11 +13,6 @@ services:
       - POSTGRES_USER=rps
       - POSTGRES_PASSWORD=rps
 
-  redis:
-    image: redis:5-alpine
-    ports:
-      - "6379:6379"
-
   api:
     build: ./api/
     command: sh -c "dockerize -wait tcp://db:5432 && ./manage.py runserver 0.0.0.0:8000"
