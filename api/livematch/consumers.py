@@ -63,7 +63,7 @@ class MatchConsumer(JsonWebsocketConsumer):
 
         self.send_data(MessageGameJoinedSerializer())
 
-    def process_content(self, content):
+    def validate_content(self, content):
         # Get the message type
         try:
             msg_type = content["type"]
@@ -78,8 +78,10 @@ class MatchConsumer(JsonWebsocketConsumer):
             raise ClientError(
                 ClientErrorType.MALFORMED_MESSAGE, detail=serializer.errors
             )
+        return serializer.validated_data
 
-        print("Got this data: ", serializer.validated_data)
+    def process_msg(self, msg):
+        pass
 
     def connect(self):
         print("connect")
@@ -99,6 +101,7 @@ class MatchConsumer(JsonWebsocketConsumer):
     def receive_json(self, content):
         print("receive", content)
         try:
-            self.process_content(content)
+            msg = self.validate_content(content)
+            self.process_msg(msg)
         except ClientError as e:
             self.handle_error(e)
