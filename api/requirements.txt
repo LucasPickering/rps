@@ -1,6 +1,7 @@
 channels
 channels_redis
 django
+django-composite-field
 django-debug-toolbar
 djangorestframework
 psycopg2-binary

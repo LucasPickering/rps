@@ -7,6 +7,7 @@ from .models import LiveMatch
 from .serializers import (
     get_serializer,
     ErrorSerializer,
+    MessageType,
     MessageGameJoinedSerializer,
 )
 from .error import ClientError, ClientErrorType
@@ -38,30 +39,9 @@ class MatchConsumer(JsonWebsocketConsumer):
         if not util.is_uuid(self.match_id):
             raise ClientError(ClientErrorType.INVALID_MATCH_ID, fatal=True)
 
-    def user_join(self):
-        """
-        Tries to add the authenticated user to this match.
-
-        Raises:
-            ClientError: If the game is full or this player is already in it
-        """
-
-        # Try to join the game
-        with transaction.atomic():
-            # Get the row and lock it
-            live_match, _ = LiveMatch.objects.select_for_update().get_or_create(
-                id=self.match_id
-            )
-
-            # If the player is already in the game, we don't want to do anything
-            if not live_match.is_player_in_game(self.user):
-                if not live_match.add_player(self.user):
-                    # Get up on outta here with your game hijacking
-                    raise ClientError(ClientErrorType.GAME_FULL, fatal=True)
-                # Player was successfully added - write it to the DB
-                live_match.save()
-
-        self.send_data(MessageGameJoinedSerializer())
+    def validate_user(self):
+        if not self.user.is_authenticated:
+            raise ClientError(ClientErrorType.NOT_LOGGED_IN, fatal=True)
 
     def validate_content(self, content):
         # Get the message type
@@ -80,23 +60,74 @@ class MatchConsumer(JsonWebsocketConsumer):
             )
         return serializer.validated_data
 
+    def get_match(self):
+        live_match, _ = LiveMatch.objects.select_for_update().get(
+            id=self.match_id
+        )
+        return live_match
+
+    def user_connect(self):
+        """
+        Tries to add the authenticated user to this match.
+
+        Raises:
+            ClientError: If the game is full or this player is already in it
+        """
+
+        # Try to join the game
+        with transaction.atomic():
+            # Get the row and lock it
+            live_match, _ = LiveMatch.objects.select_for_update().get_or_create(
+                id=self.match_id
+            )
+
+            # If the player is already in the game, this will mark them as
+            # connected (if they were disconnected). If they were already
+            # connected, nothing happens here.
+            if not live_match.connect_player(self.user):
+                # Get up on outta here with your game hijacking
+                raise ClientError(ClientErrorType.GAME_FULL, fatal=True)
+            # Player was successfully added - write it to the DB
+            live_match.save()
+
+        self.send_data(MessageGameJoinedSerializer())
+
+    def user_disconnect(self):
+        with transaction.atomic():
+            try:
+                live_match = self.get_match()
+            except LiveMatch.DoesNotExist:
+                return
+
+            if live_match.disconnect_player(self.user):
+                live_match.save()
+
     def process_msg(self, msg):
-        pass
+        if msg["type"] == MessageType.MOVE:
+            with transaction.atomic():
+                # If live_match doesn't exist, we have problemos
+                live_match = self.get_match()
+                live_match.apply_move(self.user, msg["move"])
+                live_match.save()
 
     def connect(self):
         print("connect")
-        self.accept()
         self.match_id = self.scope["url_route"]["kwargs"]["match_id"]
         self.user = self.scope["user"]
+        self.accept()
         try:
+            self.validate_user()
             self.validate_match_id()
-            self.user_join()
+            self.user_connect()
         except ClientError as e:
             self.handle_error(e)
 
     def disconnect_json(self, close_code):
         print("disconnect")
-        pass
+        try:
+            self.user_disconnect()
+        except ClientError as e:
+            self.handle_error(e)
 
     def receive_json(self, content):
         print("receive", content)

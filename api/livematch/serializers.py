@@ -1,3 +1,4 @@
+from enum import Enum
 from rest_framework import serializers
 
 from core import util
@@ -6,11 +7,12 @@ from core import util
 _SERIALIZERS = {}
 
 
+class MessageType(Enum):
+    GAME_JOINED = "game_joined"
+    MOVE = "move"
+
+
 def register_msg(name):
-    return util.register(_SERIALIZERS, name, field="_TYPE")
-
-
-def register_error(name):
     return util.register(_SERIALIZERS, name, field="_TYPE")
 
 
@@ -31,11 +33,11 @@ class MessageSerializer(serializers.Serializer):
         super().__init__(data, *args, **kwargs)
 
 
-@register_msg("game_joined")
+@register_msg(MessageType.GAME_JOINED)
 class MessageGameJoinedSerializer(MessageSerializer):
     pass
 
 
-@register_msg("move")
+@register_msg(MessageType.MOVE)
 class MessageMoveSerializer(MessageSerializer):
-    data = serializers.CharField()
+    move = serializers.CharField()
