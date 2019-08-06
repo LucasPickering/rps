@@ -3,19 +3,19 @@ from django.db import transaction
 
 from core import util
 
+from .message import LiveMatchStateMessage
 from .models import LiveMatch
-from .serializers import (
-    get_serializer,
-    ErrorSerializer,
-    MessageType,
-    MessageGameJoinedSerializer,
-)
+from .serializers import get_serializer, ErrorSerializer, ClientMessageType
 from .error import ClientError, ClientErrorType
 
 
 class MatchConsumer(JsonWebsocketConsumer):
     def send_data(self, serializer):
         self.send_json(serializer.data)
+
+    def send_match_state(self, live_match):
+        msg = LiveMatchStateMessage(live_match=live_match, player=self.player)
+        self.send_data(msg.get_serializer())
 
     def handle_error(self, error):
         """
@@ -40,7 +40,7 @@ class MatchConsumer(JsonWebsocketConsumer):
             raise ClientError(ClientErrorType.INVALID_MATCH_ID, fatal=True)
 
     def validate_user(self):
-        if not self.user.is_authenticated:
+        if not self.player.is_authenticated:
             raise ClientError(ClientErrorType.NOT_LOGGED_IN, fatal=True)
 
     def validate_content(self, content):
@@ -84,13 +84,13 @@ class MatchConsumer(JsonWebsocketConsumer):
             # If the player is already in the game, this will mark them as
             # connected (if they were disconnected). If they were already
             # connected, nothing happens here.
-            if not live_match.connect_player(self.user):
+            if not live_match.connect_player(self.player):
                 # Get up on outta here with your game hijacking
                 raise ClientError(ClientErrorType.GAME_FULL, fatal=True)
             # Player was successfully added - write it to the DB
             live_match.save()
 
-        self.send_data(MessageGameJoinedSerializer())
+        self.send_match_state()
 
     def user_disconnect(self):
         with transaction.atomic():
@@ -99,33 +99,37 @@ class MatchConsumer(JsonWebsocketConsumer):
             except LiveMatch.DoesNotExist:
                 return
 
-            if live_match.disconnect_player(self.user):
+            if live_match.disconnect_player(self.player):
                 live_match.save()
 
     def process_msg(self, msg):
-        if msg["type"] == MessageType.MOVE:
+        if msg["type"] == ClientMessageType.MOVE:
             with transaction.atomic():
                 # If live_match doesn't exist, we have problemos
                 live_match = self.get_match()
-                live_match.apply_move(self.user, msg["move"])
+                live_match.apply_move(self.player, msg["move"])
+                if live_match.is_game_complete:
+                    live_match.process_complete_game()
                 live_match.save()
+
+            self.send_match_state(live_match)
 
     def connect(self):
         print("connect")
         self.match_id = self.scope["url_route"]["kwargs"]["match_id"]
-        self.user = self.scope["user"]
+        self.player = self.scope["user"]
         self.accept()
         try:
             self.validate_user()
             self.validate_match_id()
-            self.user_connect()
+            self.player_connect()
         except ClientError as e:
             self.handle_error(e)
 
     def disconnect_json(self, close_code):
         print("disconnect")
         try:
-            self.user_disconnect()
+            self.player_disconnect()
         except ClientError as e:
             self.handle_error(e)
 

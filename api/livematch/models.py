@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django_composite_field import CompositeField
 
-from core import util
+from core.util import Move
 from .error import ClientError, ClientErrorType
 
 
@@ -15,9 +15,7 @@ class PlayerField(CompositeField):
     player = models.ForeignKey(User, on_delete=models.PROTECT)
     is_connected = models.BooleanField(default=False)
     # Null here means game hasn't started or currently waiting for their move
-    move = models.CharField(
-        choices=util.Move.choices(), max_length=20, null=True
-    )
+    move = models.CharField(choices=Move.choices(), max_length=20, null=True)
 
 
 class LiveMatch(models.Model):
@@ -25,6 +23,14 @@ class LiveMatch(models.Model):
     start_time = models.DateField(auto_now=True)
     player1 = PlayerField(null=True)
     player2 = PlayerField(null=True)
+
+    @property
+    def is_game_in_progress(self):
+        return bool(self.player1_move) != bool(self.player2_move)
+
+    @property
+    def is_game_complete(self):
+        return self.player1_move and self.player1_move
 
     def connect_player(self, player):
         """
@@ -85,22 +91,18 @@ class LiveMatch(models.Model):
         Raises:
             ClientError: If the move is invalid, this player has already moved,
             or they are not in the match
-
-        Returns:
-            bool -- True if the game is now complete, False if still waiting
-            for the other player
         """
         # TODO validate move string
         if player == self.player1_player:
-            if self.move1 is None:
-                self.move1 = move
+            if self.player1_move is None:
+                self.player1_move = move
             else:
                 raise ClientError(
                     ClientErrorType.INVALID_MOVE, "Move already applied"
                 )
         elif player == self.player2_player:
-            if self.move2 is None:
-                self.move2 = move
+            if self.player2_move is None:
+                self.player2_move = move
             else:
                 raise ClientError(
                     ClientErrorType.INVALID_MOVE, "Move already applied"
@@ -109,8 +111,13 @@ class LiveMatch(models.Model):
             raise ClientError(
                 ClientErrorType.INVALID_MOVE, "Player not in match"
             )
-        return self.move1 and self.move2
 
-    def clear_moves(self):
-        self.move1 = None
-        self.move2 = None
+    def process_complete_game(self):
+        if not self.is_game_complete:
+            raise RuntimeError("Cannot complete game")
+
+        p1_outcome = Move.get_outcome(self.player1_move, self.player2_move)
+
+        # Clear moves
+        self.player1_move = None
+        self.player2_move = None

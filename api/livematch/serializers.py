@@ -7,7 +7,7 @@ from core import util
 _SERIALIZERS = {}
 
 
-class MessageType(Enum):
+class ClientMessageType(Enum):
     GAME_JOINED = "game_joined"
     MOVE = "move"
 
@@ -25,7 +25,16 @@ class ErrorSerializer(serializers.Serializer):
     detail = serializers.CharField()
 
 
-class MessageSerializer(serializers.Serializer):
+class LiveMatchStateMessageSerializer(serializers.Serializers):
+    best_of = serializers.IntegerField()
+    opponent_name = serializers.CharField()
+    game_in_progress = serializers.BooleanField()
+    selected_move = serializers.CharField()
+    game_log = serializers.CharField(many=True)
+    match_outcome = serializers.CharField()
+
+
+class ClientMessageSerializer(serializers.Serializer):
     type = serializers.CharField()
 
     def __init__(self, data={}, *args, **kwargs):
@@ -33,11 +42,6 @@ class MessageSerializer(serializers.Serializer):
         super().__init__(data, *args, **kwargs)
 
 
-@register_msg(MessageType.GAME_JOINED)
-class MessageGameJoinedSerializer(MessageSerializer):
-    pass
-
-
-@register_msg(MessageType.MOVE)
-class MessageMoveSerializer(MessageSerializer):
+@register_msg(ClientMessageType.MOVE)
+class ClientMessageMoveSerializer(ClientMessageSerializer):
     move = serializers.CharField()

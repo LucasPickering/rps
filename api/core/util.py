@@ -10,12 +10,33 @@ class DbEnum(Enum):
         return tuple((e.name, e.name) for e in cls)
 
 
+class GameOutcome(Enum):
+    WIN = "win"
+    LOSS = "loss"
+    TIE = "tie"
+
+
 class Move(DbEnum):
     ROCK = "rock"
     PAPER = "paper"
     SCISSORS = "scissors"
     LIZARD = "lizard"
     SPOCK = "spock"
+
+    @staticmethod
+    def get_outcome(move1, move2):
+        """
+        Gets the outcome of the first move relative to the second
+
+        Arguments:
+            move1 {Move} -- The first move
+            move2 {Move} -- The second move
+
+        Returns:
+            GameOutcome -- Win if first beats second, Loss if second beats
+            first, Tie otherwise
+        """
+        return GameOutcome.WIN  # TODO
 
 
 def is_uuid(s):
