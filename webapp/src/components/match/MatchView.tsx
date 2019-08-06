@@ -1,11 +1,13 @@
 import withRouteParams from 'hoc/withRouteParams';
 import useWebSocket from 'hooks/useWebSocket';
+import { camelCase, mapKeys } from 'lodash';
 import React, { useMemo, useReducer } from 'react';
 import {
   defaultMatchState,
-  MatchAction,
+  MatchActionType,
   MatchContext,
   matchReducer,
+  MatchState,
 } from 'state/match';
 import ConnectionIndicator from './ConnectionIndicator';
 import Match from './Match';
@@ -18,7 +20,6 @@ interface Props {
  * Data handler for the match screen.
  */
 const MatchView: React.FC<Props> = ({ matchId }) => {
-  // See paragraph above for assertive programmer rant
   const [state, dispatch] = useReducer(matchReducer, defaultMatchState);
   const { status, send } = useWebSocket(
     `/ws/match/${matchId}`,
@@ -26,10 +27,19 @@ const MatchView: React.FC<Props> = ({ matchId }) => {
     // Ugly solution but it works (sorry Seth!)
     useMemo(
       () => ({
-        onMessage: event => {
-          // Let's just pray our data format agrees with the API
-          // TODO snake case -> camel case here
-          dispatch(event.data as MatchAction);
+        onMessage: data => {
+          if (data.error) {
+            console.error(`Socket error:`, data);
+          } else {
+            console.log(data);
+            // Let's just pray our data format agrees with the API
+            // TODO use io-ts here
+            const matchAction = {
+              type: MatchActionType.MatchUpdate,
+              state: mapKeys(data, camelCase) as MatchState,
+            };
+            dispatch(matchAction);
+          }
         },
       }),
       []

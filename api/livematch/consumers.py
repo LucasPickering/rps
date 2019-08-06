@@ -122,7 +122,7 @@ class MatchConsumer(JsonWebsocketConsumer):
         try:
             self.validate_user()
             self.validate_match_id()
-            self.player_connect()
+            self.user_connect()
         except ClientError as e:
             self.handle_error(e)
 

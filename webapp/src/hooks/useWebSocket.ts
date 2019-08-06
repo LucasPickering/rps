@@ -5,7 +5,7 @@ type EventConsumer<T = Event> = (event: T) => void;
 
 interface Callbacks {
   onOpen?: EventConsumer;
-  onMessage?: EventConsumer<MessageEvent>;
+  onMessage?: EventConsumer<{ [key: string]: any }>;
   onError?: EventConsumer;
   onClose?: EventConsumer<CloseEvent>;
 }
@@ -59,7 +59,7 @@ export default (
     };
     ws.onmessage = event => {
       if (callbacks.onMessage) {
-        callbacks.onMessage(event);
+        callbacks.onMessage(JSON.parse(event.data));
       }
     };
     ws.onerror = event => {

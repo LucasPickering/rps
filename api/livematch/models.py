@@ -1,12 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django_composite_field import CompositeField
 
 from core.util import Move
 from .error import ClientError, ClientErrorType
 
 
-class PlayerField(CompositeField):
+class LiveMatchPlayer(models.Model):
     """
     Re-usable field to de-duplicate the logic around a player.
     """
@@ -21,16 +20,26 @@ class PlayerField(CompositeField):
 class LiveMatch(models.Model):
     id = models.CharField(primary_key=True, max_length=32)
     start_time = models.DateField(auto_now=True)
-    player1 = PlayerField(null=True)
-    player2 = PlayerField(null=True)
+    player1 = models.OneToOneField(
+        LiveMatchPlayer,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name="match_as_p1",
+    )
+    player2 = models.OneToOneField(
+        LiveMatchPlayer,
+        null=True,
+        on_delete=models.CASCADE,
+        related_name="match_as_p2",
+    )
 
     @property
     def is_game_in_progress(self):
-        return bool(self.player1_move) != bool(self.player2_move)
+        return bool(self.player1.move) != bool(self.player2.move)
 
     @property
     def is_game_complete(self):
-        return self.player1_move and self.player1_move
+        return self.player1.move and self.player1.move
 
     def connect_player(self, player):
         """
@@ -45,17 +54,17 @@ class LiveMatch(models.Model):
             bool -- True if the player was connected, False if the game is
             already full
         """
-        if self.player1_player is None:
-            self.player1_player = player
+        if self.player1 is None:
+            self.player1.player = player
         elif self.player2 is None:
             self.player2 = player
 
         # If we just added the player, or they were already in the game, mark
         # them as connected.
-        if player == self.player1_player:
-            self.player1_connected = True
-        elif player == self.player2_player:
-            self.player2_connected = True
+        if player == self.player1.player:
+            self.player1.connected = True
+        elif player == self.player2.player:
+            self.player2.connected = True
         else:
             return False
         return True
@@ -72,10 +81,10 @@ class LiveMatch(models.Model):
             bool -- True if the player was disonnect, False if they aren't in
             the game
         """
-        if player == self.player1_player:
-            self.player1_connected = False
-        elif player == self.player2_player:
-            self.player2_connected = False
+        if player == self.player1.player:
+            self.player1.connected = False
+        elif player == self.player2.player:
+            self.player2.connected = False
         else:
             return False
         return True
@@ -93,16 +102,16 @@ class LiveMatch(models.Model):
             or they are not in the match
         """
         # TODO validate move string
-        if player == self.player1_player:
-            if self.player1_move is None:
-                self.player1_move = move
+        if player == self.player1.player:
+            if self.player1.move is None:
+                self.player1.move = move
             else:
                 raise ClientError(
                     ClientErrorType.INVALID_MOVE, "Move already applied"
                 )
-        elif player == self.player2_player:
-            if self.player2_move is None:
-                self.player2_move = move
+        elif player == self.player2.player:
+            if self.player2.move is None:
+                self.player2.move = move
             else:
                 raise ClientError(
                     ClientErrorType.INVALID_MOVE, "Move already applied"
@@ -116,8 +125,8 @@ class LiveMatch(models.Model):
         if not self.is_game_complete:
             raise RuntimeError("Cannot complete game")
 
-        p1_outcome = Move.get_outcome(self.player1_move, self.player2_move)
+        p1_outcome = Move.get_outcome(self.player1.move, self.player2.move)
 
         # Clear moves
-        self.player1_move = None
-        self.player2_move = None
+        self.player1.move = None
+        self.player2.move = None

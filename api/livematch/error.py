@@ -21,4 +21,4 @@ class ClientError(Exception):
         return self._fatal
 
     def to_dict(self):
-        return {"error": self._error_type, "detail": self._detail}
+        return {"error": self._error_type.value, "detail": self._detail}

@@ -37,42 +37,23 @@ export const defaultMatchState: MatchState = {
 };
 
 export enum MatchActionType {
-  MatchJoin,
-  GameStart,
-  GameEnd,
-  Move,
+  MatchUpdate,
 }
 
-export type MatchAction =
-  | { type: MatchActionType.MatchJoin; state: MatchState }
-  | { type: MatchActionType.GameStart }
-  | { type: MatchActionType.GameEnd; gameLog: GameOutcome[] }
-  | { type: MatchActionType.Move; move: Move };
+export interface MatchAction {
+  type: MatchActionType;
+  state: MatchState;
+}
 
+// This reducer should only ever be triggered by a server message
 export const matchReducer: React.Reducer<MatchState, MatchAction> = (
   state,
   action
 ) => {
+  console.log(action);
   switch (action.type) {
-    case MatchActionType.MatchJoin:
+    case MatchActionType.MatchUpdate:
       return action.state;
-    case MatchActionType.GameStart:
-      return {
-        ...state,
-        gameInProgress: true,
-      };
-    case MatchActionType.GameEnd:
-      // We might want to make this message return the entire game history
-      return {
-        ...state,
-        gameInProgress: false,
-        gameLog: action.gameLog,
-      };
-    case MatchActionType.Move:
-      return {
-        ...state,
-        selectedMove: action.move,
-      };
     default:
       return state;
   }
