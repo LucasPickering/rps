@@ -31,7 +31,6 @@ const MatchView: React.FC<Props> = ({ matchId }) => {
           if (data.error) {
             console.error(`Socket error:`, data);
           } else {
-            console.log(data);
             // Let's just pray our data format agrees with the API
             // TODO use io-ts here
             const matchAction = {

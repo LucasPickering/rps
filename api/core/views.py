@@ -31,12 +31,23 @@ class LogoutView(views.APIView):
         return Response({})
 
 
+class CurrentUserView(views.APIView):
+    def get(self, request):
+        user = request.user
+        if user.is_authenticated:
+            return Response(serializers.UserSerializer(user).data)
+        else:
+            return Response(
+                {"detail": "not logged in"}, status=status.HTTP_401_UNAUTHORIZED
+            )
+
+
 class NewMatchView(views.APIView):
     def get(self, request):
         # Generate a new match ID and return it
         match_id = uuid.uuid4().hex
         return Response(
-            serializers.NewMatchSerailizer({"match_id": match_id}).data
+            serializers.NewMatchSerializer({"match_id": match_id}).data
         )
 
 

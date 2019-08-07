@@ -28,5 +28,5 @@ class MatchSerializer(serializers.ModelSerializer):
     games = GameSerializer(many=True)
 
 
-class NewMatchSerailizer(serializers.Serializer):
+class NewMatchSerializer(serializers.Serializer):
     match_id = serializers.CharField()
