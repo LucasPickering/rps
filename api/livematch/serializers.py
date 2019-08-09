@@ -25,9 +25,10 @@ class ErrorSerializer(serializers.Serializer):
     detail = serializers.CharField()
 
 
-class LiveMatchStateMessageSerializer(serializers.Serializer):
+class LiveMatchStateSerializer(serializers.Serializer):
     best_of = serializers.IntegerField()
     opponent_name = serializers.CharField()
+    opponent_connected = serializers.BooleanField()
     game_in_progress = serializers.BooleanField()
     selected_move = serializers.CharField()
     game_log = serializers.ListField(child=serializers.CharField())

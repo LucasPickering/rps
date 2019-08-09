@@ -3,9 +3,13 @@ from django.db import transaction
 
 from core import util
 
-from .message import LiveMatchStateMessage
 from .models import LiveMatch
-from .serializers import get_serializer, ErrorSerializer, ClientMessageType
+from .serializers import (
+    get_serializer,
+    ErrorSerializer,
+    ClientMessageType,
+    LiveMatchStateSerializer,
+)
 from .error import ClientError, ClientErrorType
 
 
@@ -15,8 +19,8 @@ class MatchConsumer(JsonWebsocketConsumer):
         self.send_json(serializer.data)
 
     def send_match_state(self, live_match):
-        msg = LiveMatchStateMessage(live_match=live_match, player=self.player)
-        self.send_data(msg.get_serializer())
+        state = live_match.get_state_for_player(self.player)
+        self.send_data(LiveMatchStateSerializer(state))
 
     def handle_error(self, error):
         """
@@ -108,6 +112,7 @@ class MatchConsumer(JsonWebsocketConsumer):
             with transaction.atomic():
                 # If live_match doesn't exist, we have problemos
                 live_match = self.get_match()
+                # TODO validate move string
                 live_match.apply_move(self.player, msg["move"])
                 if live_match.is_game_complete:
                     live_match.process_complete_game()
