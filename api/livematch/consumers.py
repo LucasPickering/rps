@@ -90,7 +90,7 @@ class MatchConsumer(JsonWebsocketConsumer):
             # Player was successfully added - write it to the DB
             live_match.save()
 
-        self.send_match_state()
+        self.send_match_state(live_match)
 
     def user_disconnect(self):
         with transaction.atomic():

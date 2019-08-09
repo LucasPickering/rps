@@ -13,4 +13,4 @@ class LiveMatchStateMessage:
         }
 
     def get_serializer(self):
-        return LiveMatchStateMessageSerializer(data=self._state)
+        return LiveMatchStateMessageSerializer(self._state)
