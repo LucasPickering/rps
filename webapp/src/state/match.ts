@@ -50,7 +50,6 @@ export const matchReducer: React.Reducer<MatchState, MatchAction> = (
   state,
   action
 ) => {
-  console.log(action);
   switch (action.type) {
     case MatchActionType.MatchUpdate:
       return action.state;

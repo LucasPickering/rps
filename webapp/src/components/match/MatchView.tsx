@@ -35,7 +35,7 @@ const MatchView: React.FC<Props> = ({ matchId }) => {
             // TODO use io-ts here
             const matchAction = {
               type: MatchActionType.MatchUpdate,
-              state: mapKeys(data, camelCase) as MatchState,
+              state: mapKeys(data, (_v, k) => camelCase(k)) as MatchState,
             };
             dispatch(matchAction);
           }

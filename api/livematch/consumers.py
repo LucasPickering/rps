@@ -11,6 +11,7 @@ from .error import ClientError, ClientErrorType
 
 class MatchConsumer(JsonWebsocketConsumer):
     def send_data(self, serializer):
+        print("sending", serializer.data)
         self.send_json(serializer.data)
 
     def send_match_state(self, live_match):
