@@ -15,6 +15,12 @@ export enum GameOutcome {
   Tie = 'tie',
 }
 
+export interface Game {
+  selfMove: Move;
+  opponentMove: Move;
+  outcome: GameOutcome;
+}
+
 export enum MatchOutcome {
   Win = 'win',
   Loss = 'loss',
@@ -23,15 +29,16 @@ export enum MatchOutcome {
 export interface MatchState {
   bestOf: number;
   opponentName?: string; // undef if waiting on opponent
+  opponentConnected: false;
   gameInProgress: boolean;
   selectedMove?: Move; // undef if no move selected yet
-  gameLog: GameOutcome[];
+  gameLog: Game[];
   matchOutcome?: MatchOutcome; // undef if match in progress
 }
 
 export const defaultMatchState: MatchState = {
   bestOf: 5, // TODO revert to 0
-  opponentName: 'Nick', // TODO remove
+  opponentConnected: false,
   gameInProgress: false,
   gameLog: [],
 };

@@ -1,7 +1,7 @@
 import { Box, Typography } from '@material-ui/core';
 import React, { useContext } from 'react';
 import { GameOutcome, MatchContext } from 'state/match';
-import { freq } from 'util/funcs';
+import { countGameOutcomes } from 'util/funcs';
 
 interface Props {
   isSelf: boolean;
@@ -13,7 +13,10 @@ const PlayerScore = ({ isSelf }: Props) => {
     state: { gameLog, opponentName },
   } = useContext(MatchContext);
 
-  const num = freq(gameLog, isSelf ? GameOutcome.Win : GameOutcome.Loss);
+  const num = countGameOutcomes(
+    gameLog,
+    isSelf ? GameOutcome.Win : GameOutcome.Loss
+  );
 
   return (
     <Box

@@ -120,9 +120,11 @@ class LiveMatch(models.Model):
         player_obj = self.get_player_obj(player)
 
         # If the player isn't in the game, try to add them
+        is_player_new = False
         if not player_obj:
             if self.player1 is None or self.player2 is None:
                 player_obj = LiveMatchPlayer(user=player)
+                is_player_new = True
             else:
                 # Game is full already
                 return False
@@ -132,10 +134,11 @@ class LiveMatch(models.Model):
 
         # We have to do this AFTER saving the player object to make sure we
         # have a primary key
-        if self.player1 is None:
-            self.player1 = player_obj
-        elif self.player2 is None:
-            self.player2 = player_obj
+        if is_player_new:
+            if self.player1 is None:
+                self.player1 = player_obj
+            elif self.player2 is None:
+                self.player2 = player_obj
         return True
 
     def disconnect_player(self, player):

@@ -1,14 +1,19 @@
 {
   "defaultSeverity": "error",
-  "extends": ["tslint:recommended", "tslint-config-prettier"],
+  "extends": [
+    "tslint:recommended",
+    "tslint-config-prettier"
+  ],
+  "rulesDirectory": [
+    "node_modules/tslint-eslint-rules/dist/rules"
+  ],
   "jsRules": {},
   "rules": {
     "interface-name": false,
     "match-default-export-name": true,
-    "max-classes-per-file": false,
     "no-constant-condition": true,
     "no-empty-interface": false,
-    "object-literal-sort-keys": false
-  },
-  "rulesDirectory": ["node_modules/tslint-eslint-rules/dist/rules"]
+    "object-literal-sort-keys": false,
+    "no-any": true
+  }
 }

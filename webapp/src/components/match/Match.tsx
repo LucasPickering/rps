@@ -1,34 +1,64 @@
+import { Box, Typography } from '@material-ui/core';
+import { isEmpty } from 'lodash';
 import React, { useContext } from 'react';
-import { MatchContext, MatchState } from 'state/match';
-import MatchOutline from './MatchOutline';
+import { MatchContext } from 'state/match';
+import GameLog from './GameLog';
+import MoveButtons from './MoveButtons';
+import PlayerScore from './PlayerScore';
 
-const getMatchInProgressChild = (
-  state: MatchState
-): React.ReactElement<any> => {
+/**
+ * Helper component to render the actions available to the player
+ */
+const MatchActions: React.FC = () => {
+  const {
+    state: { gameInProgress, selectedMove, matchOutcome, gameLog },
+    send,
+  } = useContext(MatchContext);
   // Game is running
-  if (state.gameInProgress) {
-    if (state.selectedMove) {
+  if (gameInProgress) {
+    if (selectedMove) {
       return <div>Waiting for opponent to go</div>; // TODO
     }
-    return <div>Select a move</div>; // TODO
+    return (
+      <MoveButtons
+        onClick={move => {
+          send({ type: 'move', move });
+        }}
+      />
+    ); // TODO
   }
 
   // Game is over
-  if (state.matchOutcome) {
+  if (matchOutcome) {
     return <div>Match over</div>; // TODO
   }
-  return <div>Game over</div>; // TODO
+  if (!isEmpty(gameLog)) {
+    const lastGame = gameLog[gameLog.length - 1];
+    return <Typography>Game Over. You {lastGame}.</Typography>;
+  }
+  // Shouldn't ever get here (ecks dee)
+  return null;
 };
 
 const Match: React.FC = () => {
-  const { state } = useContext(MatchContext);
-
+  // TODO uncomment this
   // No opponent
   // if (!state.opponentName) {
   //   return <p>Waiting for opponent...</p>; // TODO
   // }
 
-  return <MatchOutline>{getMatchInProgressChild(state)}</MatchOutline>;
+  return (
+    <>
+      <Box display="flex" flexDirection="row" justifyContent="space-between">
+        <PlayerScore isSelf />
+        <GameLog />
+        <PlayerScore />
+      </Box>
+      <Box display="flex" flexDirection="column" alignItems="center">
+        <MatchActions />
+      </Box>
+    </>
+  );
 };
 
 export default Match;

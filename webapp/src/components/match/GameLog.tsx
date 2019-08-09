@@ -1,7 +1,7 @@
 import { Box, Typography } from '@material-ui/core';
 import React, { useContext } from 'react';
 import { GameOutcome, MatchContext } from 'state/match';
-import { freq } from 'util/funcs';
+import { countGameOutcomes } from 'util/funcs';
 
 const outcomeLabel = {
   [GameOutcome.Win]: 'W',
@@ -15,10 +15,10 @@ const GameLog: React.FC = () => {
     state: { bestOf, gameLog },
   } = useContext(MatchContext);
 
-  const nonTies = freq(gameLog, GameOutcome.Tie);
+  const nonTies = countGameOutcomes(gameLog, GameOutcome.Tie);
   const maxRemainingGames = bestOf - nonTies;
   const gameLogStr = gameLog
-    .map(outcome => outcomeLabel[outcome])
+    .map(({ outcome }) => outcomeLabel[outcome])
     .concat(Array(maxRemainingGames).fill('–'))
     .join(' ');
 

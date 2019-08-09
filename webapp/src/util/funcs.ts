@@ -1,4 +1,5 @@
 import React from 'react';
+import { Game, GameOutcome } from 'state/match';
 
 /**
  * Wraps the given HoC in logic that will add a better name to all
@@ -32,6 +33,11 @@ export const makeHoc = <InnerProps, OuterProps>(
  */
 export const freq = <T>(arr: T[], el: T): number =>
   arr.filter(e => e === el).length;
+
+export const countGameOutcomes = (
+  games: Game[],
+  outcome: GameOutcome
+): number => freq(games.map(game => game.outcome), outcome);
 
 /**
  * Creates a pair of contexts for the state and dispatch of a useReducer.
