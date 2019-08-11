@@ -114,8 +114,6 @@ class MatchConsumer(JsonWebsocketConsumer):
                 live_match = self.get_match()
                 # TODO validate move string
                 live_match.apply_move(self.player, msg["move"])
-                if live_match.is_game_complete:
-                    live_match.process_complete_game()
                 live_match.save()
 
             self.send_match_state(live_match)

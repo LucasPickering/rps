@@ -1,4 +1,4 @@
-import { ConnectionStatus, Send } from 'hooks/useWebSocket';
+import { ConnectionStatus } from 'hooks/useWebSocket';
 import React from 'react';
 
 export enum Move {
@@ -65,9 +65,19 @@ export const matchReducer: React.Reducer<MatchState, MatchAction> = (
   }
 };
 
+export enum ClientMessageType {
+  Move = 'move',
+}
+
+// More types will be added here
+export interface ClientMessage {
+  type: ClientMessageType.Move;
+  move: Move;
+}
+
 export interface MatchContextType {
   connectionStatus: ConnectionStatus;
-  send: Send;
+  sendMessage: (msg: ClientMessage) => void;
   state: MatchState;
 }
 

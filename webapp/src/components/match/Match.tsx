@@ -1,7 +1,7 @@
 import { Box, Typography } from '@material-ui/core';
 import { isEmpty } from 'lodash';
 import React, { useContext } from 'react';
-import { MatchContext } from 'state/match';
+import { ClientMessageType, MatchContext } from 'state/match';
 import GameLog from './GameLog';
 import MoveButtons from './MoveButtons';
 import PlayerScore from './PlayerScore';
@@ -12,7 +12,7 @@ import PlayerScore from './PlayerScore';
 const MatchActions: React.FC = () => {
   const {
     state: { gameInProgress, selectedMove, matchOutcome, gameLog },
-    send,
+    sendMessage,
   } = useContext(MatchContext);
   // Game is running
   if (gameInProgress) {
@@ -22,10 +22,10 @@ const MatchActions: React.FC = () => {
     return (
       <MoveButtons
         onClick={move => {
-          send({ type: 'move', move });
+          sendMessage({ type: ClientMessageType.Move, move });
         }}
       />
-    ); // TODO
+    );
   }
 
   // Game is over

@@ -1,18 +1,17 @@
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import signals
-from django.dispatch import receiver
 
 from core.util import Move
+from core.models import AbstractGame, AbstractPlayerGame
 from .error import ClientError, ClientErrorType
 
 
-class LiveMatchPlayer(models.Model):
+class LivePlayerMatch(models.Model):
     """
     Holds the data for one player in a live match. THIS TABLE SHOULD NEVER BE
     MODIFIED DIRECTLY - ONLY VIA LiveMatch. If you have a lock on a LiveMatch
-    row, you own can considered its LiveMatchPlayers locked.
+    row, you own can considered its LivePlayerMatchs locked.
     """
 
     user = models.ForeignKey(User, on_delete=models.PROTECT)
@@ -28,26 +27,22 @@ class LiveMatch(models.Model):
     best_of = models.PositiveSmallIntegerField(default=5)
     # Null here means no player has joined yet
     player1 = models.OneToOneField(
-        LiveMatchPlayer,
+        LivePlayerMatch,
         blank=True,
         null=True,
         on_delete=models.PROTECT,
         related_name="match_as_p1",
     )
     player2 = models.OneToOneField(
-        LiveMatchPlayer,
+        LivePlayerMatch,
         blank=True,
         null=True,
         on_delete=models.PROTECT,
         related_name="match_as_p2",
     )
 
-    @receiver(signals.pre_save)
-    def pre_save_handler(sender, instance, *args, **kwargs):
-        instance.full_clean()
-
-    def clean(self):
-        super().clean()
+    def save(self, *args, **kwargs):
+        # Validation
         if (
             self.player1
             and self.player2
@@ -56,6 +51,7 @@ class LiveMatch(models.Model):
             raise ValidationError(
                 f"User {self.player1.user} is both player1 and player2"
             )
+        super().save(*args, **kwargs)
 
     @property
     def is_game_in_progress(self):
@@ -74,7 +70,7 @@ class LiveMatch(models.Model):
             and self.player1.move
         )
 
-    def get_player_and_opponent_objs(self, player_user):
+    def get_self_and_opponent_objs(self, player_user):
         if self.player1 and player_user == self.player1.user:
             return (self.player1, self.player2)
         if self.player2 and player_user == self.player2.user:
@@ -82,13 +78,13 @@ class LiveMatch(models.Model):
         return (None, None)
 
     def get_player_obj(self, player_user):
-        (player_obj, _) = self.get_player_and_opponent_objs(player_user)
-        return player_obj
+        self_obj, _ = self.get_self_and_opponent_objs(player_user)
+        return self_obj
 
     def get_state_for_player(self, player):
-        (player_obj, opponent_obj) = self.get_player_and_opponent_objs(player)
+        self_obj, opponent_obj = self.get_self_and_opponent_objs(player)
 
-        if not player_obj:
+        if not self_obj:
             raise RuntimeError(
                 "Cannot get state for player that is not in game"
             )
@@ -99,7 +95,7 @@ class LiveMatch(models.Model):
             else None,
             "opponent_connected": opponent_obj and opponent_obj.connections > 0,
             "game_in_progress": self.is_game_in_progress,
-            "selected_move": player_obj.move,
+            "selected_move": self_obj.move,
             "game_log": [],  # TODO
             "match_outcome": None,  # TODO
         }
@@ -123,7 +119,7 @@ class LiveMatch(models.Model):
         is_player_new = False
         if not player_obj:
             if self.player1 is None or self.player2 is None:
-                player_obj = LiveMatchPlayer(user=player)
+                player_obj = LivePlayerMatch(user=player)
                 is_player_new = True
             else:
                 # Game is full already
@@ -162,7 +158,8 @@ class LiveMatch(models.Model):
 
     def apply_move(self, player, move):
         """
-        Applies the given move for the given player.
+        Applies the given move for the given player. If the move completes the
+        game, the completed game will be processed and the match may end.
 
         Arguments:
             player {User} -- The player to make a move for
@@ -184,13 +181,72 @@ class LiveMatch(models.Model):
             raise ClientError(
                 ClientErrorType.INVALID_MOVE, "Player not in match"
             )
+        self.process_complete_game()
 
     def process_complete_game(self):
         if not self.is_game_complete:
             raise RuntimeError("Cannot complete game")
 
-        p1_outcome = Move.get_outcome(self.player1.move, self.player2.move)
+        # These need to be created & saved first so they get a PK
+        p1_game = LivePlayerGame.from_player_match(self.player1)
+        p1_game.save()
+        p2_game = LivePlayerGame.from_player_match(self.player2)
+        p2_game.save()
+
+        game = LiveGame(
+            game_num=self.games.count(),
+            match=self,
+            player1=p1_game,
+            player2=p2_game,
+        )
+        game.save()
 
         # Clear moves
         self.player1.move = None
         self.player2.move = None
+
+        wins_by_player = self.games.exclude(user=None).annotate(
+            win_count=models.Count("winner")
+        )
+        print("wins_by_player", wins_by_player)
+        # TODO
+
+        def save_to_permanent(self):
+            # TODO
+            pass
+
+
+class LiveGame(AbstractGame):
+    match = models.ForeignKey(
+        LiveMatch, on_delete=models.CASCADE, related_name="games"
+    )
+    # Always len=2
+    players = models.ManyToManyField(User, through="LivePlayerGame")
+
+    def get_self_and_opponent_objs(self, player_user):
+        if len(self.players) != 2:
+            raise RuntimeError(
+                f"Expected 2 related players, but got {len(self.players)}"
+            )
+        player1, player2 = self.players
+        if player1 and player_user == player1.user:
+            return (player1, player2)
+        if player2 and player_user == player2.user:
+            return (player2, player1)
+        return (None, None)
+
+    def get_game_summary_for_player(self, player_user):
+        self_obj, opponent_obj = self.get_self_and_opponent_objs(player_user)
+        return {
+            "self_move": self_obj.move,
+            "opponent_move": opponent_obj.move,
+            "outcome": Move.get_outcome(self_obj.move, opponent_obj.move),
+        }
+
+
+class LivePlayerGame(AbstractPlayerGame):
+    game = models.ForeignKey(LiveGame, on_delete=models.CASCADE)
+
+    @classmethod
+    def from_player_match(cls, player_match):
+        return cls(user=player_match.user, move=player_match.move)

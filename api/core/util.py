@@ -36,7 +36,7 @@ class Move(DbEnum):
             GameOutcome -- Win if first beats second, Loss if second beats
             first, Tie otherwise
         """
-        return GameOutcome.WIN  # TODO
+        return GameOutcome.TIE  # TODO
 
 
 def is_uuid(s):
