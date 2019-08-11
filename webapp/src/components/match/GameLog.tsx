@@ -12,12 +12,12 @@ const outcomeLabel = {
 // We have to leave the React.FC tag off to get default props to work
 const GameLog: React.FC = () => {
   const {
-    state: { bestOf, gameLog },
+    state: { bestOf, games },
   } = useContext(MatchContext);
 
-  const nonTies = countGameOutcomes(gameLog, GameOutcome.Tie);
+  const nonTies = countGameOutcomes(games, GameOutcome.Tie);
   const maxRemainingGames = bestOf - nonTies;
-  const gameLogStr = gameLog
+  const gameLogStr = games
     .map(({ outcome }) => outcomeLabel[outcome])
     .concat(Array(maxRemainingGames).fill('–'))
     .join(' ');

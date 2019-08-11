@@ -1,5 +1,5 @@
 import { Box, Typography } from '@material-ui/core';
-import { isEmpty } from 'lodash';
+import { last } from 'lodash';
 import React, { useContext } from 'react';
 import { ClientMessageType, MatchContext } from 'state/match';
 import GameLog from './GameLog';
@@ -11,11 +11,11 @@ import PlayerScore from './PlayerScore';
  */
 const MatchActions: React.FC = () => {
   const {
-    state: { gameInProgress, selectedMove, matchOutcome, gameLog },
+    state: { isInProgress, selectedMove, matchOutcome, games },
     sendMessage,
   } = useContext(MatchContext);
-  // Game is running
-  if (gameInProgress) {
+  // Match is running
+  if (isInProgress) {
     if (selectedMove) {
       return <div>Waiting for opponent to go</div>; // TODO
     }
@@ -32,8 +32,8 @@ const MatchActions: React.FC = () => {
   if (matchOutcome) {
     return <div>Match over</div>; // TODO
   }
-  if (!isEmpty(gameLog)) {
-    const lastGame = gameLog[gameLog.length - 1];
+  const lastGame = last(games);
+  if (!lastGame) {
     return <Typography>Game Over. You {lastGame}.</Typography>;
   }
   // Shouldn't ever get here (ecks dee)

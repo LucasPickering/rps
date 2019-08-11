@@ -28,19 +28,21 @@ export enum MatchOutcome {
 
 export interface MatchState {
   bestOf: number;
-  opponentName?: string; // undef if waiting on opponent
-  opponentConnected: false;
-  gameInProgress: boolean;
+  // undef if waiting on opponent
+  opponent?: {
+    name: string;
+    isConnected: boolean;
+  };
+  isInProgress: boolean;
   selectedMove?: Move; // undef if no move selected yet
-  gameLog: Game[];
+  games: Game[];
   matchOutcome?: MatchOutcome; // undef if match in progress
 }
 
 export const defaultMatchState: MatchState = {
-  bestOf: 5, // TODO revert to 0
-  opponentConnected: false,
-  gameInProgress: false,
-  gameLog: [],
+  bestOf: 0,
+  isInProgress: false,
+  games: [],
 };
 
 export enum MatchActionType {
@@ -57,6 +59,7 @@ export const matchReducer: React.Reducer<MatchState, MatchAction> = (
   state,
   action
 ) => {
+  console.log(action);
   switch (action.type) {
     case MatchActionType.MatchUpdate:
       return action.state;

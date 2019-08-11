@@ -4,20 +4,19 @@ from rest_framework import serializers
 from core import util
 
 
-_SERIALIZERS = {}
+_CLIENT_MSG_SERIALIZERS = {}
 
 
 class ClientMessageType(Enum):
-    GAME_JOINED = "game_joined"
     MOVE = "move"
 
 
 def register_msg(name):
-    return util.register(_SERIALIZERS, name, field="_TYPE")
+    return util.register(_CLIENT_MSG_SERIALIZERS, name.value, field="_TYPE")
 
 
-def get_serializer(serializer_type):
-    return _SERIALIZERS[serializer_type]
+def get_client_msg_serializer(serializer_type):
+    return _CLIENT_MSG_SERIALIZERS[serializer_type]
 
 
 class ErrorSerializer(serializers.Serializer):
@@ -25,13 +24,23 @@ class ErrorSerializer(serializers.Serializer):
     detail = serializers.CharField()
 
 
+class OpponentSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    is_connected = serializers.BooleanField()
+
+
+class LiveGameSummarySerializer(serializers.Serializer):
+    self_move = serializers.CharField()
+    opponent_move = serializers.CharField()
+    outcome = serializers.CharField()
+
+
 class LiveMatchStateSerializer(serializers.Serializer):
     best_of = serializers.IntegerField()
-    opponent_name = serializers.CharField()
-    opponent_connected = serializers.BooleanField()
-    game_in_progress = serializers.BooleanField()
+    opponent = OpponentSerializer()
+    is_in_progress = serializers.BooleanField()
     selected_move = serializers.CharField()
-    game_log = serializers.ListField(child=serializers.CharField())
+    games = LiveGameSummarySerializer(many=True)
     match_outcome = serializers.CharField()
 
 

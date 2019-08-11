@@ -54,12 +54,8 @@ class LiveMatch(models.Model):
         super().save(*args, **kwargs)
 
     @property
-    def is_game_in_progress(self):
-        return (
-            self.player1
-            and self.player2
-            and bool(self.player1.move) != bool(self.player2.move)
-        )
+    def is_in_progress(self):
+        return self.player1 and self.player2
 
     @property
     def is_game_complete(self):
@@ -81,8 +77,8 @@ class LiveMatch(models.Model):
         self_obj, _ = self.get_self_and_opponent_objs(player_user)
         return self_obj
 
-    def get_state_for_player(self, player):
-        self_obj, opponent_obj = self.get_self_and_opponent_objs(player)
+    def get_state_for_player(self, player_user):
+        self_obj, opponent_obj = self.get_self_and_opponent_objs(player_user)
 
         if not self_obj:
             raise RuntimeError(
@@ -90,13 +86,18 @@ class LiveMatch(models.Model):
             )
         return {
             "best_of": self.best_of,
-            "opponent_name": opponent_obj.user.username
+            "opponent": {
+                "name": opponent_obj.user.username,
+                "is_connected": opponent_obj.connections > 0,
+            }
             if opponent_obj
             else None,
-            "opponent_connected": opponent_obj and opponent_obj.connections > 0,
-            "game_in_progress": self.is_game_in_progress,
+            "is_in_progress": self.is_in_progress,
             "selected_move": self_obj.move,
-            "game_log": [],  # TODO
+            "games": [
+                game.get_game_summary_for_player(player_user)
+                for game in self.games.all()
+            ],
             "match_outcome": None,  # TODO
         }
 
@@ -135,6 +136,9 @@ class LiveMatch(models.Model):
                 self.player1 = player_obj
             elif self.player2 is None:
                 self.player2 = player_obj
+            # If we now have two players connected, start a game
+            if self.player1 and self.player2:
+                self.game_in_progress = True
         return True
 
     def disconnect_player(self, player):
@@ -181,12 +185,11 @@ class LiveMatch(models.Model):
             raise ClientError(
                 ClientErrorType.INVALID_MOVE, "Player not in match"
             )
-        self.process_complete_game()
+
+        if self.is_game_complete:
+            self.process_complete_game()
 
     def process_complete_game(self):
-        if not self.is_game_complete:
-            raise RuntimeError("Cannot complete game")
-
         # These need to be created & saved first so they get a PK
         p1_game = LivePlayerGame.from_player_match(self.player1)
         p1_game.save()

@@ -10,7 +10,7 @@ interface Props {
 const MoveButtons: React.FC<Props> = ({ onClick }) => (
   <Box>
     {Object.values(Move).map((move: Move) => (
-      <Button onClick={() => onClick(move)}>
+      <Button key={move} variant="outlined" onClick={() => onClick(move)}>
         <MoveIcon move={move} />
       </Button>
     ))}
