@@ -59,9 +59,7 @@ class MatchConsumer(JsonWebsocketConsumer):
 
         # Look up the correct serializer for this type and try to deserialize
         serializer_cls = get_client_msg_serializer(msg_type)
-        print(serializer_cls, content)
         serializer = serializer_cls(data=content)
-        print(serializer)
         if not serializer.is_valid():
             raise ClientError(
                 ClientErrorType.MALFORMED_MESSAGE, detail=serializer.errors

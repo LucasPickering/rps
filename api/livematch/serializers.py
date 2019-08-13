@@ -49,7 +49,7 @@ class ClientMessageSerializer(serializers.Serializer):
 
     def __init__(self, data={}, *args, **kwargs):
         data["type"] = self._TYPE
-        super().__init__(data, *args, **kwargs)
+        super().__init__(data=data, *args, **kwargs)
 
 
 @register_msg(ClientMessageType.MOVE)
