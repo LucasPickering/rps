@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from core.util import Move
+from core.util import GameOutcome, Move
 from core.models import AbstractGame, AbstractPlayerGame
 from .error import ClientError, ClientErrorType
 
@@ -19,6 +19,9 @@ class LivePlayerMatch(models.Model):
     # is connected. Maybe we should just wipe the LiveMatch table on startup.
     connections = models.PositiveSmallIntegerField(default=0)
     move = models.CharField(choices=Move.choices(), max_length=20, blank=True)
+
+    def __str__(self):
+        return f"user: {self.user}; connections: {self.connections}; move: {self.move}"
 
 
 class LiveMatch(models.Model):
@@ -41,7 +44,7 @@ class LiveMatch(models.Model):
         related_name="match_as_p2",
     )
 
-    def save(self, *args, **kwargs):
+    def clean(self):
         # Validation
         if (
             self.player1
@@ -51,6 +54,9 @@ class LiveMatch(models.Model):
             raise ValidationError(
                 f"User {self.player1.user} is both player1 and player2"
             )
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
         super().save(*args, **kwargs)
 
     @property
@@ -63,7 +69,7 @@ class LiveMatch(models.Model):
             self.player1
             and self.player2
             and self.player1.move
-            and self.player1.move
+            and self.player2.move
         )
 
     def get_self_and_opponent_objs(self, player_user):
@@ -174,13 +180,15 @@ class LiveMatch(models.Model):
             or they are not in the match
         """
         player_obj = self.get_player_obj(player)
+        print("apply_move", player_obj)
         if player_obj:
-            if player_obj.move is None:
-                player_obj.move = move
-            else:
+            if player_obj.move:
                 raise ClientError(
                     ClientErrorType.INVALID_MOVE, "Move already applied"
                 )
+            else:
+                player_obj.move = move
+                player_obj.save()
         else:
             raise ClientError(
                 ClientErrorType.INVALID_MOVE, "Player not in match"
@@ -190,25 +198,30 @@ class LiveMatch(models.Model):
             self.process_complete_game()
 
     def process_complete_game(self):
-        # These need to be created & saved first so they get a PK
-        p1_game = LivePlayerGame.from_player_match(self.player1)
-        p1_game.save()
-        p2_game = LivePlayerGame.from_player_match(self.player2)
-        p2_game.save()
+        p1_outcome = Move.get_outcome(self.player1.move, self.player2.move)
+        if p1_outcome == GameOutcome.WIN:
+            game_winner = self.player1
+        elif p1_outcome == GameOutcome.LOSS:
+            game_winner = self.player2
+        else:
+            game_winner = None
 
+        # This need to be created & saved first so it gets a PK
         game = LiveGame(
-            game_num=self.games.count(),
-            match=self,
-            player1=p1_game,
-            player2=p2_game,
+            game_num=self.games.count(), match=self, winner=game_winner
         )
         game.save()
+
+        p1_game = LivePlayerGame.from_player_match(self.player1, game)
+        p1_game.save()
+        p2_game = LivePlayerGame.from_player_match(self.player2, game)
+        p2_game.save()
 
         # Clear moves
         self.player1.move = None
         self.player2.move = None
 
-        wins_by_player = self.games.exclude(user=None).annotate(
+        wins_by_player = self.games.exclude(winner=None).annotate(
             win_count=models.Count("winner")
         )
         print("wins_by_player", wins_by_player)
@@ -227,11 +240,11 @@ class LiveGame(AbstractGame):
     players = models.ManyToManyField(User, through="LivePlayerGame")
 
     def get_self_and_opponent_objs(self, player_user):
-        if len(self.players) != 2:
+        if self.players.count() != 2:
             raise RuntimeError(
                 f"Expected 2 related players, but got {len(self.players)}"
             )
-        player1, player2 = self.players
+        player1, player2 = self.liveplayergame_set.all()
         if player1 and player_user == player1.user:
             return (player1, player2)
         if player2 and player_user == player2.user:
@@ -240,6 +253,7 @@ class LiveGame(AbstractGame):
 
     def get_game_summary_for_player(self, player_user):
         self_obj, opponent_obj = self.get_self_and_opponent_objs(player_user)
+        print(self_obj, opponent_obj)
         return {
             "self_move": self_obj.move,
             "opponent_move": opponent_obj.move,
@@ -251,5 +265,5 @@ class LivePlayerGame(AbstractPlayerGame):
     game = models.ForeignKey(LiveGame, on_delete=models.CASCADE)
 
     @classmethod
-    def from_player_match(cls, player_match):
-        return cls(user=player_match.user, move=player_match.move)
+    def from_player_match(cls, player_match, game):
+        return cls(user=player_match.user, move=player_match.move, game=game)

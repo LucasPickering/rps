@@ -67,10 +67,7 @@ class MatchConsumer(JsonWebsocketConsumer):
         return serializer.validated_data
 
     def get_match(self):
-        live_match, _ = LiveMatch.objects.select_for_update().get(
-            id=self.match_id
-        )
-        return live_match
+        return LiveMatch.objects.select_for_update().get(id=self.match_id)
 
     def user_connect(self):
         """
@@ -109,7 +106,7 @@ class MatchConsumer(JsonWebsocketConsumer):
                 live_match.save()
 
     def process_msg(self, msg):
-        if msg["type"] == ClientMessageType.MOVE:
+        if msg["type"] == ClientMessageType.MOVE.value:
             with transaction.atomic():
                 # If live_match doesn't exist, we have problemos
                 live_match = self.get_match()

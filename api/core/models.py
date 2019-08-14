@@ -9,17 +9,29 @@ class AbstractGame(models.Model):
     game_num = models.PositiveSmallIntegerField()
     # Null for ties
     winner = models.ForeignKey(
-        User, related_name="%(class)s_wins", null=True, on_delete=models.PROTECT
+        User,
+        related_name="%(class)s_wins",
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
     )
 
     class Meta:
         abstract = True
         ordering = ("game_num",)
 
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
 
 class AbstractPlayerGame(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     move = models.CharField(choices=Move.choices(), max_length=20)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
 
 class Match(models.Model):
