@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from core.util import GameOutcome, Move
+from core.util import GameOutcome, Move, get_win_target
 from core.models import AbstractGame, AbstractPlayerGame
 from .error import ClientError, ClientErrorType
 
@@ -61,11 +61,11 @@ class LiveMatch(models.Model):
 
     @property
     def is_in_progress(self):
-        return self.player1 and self.player2
+        return bool(self.player1 and self.player2)
 
     @property
     def is_game_complete(self):
-        return (
+        return bool(
             self.player1
             and self.player2
             and self.player1.move
@@ -210,7 +210,9 @@ class LiveMatch(models.Model):
         game = LiveGame(
             game_num=self.games.count(), match=self, winner=game_winner
         )
-        game.save()
+        self.games.add(game, bulk=False)
+        print("created game", game)
+        print("games", self.games)
 
         p1_game = LivePlayerGame.from_player_match(self.player1, game)
         p1_game.save()
@@ -218,18 +220,27 @@ class LiveMatch(models.Model):
         p2_game.save()
 
         # Clear moves
-        self.player1.move = None
-        self.player2.move = None
+        self.player1.move = ""
+        self.player1.save()
+        self.player2.move = ""
+        self.player2.save()
 
+        # Check if the match is over now
         wins_by_player = self.games.exclude(winner=None).annotate(
             win_count=models.Count("winner")
         )
         print("wins_by_player", wins_by_player)
-        # TODO
+        if max(wins_by_player.values(), default=0) >= get_win_target(
+            self.best_of
+        ):
+            self.process_complete_match(self)
 
-        def save_to_permanent(self):
-            # TODO
-            pass
+    def process_complete_match(self):
+        pass  # TODO
+
+    def save_to_permanent(self):
+        # TODO
+        pass
 
 
 class LiveGame(AbstractGame):
@@ -259,6 +270,9 @@ class LiveGame(AbstractGame):
             "opponent_move": opponent_obj.move,
             "outcome": Move.get_outcome(self_obj.move, opponent_obj.move),
         }
+
+    def __str__(self):
+        return f"match: {self.match_id}; game_num: {self.game_num}; winner: {self.winner}"
 
 
 class LivePlayerGame(AbstractPlayerGame):

@@ -39,6 +39,19 @@ class Move(DbEnum):
         return GameOutcome.TIE  # TODO
 
 
+def get_win_target(best_of):
+    """
+    Gets the number of wins needed to win a match with the given best-of.
+
+    Arguments:
+        best_of {number} -- the max number of (non-tie) games in a match
+
+    Returns:
+        number -- the number of game wins needed to win the match
+    """
+    return (best_of // 2) + 1
+
+
 def is_uuid(s):
     return bool(UUID_RGX.match(s))
 
