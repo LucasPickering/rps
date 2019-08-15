@@ -36,7 +36,20 @@ class Move(DbEnum):
             GameOutcome -- Win if first beats second, Loss if second beats
             first, Tie otherwise
         """
-        return GameOutcome.TIE  # TODO
+        if move2 in _BEATS[move1]:
+            return GameOutcome.WIN
+        if move1 in _BEATS[move2]:
+            return GameOutcome.LOSS
+        return GameOutcome.TIE
+
+
+_BEATS = {
+    Move.ROCK.value: {Move.SCISSORS.value, Move.LIZARD.value},
+    Move.PAPER.value: {Move.ROCK.value, Move.SPOCK.value},
+    Move.SCISSORS.value: {Move.PAPER.value, Move.LIZARD.value},
+    Move.LIZARD.value: {Move.PAPER.value, Move.SPOCK.value},
+    Move.SPOCK.value: {Move.ROCK.value, Move.SCISSORS.value},
+}
 
 
 def get_win_target(best_of):

@@ -38,7 +38,7 @@ class LiveGameSummarySerializer(serializers.Serializer):
 class LiveMatchStateSerializer(serializers.Serializer):
     best_of = serializers.IntegerField()
     opponent = OpponentSerializer()
-    is_in_progress = serializers.BooleanField()
+    is_game_in_progress = serializers.BooleanField()
     selected_move = serializers.CharField()
     games = LiveGameSummarySerializer(many=True)
     match_outcome = serializers.CharField()

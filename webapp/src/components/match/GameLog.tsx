@@ -15,7 +15,7 @@ const GameLog: React.FC = () => {
     state: { bestOf, games },
   } = useContext(MatchContext);
 
-  const nonTies = countGameOutcomes(games, GameOutcome.Tie);
+  const nonTies = games.length - countGameOutcomes(games, GameOutcome.Tie);
   const maxRemainingGames = bestOf - nonTies;
   const gameLogStr = games
     .map(({ outcome }) => outcomeLabel[outcome])

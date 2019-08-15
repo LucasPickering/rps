@@ -33,7 +33,7 @@ export interface MatchState {
     name: string;
     isConnected: boolean;
   };
-  isInProgress: boolean;
+  isGameInProgress: boolean;
   selectedMove?: Move; // undef if no move selected yet
   games: Game[];
   matchOutcome?: MatchOutcome; // undef if match in progress
@@ -41,7 +41,7 @@ export interface MatchState {
 
 export const defaultMatchState: MatchState = {
   bestOf: 0,
-  isInProgress: false,
+  isGameInProgress: false,
   games: [],
 };
 

@@ -11,11 +11,11 @@ import PlayerScore from './PlayerScore';
  */
 const MatchActions: React.FC = () => {
   const {
-    state: { isInProgress, selectedMove, matchOutcome, games },
+    state: { isGameInProgress, selectedMove, matchOutcome, games },
     sendMessage,
   } = useContext(MatchContext);
   // Match is running
-  if (isInProgress) {
+  if (isGameInProgress) {
     if (selectedMove) {
       return <div>Waiting for opponent to go</div>; // TODO
     }
@@ -28,7 +28,7 @@ const MatchActions: React.FC = () => {
     );
   }
 
-  // Game is over
+  // Match is over
   if (matchOutcome) {
     return <div>Match over</div>; // TODO
   }

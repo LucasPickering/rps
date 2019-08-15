@@ -1,9 +1,17 @@
+from collections import Counter
+from datetime import datetime
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
 
 from core.util import GameOutcome, Move, get_win_target
-from core.models import AbstractGame, AbstractPlayerGame
+from core.models import (
+    AbstractGame,
+    AbstractPlayerGame,
+    Match,
+    Game,
+    PlayerGame,
+)
 from .error import ClientError, ClientErrorType
 
 
@@ -60,7 +68,7 @@ class LiveMatch(models.Model):
         super().save(*args, **kwargs)
 
     @property
-    def is_in_progress(self):
+    def is_game_in_progress(self):
         return bool(self.player1 and self.player2)
 
     @property
@@ -98,7 +106,7 @@ class LiveMatch(models.Model):
             }
             if opponent_obj
             else None,
-            "is_in_progress": self.is_in_progress,
+            "is_game_in_progress": self.is_game_in_progress,
             "selected_move": self_obj.move,
             "games": [
                 game.get_game_summary_for_player(player_user)
@@ -180,7 +188,6 @@ class LiveMatch(models.Model):
             or they are not in the match
         """
         player_obj = self.get_player_obj(player)
-        print("apply_move", player_obj)
         if player_obj:
             if player_obj.move:
                 raise ClientError(
@@ -208,16 +215,15 @@ class LiveMatch(models.Model):
 
         # This need to be created & saved first so it gets a PK
         game = LiveGame(
-            game_num=self.games.count(), match=self, winner=game_winner
+            game_num=self.games.count(),
+            match=self,
+            winner=game_winner.user if game_winner else None,
         )
         self.games.add(game, bulk=False)
-        print("created game", game)
-        print("games", self.games)
 
-        p1_game = LivePlayerGame.from_player_match(self.player1, game)
-        p1_game.save()
-        p2_game = LivePlayerGame.from_player_match(self.player2, game)
-        p2_game.save()
+        # Create a player-game for each player in the game
+        LivePlayerGame.from_player_match(self.player1, game).save()
+        LivePlayerGame.from_player_match(self.player2, game).save()
 
         # Clear moves
         self.player1.move = ""
@@ -226,21 +232,34 @@ class LiveMatch(models.Model):
         self.player2.save()
 
         # Check if the match is over now
-        wins_by_player = self.games.exclude(winner=None).annotate(
-            win_count=models.Count("winner")
+        # Build a dict of User:wins
+        wins_by_player = Counter(
+            self.games.exclude(winner=None).values_list("winner", flat=True)
         )
-        print("wins_by_player", wins_by_player)
-        if max(wins_by_player.values(), default=0) >= get_win_target(
-            self.best_of
-        ):
-            self.process_complete_match(self)
+        # Get the winningest player
+        winning_player, wins = max(
+            wins_by_player.items(),
+            key=lambda _, wins: wins,
+            default=(None, None),
+        )
+        if winning_player and wins >= get_win_target(self.best_of):
+            self.process_complete_match(winning_player)
 
-    def process_complete_match(self):
-        pass  # TODO
+    def process_complete_match(self, winner):
+        self.save_to_permanent(winner)
+        # We might want more logic here - that remains to be seen
 
-    def save_to_permanent(self):
-        # TODO
-        pass
+    def save_to_permanent(self, winner):
+        match = Match.objects.create(
+            start_time=self.start_time,
+            duration=datetime.now() - self.state_time,
+            best_of=self.best_of,
+            players=[self.player1.user, self.player2.user],
+            winner=winner,
+        )
+        for game in self.games:
+            game.save_to_permanent(match)
+        return match
 
 
 class LiveGame(AbstractGame):
@@ -273,6 +292,14 @@ class LiveGame(AbstractGame):
     def __str__(self):
         return f"match: {self.match_id}; game_num: {self.game_num}; winner: {self.winner}"
 
+    def save_to_permanent(self, match):
+        game = Game.objects.create(
+            game_num=self.game_num, winner=self.winner, match=match
+        )
+        for player in self.players:
+            player.save_to_permanent(game)
+        return game
+
 
 class LivePlayerGame(AbstractPlayerGame):
     game = models.ForeignKey(LiveGame, on_delete=models.CASCADE)
@@ -280,3 +307,8 @@ class LivePlayerGame(AbstractPlayerGame):
     @classmethod
     def from_player_match(cls, player_match, game):
         return cls(user=player_match.user, move=player_match.move, game=game)
+
+    def save_to_permanent(self, game):
+        return PlayerGame.objects.create(
+            user=self.user, move=self.move, game=game
+        )
