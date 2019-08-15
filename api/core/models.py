@@ -29,6 +29,9 @@ class AbstractPlayerGame(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     move = models.CharField(choices=Move.choices(), max_length=20)
 
+    class Meta:
+        abstract = True
+
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)

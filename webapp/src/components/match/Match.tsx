@@ -33,19 +33,21 @@ const MatchActions: React.FC = () => {
     return <div>Match over</div>; // TODO
   }
   const lastGame = last(games);
-  if (!lastGame) {
-    return <Typography>Game Over. You {lastGame}.</Typography>;
+  if (lastGame) {
+    return <Typography>Game Over. You {lastGame.outcome}.</Typography>;
   }
   // Shouldn't ever get here (ecks dee)
   return null;
 };
 
 const Match: React.FC = () => {
-  // TODO uncomment this
+  const {
+    state: { opponent },
+  } = useContext(MatchContext);
   // No opponent
-  // if (!state.opponentName) {
-  //   return <p>Waiting for opponent...</p>; // TODO
-  // }
+  if (!opponent) {
+    return <p>Waiting for opponent...</p>; // TODO
+  }
 
   return (
     <>

@@ -264,11 +264,10 @@ class LiveGame(AbstractGame):
 
     def get_game_summary_for_player(self, player_user):
         self_obj, opponent_obj = self.get_self_and_opponent_objs(player_user)
-        print(self_obj, opponent_obj)
         return {
             "self_move": self_obj.move,
             "opponent_move": opponent_obj.move,
-            "outcome": Move.get_outcome(self_obj.move, opponent_obj.move),
+            "outcome": Move.get_outcome(self_obj.move, opponent_obj.move).value,
         }
 
     def __str__(self):

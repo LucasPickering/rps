@@ -1,6 +1,6 @@
+import camelcaseKeys from 'camelcase-keys';
 import withRouteParams from 'hoc/withRouteParams';
 import useWebSocket from 'hooks/useWebSocket';
-import { camelCase, mapKeys } from 'lodash';
 import React, { useMemo, useReducer } from 'react';
 import {
   defaultMatchState,
@@ -35,7 +35,9 @@ const MatchView: React.FC<Props> = ({ matchId }) => {
             // TODO use io-ts here
             const matchAction = {
               type: MatchActionType.MatchUpdate,
-              state: mapKeys(data, (_v, k) => camelCase(k)) as MatchState,
+              state: (camelcaseKeys(data, {
+                deep: true,
+              }) as unknown) as MatchState,
             };
             dispatch(matchAction);
           }
