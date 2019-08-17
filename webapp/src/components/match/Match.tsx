@@ -1,7 +1,8 @@
-import { Box, Typography } from '@material-ui/core';
+import { Box, LinearProgress, Typography } from '@material-ui/core';
 import { last } from 'lodash';
 import React, { useContext } from 'react';
 import { ClientMessageType, MatchContext } from 'state/match';
+import { formatGameOutcome, formatMatchOutcome } from 'util/format';
 import GameLog from './GameLog';
 import MoveButtons from './MoveButtons';
 import PlayerScore from './PlayerScore';
@@ -17,7 +18,12 @@ const MatchActions: React.FC = () => {
   // Match is running
   if (isGameInProgress) {
     if (selectedMove) {
-      return <div>Waiting for opponent to go</div>; // TODO
+      return (
+        <>
+          <Typography variant="h5">Waiting for opponent to go...</Typography>
+          <LinearProgress />
+        </>
+      );
     }
     return (
       <MoveButtons
@@ -30,11 +36,22 @@ const MatchActions: React.FC = () => {
 
   // Match is over
   if (matchOutcome) {
-    return <div>Match over</div>; // TODO
+    return (
+      <>
+        <Typography variant="h5">Match Over</Typography>
+        <Typography variant="h3">
+          You {formatMatchOutcome(matchOutcome)}
+        </Typography>
+      </>
+    );
   }
   const lastGame = last(games);
   if (lastGame) {
-    return <Typography>Game Over. You {lastGame.outcome}.</Typography>;
+    return (
+      <Typography>
+        Game Over. You {formatGameOutcome(lastGame.outcome)}.
+      </Typography>
+    );
   }
   // Shouldn't ever get here (ecks dee)
   return null;
@@ -46,7 +63,12 @@ const Match: React.FC = () => {
   } = useContext(MatchContext);
   // No opponent
   if (!opponent) {
-    return <p>Waiting for opponent...</p>; // TODO
+    return (
+      <Box display="flex" flexDirection="row" alignItems="center">
+        <Typography variant="h5">Waiting for opponent to connect...</Typography>
+        <LinearProgress />
+      </Box>
+    );
   }
 
   return (

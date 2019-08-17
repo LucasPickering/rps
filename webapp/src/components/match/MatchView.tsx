@@ -29,17 +29,15 @@ const MatchView: React.FC<Props> = ({ matchId }) => {
       () => ({
         onMessage: data => {
           if (data.error) {
-            console.error(`Socket error:`, data);
+            console.error('Socket error:', data); // TODO
           } else {
             // Let's just pray our data format agrees with the API
-            // TODO use io-ts here
-            const matchAction = {
+            dispatch({
               type: MatchActionType.MatchUpdate,
               state: (camelcaseKeys(data, {
                 deep: true,
               }) as unknown) as MatchState,
-            };
-            dispatch(matchAction);
+            });
           }
         },
       }),

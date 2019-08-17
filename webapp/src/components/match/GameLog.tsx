@@ -9,8 +9,10 @@ const outcomeLabel = {
   [GameOutcome.Tie]: 'T',
 };
 
+interface Props {}
+
 // We have to leave the React.FC tag off to get default props to work
-const GameLog: React.FC = () => {
+const GameLog: React.FC<Props> = () => {
   const {
     state: { bestOf, games },
   } = useContext(MatchContext);
@@ -33,10 +35,6 @@ const GameLog: React.FC = () => {
       <Typography variant="body1">{gameLogStr}</Typography>
     </Box>
   );
-};
-
-GameLog.defaultProps = {
-  isSelf: false,
 };
 
 export default GameLog;
