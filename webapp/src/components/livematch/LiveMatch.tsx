@@ -1,9 +1,10 @@
-import { Box, LinearProgress, Typography } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { last } from 'lodash';
 import React, { useContext } from 'react';
 import { ClientMessageType, LiveMatchContext } from 'state/livematch';
 import { formatGameOutcome, formatMatchOutcome } from 'util/format';
 import GameLog from './GameLog';
+import LiveMatchStatusMessage from './LiveMatchStatusMessage';
 import MoveButtons from './MoveButtons';
 import PlayerScore from './PlayerScore';
 
@@ -19,10 +20,7 @@ const Actions: React.FC = () => {
   if (isGameInProgress) {
     if (selectedMove) {
       return (
-        <>
-          <Typography variant="h5">Waiting for opponent to go...</Typography>
-          <LinearProgress />
-        </>
+        <LiveMatchStatusMessage minor="Waiting for opponent to go..." loading />
       );
     }
     return (
@@ -37,20 +35,18 @@ const Actions: React.FC = () => {
   // Match is over
   if (matchOutcome) {
     return (
-      <>
-        <Typography variant="h5">Match Over</Typography>
-        <Typography variant="h3">
-          You {formatMatchOutcome(matchOutcome)}
-        </Typography>
-      </>
+      <LiveMatchStatusMessage
+        minor="Match Over"
+        major={`You ${formatMatchOutcome(matchOutcome)}`}
+      />
     );
   }
   const lastGame = last(games);
   if (lastGame) {
     return (
-      <Typography>
-        Game Over. You {formatGameOutcome(lastGame.outcome)}.
-      </Typography>
+      <LiveMatchStatusMessage
+        minor={`Game Over. You ${formatGameOutcome(lastGame.outcome)}.`}
+      />
     );
   }
   // Shouldn't ever get here (ecks dee)
@@ -64,21 +60,28 @@ const LiveMatch: React.FC = () => {
   // No opponent
   if (!opponent) {
     return (
-      <Box display="flex" flexDirection="row" alignItems="center">
-        <Typography variant="h5">Waiting for opponent to connect...</Typography>
-        <LinearProgress />
+      <Box display="flex" flexDirection="column" alignItems="center">
+        <LiveMatchStatusMessage
+          minor="Waiting for opponent to connect..."
+          loading
+        />
       </Box>
     );
   }
 
   return (
     <>
-      <Box display="flex" flexDirection="row" justifyContent="space-between">
-        <PlayerScore isSelf />
-        <GameLog />
-        <PlayerScore />
-      </Box>
       <Box display="flex" flexDirection="column" alignItems="center">
+        <Box
+          display="flex"
+          flexDirection="row"
+          justifyContent="space-between"
+          width="100%"
+        >
+          <PlayerScore isSelf />
+          <GameLog />
+          <PlayerScore />
+        </Box>
         <Actions />
       </Box>
     </>

@@ -15,6 +15,6 @@ interface Props extends React.ComponentProps<typeof Button> {
 }
 
 // TODO make this pretty
-const MoveIcon: React.FC<Props> = ({ move }) => <p>{moveLabels[move]}</p>;
+const MoveIcon: React.FC<Props> = ({ move }) => <>{moveLabels[move]}</>;
 
 export default MoveIcon;
