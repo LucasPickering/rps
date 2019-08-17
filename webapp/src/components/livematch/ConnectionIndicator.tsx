@@ -11,6 +11,9 @@ import {
   Error as ErrorIcon,
 } from '@material-ui/icons';
 import classNames from 'classnames';
+import useSplashMessage, {
+  connectionStatusSplasher,
+} from 'hooks/useSplashMessage';
 import { ConnectionStatus } from 'hooks/useWebSocket';
 import React, { useContext, useState } from 'react';
 import { LiveMatchContext } from 'state/livematch';
@@ -42,17 +45,6 @@ const useLocalStyles = makeStyles(({ palette, spacing }: Theme) => ({
   },
 }));
 
-const getStatusMessage = (status: ConnectionStatus): string | undefined => {
-  switch (status) {
-    case ConnectionStatus.Connected:
-      return 'You are Online™';
-    case ConnectionStatus.ClosedError:
-      return ':sad_parrot:';
-    default:
-      return undefined;
-  }
-};
-
 const StatusIcon: React.FC<{ status: ConnectionStatus }> = ({
   status,
   ...rest
@@ -77,8 +69,11 @@ const ConnectionIndicator: React.FC = () => {
   const { connectionStatus } = useContext(LiveMatchContext);
   const localClasses = useLocalStyles();
 
-  const statusMessage = getStatusMessage(connectionStatus);
-  const popoverOpen = Boolean(popoverAnchorEl && statusMessage);
+  const splashMessage = useSplashMessage(
+    connectionStatusSplasher,
+    connectionStatus
+  );
+  const popoverOpen = Boolean(popoverAnchorEl && splashMessage);
 
   return (
     <div>
@@ -115,7 +110,7 @@ const ConnectionIndicator: React.FC = () => {
         onClose={() => setPopoverAnchorEl(undefined)}
         disableRestoreFocus
       >
-        {statusMessage}
+        {splashMessage}
       </Popover>
     </div>
   );

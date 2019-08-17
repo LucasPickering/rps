@@ -6,6 +6,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import MoveIcon from 'components/MoveIcon';
+import useSplashMessage, { matchOutcomeSplasher } from 'hooks/useSplashMessage';
 import { last } from 'lodash';
 import React, { useContext } from 'react';
 import { ClientMessageType, LiveMatchContext } from 'state/livematch';
@@ -22,7 +23,7 @@ const useLocalStyles = makeStyles(({ typography }: Theme) => ({
     ...typography.h5,
   },
   minorMessage: {
-    ...typography.subtitle1,
+    ...typography.body1,
   },
   loading: {
     width: '100%',
@@ -38,6 +39,10 @@ const Actions: React.FC = () => {
     state: { isGameInProgress, opponent, selectedMove, matchOutcome, games },
     sendMessage,
   } = useContext(LiveMatchContext);
+  const matchOutcomeSplash = useSplashMessage(
+    matchOutcomeSplasher,
+    matchOutcome
+  );
 
   // Match is running
   if (isGameInProgress) {
@@ -79,6 +84,9 @@ const Actions: React.FC = () => {
         </Typography>
         <Typography className={localClasses.majorMessage}>
           You {formatMatchOutcome(matchOutcome)}!
+        </Typography>
+        <Typography className={localClasses.minorMessage}>
+          {matchOutcomeSplash}
         </Typography>
       </>
     );
