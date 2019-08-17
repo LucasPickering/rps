@@ -72,8 +72,8 @@ WSGI_APPLICATION = "rps.wsgi.application"
 DATABASES = DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "rps",
-        "USER": "rps",
+        "NAME": os.getenv("RPS_DB_NAME", "rps"),
+        "USER": os.getenv("RPS_DB_USER", "rps"),
         "PASSWORD": os.getenv("RPS_DB_PASSWORD", "rps"),
         "HOST": os.getenv("RPS_DB_HOST", "db"),
         "PORT": "",

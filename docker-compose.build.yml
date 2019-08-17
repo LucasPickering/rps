@@ -1,0 +1,12 @@
+# This file is just to make it easier to build/push the prod images
+
+version: "3"
+
+services:
+  api:
+    build: ./api/
+    image: lucaspickering/rps-api:latest
+
+  static:
+    build: ./webapp/
+    image: lucaspickering/rps-static:latest
