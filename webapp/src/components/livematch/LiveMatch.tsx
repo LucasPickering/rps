@@ -1,7 +1,7 @@
 import { Box, LinearProgress, Typography } from '@material-ui/core';
 import { last } from 'lodash';
 import React, { useContext } from 'react';
-import { ClientMessageType, MatchContext } from 'state/match';
+import { ClientMessageType, LiveMatchContext } from 'state/livematch';
 import { formatGameOutcome, formatMatchOutcome } from 'util/format';
 import GameLog from './GameLog';
 import MoveButtons from './MoveButtons';
@@ -10,11 +10,11 @@ import PlayerScore from './PlayerScore';
 /**
  * Helper component to render the actions available to the player
  */
-const MatchActions: React.FC = () => {
+const Actions: React.FC = () => {
   const {
     state: { isGameInProgress, selectedMove, matchOutcome, games },
     sendMessage,
-  } = useContext(MatchContext);
+  } = useContext(LiveMatchContext);
   // Match is running
   if (isGameInProgress) {
     if (selectedMove) {
@@ -57,10 +57,10 @@ const MatchActions: React.FC = () => {
   return null;
 };
 
-const Match: React.FC = () => {
+const LiveMatch: React.FC = () => {
   const {
     state: { opponent },
-  } = useContext(MatchContext);
+  } = useContext(LiveMatchContext);
   // No opponent
   if (!opponent) {
     return (
@@ -79,10 +79,10 @@ const Match: React.FC = () => {
         <PlayerScore />
       </Box>
       <Box display="flex" flexDirection="column" alignItems="center">
-        <MatchActions />
+        <Actions />
       </Box>
     </>
   );
 };
 
-export default Match;
+export default LiveMatch;

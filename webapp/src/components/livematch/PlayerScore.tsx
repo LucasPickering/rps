@@ -1,7 +1,8 @@
 import { Box, makeStyles, Theme, Typography } from '@material-ui/core';
 import classNames from 'classnames';
 import React, { useContext } from 'react';
-import { GameOutcome, MatchContext } from 'state/match';
+import { LiveMatchContext } from 'state/livematch';
+import { GameOutcome } from 'state/match';
 import { countGameOutcomes } from 'util/funcs';
 
 const useLocalStyles = makeStyles(({  }: Theme) => ({
@@ -25,7 +26,7 @@ const PlayerScore = ({ className, isSelf }: Props) => {
   const localClasses = useLocalStyles();
   const {
     state: { games, opponent },
-  } = useContext(MatchContext);
+  } = useContext(LiveMatchContext);
 
   const num = countGameOutcomes(
     games,

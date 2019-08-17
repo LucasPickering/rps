@@ -13,7 +13,7 @@ import {
 import classNames from 'classnames';
 import { ConnectionStatus } from 'hooks/useWebSocket';
 import React, { useContext, useState } from 'react';
-import { MatchContext } from 'state/match';
+import { LiveMatchContext } from 'state/livematch';
 
 const statusLabels = {
   [ConnectionStatus.Connecting]: 'Connecting',
@@ -74,7 +74,7 @@ const ConnectionIndicator: React.FC = () => {
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<
     HTMLElement | undefined
   >(undefined);
-  const { connectionStatus } = useContext(MatchContext);
+  const { connectionStatus } = useContext(LiveMatchContext);
   const localClasses = useLocalStyles();
 
   const statusMessage = getStatusMessage(connectionStatus);

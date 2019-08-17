@@ -1,6 +1,7 @@
 import { Box, Typography } from '@material-ui/core';
 import React, { useContext } from 'react';
-import { GameOutcome, MatchContext } from 'state/match';
+import { LiveMatchContext } from 'state/livematch';
+import { GameOutcome } from 'state/match';
 import { countGameOutcomes } from 'util/funcs';
 
 const outcomeLabel = {
@@ -15,7 +16,7 @@ interface Props {}
 const GameLog: React.FC<Props> = () => {
   const {
     state: { bestOf, games },
-  } = useContext(MatchContext);
+  } = useContext(LiveMatchContext);
 
   const nonTies = games.length - countGameOutcomes(games, GameOutcome.Tie);
   const maxRemainingGames = bestOf - nonTies;

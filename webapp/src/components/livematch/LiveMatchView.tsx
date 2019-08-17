@@ -3,14 +3,14 @@ import withRouteParams from 'hoc/withRouteParams';
 import useWebSocket from 'hooks/useWebSocket';
 import React, { useMemo, useReducer } from 'react';
 import {
-  defaultMatchState,
-  MatchActionType,
-  MatchContext,
-  matchReducer,
-  MatchState,
-} from 'state/match';
+  defaultLiveMatchState,
+  LiveMatchActionType,
+  LiveMatchContext,
+  liveMatchReducer,
+  LiveMatchState,
+} from 'state/livematch';
 import ConnectionIndicator from './ConnectionIndicator';
-import Match from './Match';
+import LiveMatch from './LiveMatch';
 
 interface Props {
   matchId: string;
@@ -19,8 +19,8 @@ interface Props {
 /**
  * Data handler for the match screen.
  */
-const MatchView: React.FC<Props> = ({ matchId }) => {
-  const [state, dispatch] = useReducer(matchReducer, defaultMatchState);
+const LiveMatchView: React.FC<Props> = ({ matchId }) => {
+  const [state, dispatch] = useReducer(liveMatchReducer, defaultLiveMatchState);
   const { status, send } = useWebSocket(
     `/ws/match/${matchId}`,
     // We need to memoize the callbacks to prevent hook triggers
@@ -33,10 +33,10 @@ const MatchView: React.FC<Props> = ({ matchId }) => {
           } else {
             // Let's just pray our data format agrees with the API
             dispatch({
-              type: MatchActionType.MatchUpdate,
+              type: LiveMatchActionType.MatchUpdate,
               state: (camelcaseKeys(data, {
                 deep: true,
-              }) as unknown) as MatchState,
+              }) as unknown) as LiveMatchState,
             });
           }
         },
@@ -55,11 +55,11 @@ const MatchView: React.FC<Props> = ({ matchId }) => {
   );
 
   return (
-    <MatchContext.Provider value={contextValue}>
-      <Match />
+    <LiveMatchContext.Provider value={contextValue}>
+      <LiveMatch />
       <ConnectionIndicator />
-    </MatchContext.Provider>
+    </LiveMatchContext.Provider>
   );
 };
 
-export default withRouteParams(MatchView);
+export default withRouteParams(LiveMatchView);
