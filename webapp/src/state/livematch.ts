@@ -41,7 +41,6 @@ export const liveMatchReducer: React.Reducer<
   LiveMatchState,
   LiveMatchAction
 > = (state, action) => {
-  console.log(action);
   switch (action.type) {
     case LiveMatchActionType.MatchUpdate:
       return action.state;

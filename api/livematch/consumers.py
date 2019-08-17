@@ -1,5 +1,7 @@
+import logging
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import JsonWebsocketConsumer
+from django.conf import settings
 from django.db import transaction
 
 from core.util import Move, is_uuid
@@ -12,6 +14,8 @@ from .serializers import (
     LiveMatchStateSerializer,
 )
 from .error import ClientError, ClientErrorType
+
+logger = logging.getLogger(settings.RPS_LOGGER_NAME)
 
 
 def validate_content(content):
@@ -51,10 +55,8 @@ class MatchConsumer(JsonWebsocketConsumer):
             update to their clients. (default: {True})
         """
         state = live_match.get_state_for_player(self.player)
-        print("sending match state", state)
         self.send_json(LiveMatchStateSerializer(state).data)
         if notify_group:
-            print("Sending group update")
             # Send the message to other consumers in the group
             async_to_sync(self.channel_layer.group_send)(
                 self.channel_group_name, {"type": "match.update"}
@@ -157,26 +159,29 @@ class MatchConsumer(JsonWebsocketConsumer):
             self.send_match_state(live_match)
 
     def connect(self):
-        print("connect")
         self.match_id = self.scope["url_route"]["kwargs"]["match_id"]
         self.player = self.scope["user"]
         self.accept()
         try:
             self.validate_user()
             self.validate_match_id()
+            logger.info(
+                f"Player {self.player} connecting to match {self.match_id}"
+            )
             self.user_connect()
         except ClientError as e:
             self.handle_error(e)
 
     def disconnect_json(self, close_code):
-        print("disconnect")
+        logger.info(
+            f"Player {self.player} disconnecting from match {self.match_id}"
+        )
         try:
             self.player_disconnect()
         except ClientError as e:
             self.handle_error(e)
 
     def receive_json(self, content):
-        print("receive", content)
         try:
             msg = validate_content(content)
             self.process_msg(msg)
@@ -193,6 +198,5 @@ class MatchConsumer(JsonWebsocketConsumer):
         """
         # No need to lock for read-only operation
         live_match = self.get_match(lock=False)
-        print("Propagating match state")
         # Notifying the group here would create an infinite loop
         self.send_match_state(live_match, notify_group=False)

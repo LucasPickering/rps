@@ -19,14 +19,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "ssfzscql8d7rf016q!&16z5@qo@a6_eou-7_76m7gtgs8q^n5j"
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]", "*"]
-
 
 # Application definition
 
@@ -134,3 +126,43 @@ STATIC_URL = "/api/static/"
 
 # Channels
 ASGI_APPLICATION = "rps.routing.application"
+
+# Configure logging
+RPS_LOGGER_NAME = "rps"
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "simple": {
+            "format": "{asctime} [{name} {levelname}] {message}",
+            "style": "{",
+        }
+    },
+    "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+        "file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "formatter": "simple",
+            "filename": os.path.join(
+                os.getenv("RPS_LOGGING_DIR", "./"), "django.log"
+            ),
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+            "propagate": True,
+        },
+        RPS_LOGGER_NAME: {
+            "handlers": ["console", "file"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+    },
+}
