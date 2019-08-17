@@ -2,7 +2,7 @@ from asgiref.sync import async_to_sync
 from channels.generic.websocket import JsonWebsocketConsumer
 from django.db import transaction
 
-from core import util
+from core.util import Move, is_uuid
 
 from .models import LiveMatch
 from .serializers import (
@@ -79,7 +79,7 @@ class MatchConsumer(JsonWebsocketConsumer):
         Raises:
             ClientError: If the match ID is invalid
         """
-        if not util.is_uuid(self.match_id):
+        if not is_uuid(self.match_id):
             raise ClientError(ClientErrorType.INVALID_MATCH_ID, fatal=True)
 
     def validate_user(self):
@@ -142,10 +142,15 @@ class MatchConsumer(JsonWebsocketConsumer):
 
     def process_msg(self, msg):
         if msg["type"] == ClientMessageType.MOVE.value:
+            move = msg["move"]
+            if not Move.is_valid_move(move):
+                raise ClientError(
+                    ClientErrorType.INVALID_MOVE, f"Unknown move: {move}"
+                )
+
             with transaction.atomic():
-                # If live_match doesn't exist, we have problemos
+                # If live_match doesn't exist, tenemos problemos
                 live_match = self.get_match()
-                # TODO validate move string
                 live_match.apply_move(self.player, msg["move"])
                 live_match.save()
 

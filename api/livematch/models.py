@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 
-from core.util import GameOutcome, Move, get_win_target
+from core.util import GameOutcome, MatchOutcome, Move, get_win_target
 from core.models import (
     AbstractGame,
     AbstractPlayerGame,
@@ -34,6 +34,10 @@ class LivePlayerMatch(models.Model):
 
 class LiveMatch(models.Model):
     id = models.CharField(primary_key=True, max_length=32)
+    # Null if in progress, populated once the permanent match exists
+    permanent_match = models.OneToOneField(
+        Match, on_delete=models.CASCADE, blank=True, null=True
+    )
     start_time = models.DateTimeField(auto_now=True)
     best_of = models.PositiveSmallIntegerField(default=5)
     # Null here means no player has joined yet
@@ -69,7 +73,9 @@ class LiveMatch(models.Model):
 
     @property
     def is_game_in_progress(self):
-        return bool(self.player1 and self.player2)
+        return (
+            bool(self.player1 and self.player2) and not self.is_match_complete
+        )
 
     @property
     def is_game_complete(self):
@@ -79,6 +85,11 @@ class LiveMatch(models.Model):
             and self.player1.move
             and self.player2.move
         )
+
+    @property
+    def is_match_complete(self):
+        # Check the FK directly to avoid a query
+        return self.permanent_match_id is not None
 
     def get_self_and_opponent_objs(self, player_user):
         if self.player1 and player_user == self.player1.user:
@@ -98,6 +109,13 @@ class LiveMatch(models.Model):
             raise RuntimeError(
                 "Cannot get state for player that is not in game"
             )
+        if self.is_match_complete:
+            if self.permanent_match.winner == player_user:
+                match_outcome = MatchOutcome.WIN.value
+            else:
+                match_outcome = MatchOutcome.LOSS.value
+        else:
+            match_outcome = None
         return {
             "best_of": self.best_of,
             "opponent": {
@@ -112,7 +130,7 @@ class LiveMatch(models.Model):
                 game.get_game_summary_for_player(player_user)
                 for game in self.games.all()
             ],
-            "match_outcome": None,  # TODO
+            "match_outcome": match_outcome,
         }
 
     def connect_player(self, player):
@@ -150,9 +168,6 @@ class LiveMatch(models.Model):
                 self.player1 = player_obj
             elif self.player2 is None:
                 self.player2 = player_obj
-            # If we now have two players connected, start a game
-            if self.player1 and self.player2:
-                self.game_in_progress = True
         return True
 
     def disconnect_player(self, player):
@@ -187,6 +202,10 @@ class LiveMatch(models.Model):
             ClientError: If the move is invalid, this player has already moved,
             or they are not in the match
         """
+        if self.is_match_complete:
+            raise ClientError(
+                ClientErrorType.INVALID_MOVE, "Match is already complete"
+            )
         player_obj = self.get_player_obj(player)
         if player_obj:
             if player_obj.move:
@@ -250,6 +269,7 @@ class LiveMatch(models.Model):
             best_of=self.best_of,
             winner_id=winner_id,
         )
+        self.permanent_match = match  # Connect the permanent match to this one
         match.players.set([self.player1.user, self.player2.user])
         for game in self.games.all():
             game.save_to_permanent(match)

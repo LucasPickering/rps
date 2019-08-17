@@ -16,12 +16,21 @@ class GameOutcome(Enum):
     TIE = "tie"
 
 
+class MatchOutcome(Enum):
+    WIN = "win"
+    LOSS = "loss"
+
+
 class Move(DbEnum):
     ROCK = "rock"
     PAPER = "paper"
     SCISSORS = "scissors"
     LIZARD = "lizard"
     SPOCK = "spock"
+
+    @staticmethod
+    def is_valid_move(move):
+        return move in set(m.value for m in Move)
 
     @staticmethod
     def get_outcome(move1, move2):
