@@ -15,11 +15,11 @@ interface Props {}
 // We have to leave the React.FC tag off to get default props to work
 const GameLog: React.FC<Props> = () => {
   const {
-    state: { bestOf, games },
+    state: { bestOf, games, matchOutcome },
   } = useContext(LiveMatchContext);
 
   const nonTies = games.length - countGameOutcomes(games, GameOutcome.Tie);
-  const maxRemainingGames = bestOf - nonTies;
+  const maxRemainingGames = matchOutcome ? 0 : bestOf - nonTies;
   const gameLogStr = games
     .map(({ outcome }) => outcomeLabel[outcome])
     .concat(Array(maxRemainingGames).fill('–'))
