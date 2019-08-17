@@ -1,3 +1,4 @@
+from asgiref.sync import async_to_sync
 from channels.generic.websocket import JsonWebsocketConsumer
 from django.db import transaction
 
@@ -13,14 +14,51 @@ from .serializers import (
 from .error import ClientError, ClientErrorType
 
 
-class MatchConsumer(JsonWebsocketConsumer):
-    def send_data(self, serializer):
-        print("sending", serializer.data)
-        self.send_json(serializer.data)
+def validate_content(content):
+    # Get the message type
+    try:
+        msg_type = content["type"]
+    except KeyError:
+        raise ClientError(
+            ClientErrorType.MALFORMED_MESSAGE, detail="Missing type"
+        )
 
-    def send_match_state(self, live_match):
+    # Look up the correct serializer for this type and try to deserialize
+    serializer_cls = get_client_msg_serializer(msg_type)
+    serializer = serializer_cls(data=content)
+    if not serializer.is_valid():
+        raise ClientError(
+            ClientErrorType.MALFORMED_MESSAGE, detail=serializer.errors
+        )
+    return serializer.validated_data
+
+
+class MatchConsumer(JsonWebsocketConsumer):
+    @property
+    def channel_group_name(self):
+        return f"match_{self.match_id}"
+
+    def send_match_state(self, live_match, notify_group=True):
+        """
+        Sends the current match state to the client.
+
+        Arguments:
+            live_match {LiveMatch} -- The current LiveMatch
+
+        Keyword Arguments:
+            notify_group {bool} -- If True, a message will be sent to the
+            channel group to tell all other consumers in the group to send and
+            update to their clients. (default: {True})
+        """
         state = live_match.get_state_for_player(self.player)
-        self.send_data(LiveMatchStateSerializer(state))
+        print("sending match state", state)
+        self.send_json(LiveMatchStateSerializer(state).data)
+        if notify_group:
+            print("Sending group update")
+            # Send the message to other consumers in the group
+            async_to_sync(self.channel_layer.group_send)(
+                self.channel_group_name, {"type": "match.update"}
+            )
 
     def handle_error(self, error):
         """
@@ -30,7 +68,7 @@ class MatchConsumer(JsonWebsocketConsumer):
         Arguments:
             error {ClientError} -- The error
         """
-        self.send_data(ErrorSerializer(error.to_dict()))
+        self.send_json(ErrorSerializer(error.to_dict()).data)
         if error.fatal:
             self.close()
 
@@ -48,26 +86,11 @@ class MatchConsumer(JsonWebsocketConsumer):
         if not self.player.is_authenticated:
             raise ClientError(ClientErrorType.NOT_LOGGED_IN, fatal=True)
 
-    def validate_content(self, content):
-        # Get the message type
-        try:
-            msg_type = content["type"]
-        except KeyError:
-            raise ClientError(
-                ClientErrorType.MALFORMED_MESSAGE, detail="Missing type"
-            )
-
-        # Look up the correct serializer for this type and try to deserialize
-        serializer_cls = get_client_msg_serializer(msg_type)
-        serializer = serializer_cls(data=content)
-        if not serializer.is_valid():
-            raise ClientError(
-                ClientErrorType.MALFORMED_MESSAGE, detail=serializer.errors
-            )
-        return serializer.validated_data
-
-    def get_match(self):
-        return LiveMatch.objects.select_for_update().get(id=self.match_id)
+    def get_match(self, lock=True):
+        qs = LiveMatch.objects
+        if lock:
+            qs = qs.select_for_update()
+        return qs.get(id=self.match_id)
 
     def user_connect(self):
         """
@@ -92,10 +115,22 @@ class MatchConsumer(JsonWebsocketConsumer):
                 raise ClientError(ClientErrorType.GAME_FULL, fatal=True)
             # Player was successfully added - write it to the DB
             live_match.save()
+            # Join the channel group for all sockets in this match. Make sure
+            # we do this BEFORE releasing the lock, to prevent missing
+            # messages
+            async_to_sync(self.channel_layer.group_add)(
+                self.channel_group_name, self.channel_name
+            )
 
         self.send_match_state(live_match)
 
     def user_disconnect(self):
+        # Leave the channel group
+        async_to_sync(self.channel_layer.group_discard)(
+            self.channel_group_name, self.channel_name
+        )
+
+        # Tell the DB object we're disconnecting
         with transaction.atomic():
             try:
                 live_match = self.get_match()
@@ -138,7 +173,21 @@ class MatchConsumer(JsonWebsocketConsumer):
     def receive_json(self, content):
         print("receive", content)
         try:
-            msg = self.validate_content(content)
+            msg = validate_content(content)
             self.process_msg(msg)
         except ClientError as e:
             self.handle_error(e)
+
+    def match_update(self, event):
+        """
+        Listener for match updates from other consumers on this match.
+
+        Arguments:
+            event {dict} -- The event received from the sender. Should contain
+            the current match state, which will be sent to the client.
+        """
+        # No need to lock for read-only operation
+        live_match = self.get_match(lock=False)
+        print("Propagating match state")
+        # Notifying the group here would create an infinite loop
+        self.send_match_state(live_match, notify_group=False)

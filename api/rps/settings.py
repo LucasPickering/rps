@@ -82,9 +82,18 @@ DATABASES = DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "rps",
         "USER": "rps",
-        "PASSWORD": os.getenv("BT_DB_PASSWORD", "rps"),
-        "HOST": os.getenv("BT_DB_HOST", "db"),
+        "PASSWORD": os.getenv("RPS_DB_PASSWORD", "rps"),
+        "HOST": os.getenv("RPS_DB_HOST", "db"),
         "PORT": "",
+    }
+}
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [os.getenv("RPS_REDIS_HOST", "redis:6379").split(":")]
+        },
     }
 }
 

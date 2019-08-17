@@ -1,8 +1,8 @@
 from collections import Counter
-from datetime import datetime
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import timezone
 
 from core.util import GameOutcome, Move, get_win_target
 from core.models import (
@@ -34,7 +34,7 @@ class LivePlayerMatch(models.Model):
 
 class LiveMatch(models.Model):
     id = models.CharField(primary_key=True, max_length=32)
-    start_time = models.DateField(auto_now=True)
+    start_time = models.DateTimeField(auto_now=True)
     best_of = models.PositiveSmallIntegerField(default=5)
     # Null here means no player has joined yet
     player1 = models.OneToOneField(
@@ -232,32 +232,26 @@ class LiveMatch(models.Model):
         self.player2.save()
 
         # Check if the match is over now
-        # Build a dict of User:wins
-        wins_by_player = Counter(
+        # Build a dict of User.id:wins
+        wins_by_player_id = Counter(
             self.games.exclude(winner=None).values_list("winner", flat=True)
         )
         # Get the winningest player
-        winning_player, wins = max(
-            wins_by_player.items(),
-            key=lambda _, wins: wins,
-            default=(None, None),
+        winner_id, wins = max(
+            wins_by_player_id.items(), key=lambda t: t[1], default=(None, None)
         )
-        if winning_player and wins >= get_win_target(self.best_of):
-            self.process_complete_match(winning_player)
+        if winner_id is not None and wins >= get_win_target(self.best_of):
+            self.save_to_permanent(winner_id=winner_id)
 
-    def process_complete_match(self, winner):
-        self.save_to_permanent(winner)
-        # We might want more logic here - that remains to be seen
-
-    def save_to_permanent(self, winner):
+    def save_to_permanent(self, winner_id):
         match = Match.objects.create(
             start_time=self.start_time,
-            duration=datetime.now() - self.state_time,
+            duration=(timezone.now() - self.start_time).total_seconds(),
             best_of=self.best_of,
-            players=[self.player1.user, self.player2.user],
-            winner=winner,
+            winner_id=winner_id,
         )
-        for game in self.games:
+        match.players.set([self.player1.user, self.player2.user])
+        for game in self.games.all():
             game.save_to_permanent(match)
         return match
 
@@ -296,7 +290,7 @@ class LiveGame(AbstractGame):
         game = Game.objects.create(
             game_num=self.game_num, winner=self.winner, match=match
         )
-        for player in self.players:
+        for player in self.liveplayergame_set.all():
             player.save_to_permanent(game)
         return game
 
