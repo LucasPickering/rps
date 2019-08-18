@@ -63,13 +63,13 @@ TEMPLATES = [
     }
 ]
 
-WSGI_APPLICATION = "rps.wsgi.application"
+ASGI_APPLICATION = "rps.routing.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-DATABASES = DATABASES = {
+DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": os.getenv("RPS_DB_NAME", "rps"),
@@ -123,9 +123,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = "/api/static/"
-
-# Channels
-ASGI_APPLICATION = "rps.routing.application"
 
 # Configure logging
 RPS_LOGGER_NAME = "rps"
