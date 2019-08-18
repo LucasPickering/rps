@@ -8,5 +8,5 @@ services:
     image: lucaspickering/rps-api:latest
 
   static:
-    build: ./webapp/
+    build: ./
     image: lucaspickering/rps-static:latest

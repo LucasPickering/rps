@@ -1,2 +1,8 @@
-**/__pycache__/
+*.log
 *.pyc
+**/__pycache__/
+static/
+Dockerfile
+.dockerignore
+pylintrc
+pyproject.toml

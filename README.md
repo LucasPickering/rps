@@ -16,7 +16,9 @@ docker-compose up
 
 Deployed via [Keskne](https://github.com/LucasPickering/keskne).
 
-```
+```sh
 docker login
-./build_push.sh
+# The static image depends on the API image, so we have to do this in order
+./build_push.sh api
+./build_push.sh static
 ```
