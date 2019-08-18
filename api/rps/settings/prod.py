@@ -1,7 +1,7 @@
 import os
 from .core import *
 
-ALLOWED_HOSTS = ["api"]
+ALLOWED_HOSTS = ["rps-api"]
 DEBUG = False
 SECRET_KEY = os.environ["RPS_SECRET_KEY"]
 

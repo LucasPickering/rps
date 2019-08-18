@@ -18,6 +18,5 @@ Deployed via [Keskne](https://github.com/LucasPickering/keskne).
 
 ```
 docker login
-docker-compose -f docker-compose.build.yml build --pull
-docker-compose -f docker-compose.build.yml push
+./build_push.sh
 ```
