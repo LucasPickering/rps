@@ -48,7 +48,10 @@ export default (
   }
 
   useEffect(() => {
-    wsRef.current = new WebSocket(`ws://${window.location.host}${addr}`);
+    const protocol = window.location.protocol === 'https' ? 'wss' : 'ws';
+    wsRef.current = new WebSocket(
+      `${protocol}://${window.location.host}${addr}`
+    );
     const { current: ws } = wsRef;
 
     wsRef.current.onopen = event => {
