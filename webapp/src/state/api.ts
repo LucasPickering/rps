@@ -6,11 +6,15 @@ export interface ApiState<T> {
   error?: Error;
 }
 
-export const defaultApiState: ApiState<any> = {
+export const defaultApiState = {
   loading: false,
-  data: undefined,
-  error: undefined,
 };
+
+export interface ApiCallbacks<T> {
+  onRequest?: () => void;
+  onSuccess?: (data: T) => void;
+  onError?: (error: Error) => void;
+}
 
 export enum ApiActionType {
   Request,

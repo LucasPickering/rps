@@ -1,8 +1,8 @@
 import { ConnectionStatus } from 'hooks/useWebSocket';
 import { sample } from 'lodash';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MatchOutcome } from 'state/match';
-import { UserStateContext } from 'state/user';
+import useUser from './useUser';
 
 type Key = string | number | symbol;
 type Splashes<T extends Key> = Record<T, string[]>;
@@ -49,10 +49,14 @@ export const matchOutcomeSplasher: Splasher<MatchOutcome> = makeSplasher(
  * EXTREMELY important hook. Integral to the operation of the entire program.
  */
 export default <T>(splasher: Splasher<T>, key?: T): string => {
-  const { user } = useContext(UserStateContext);
+  const user = useUser();
   const isAlt = Boolean(user && user.username.toLowerCase() === 'nick'); // lol
 
   const [splash, setSplash] = useState('');
-  useEffect(() => setSplash(key ? splasher(key, isAlt) : ''), [splasher, key]);
+  useEffect(() => setSplash(key ? splasher(key, isAlt) : ''), [
+    splasher,
+    key,
+    isAlt,
+  ]);
   return splash;
 };

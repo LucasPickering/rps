@@ -1,7 +1,7 @@
-import { createMuiTheme, CssBaseline } from '@material-ui/core';
+import { createMuiTheme, CssBaseline, LinearProgress } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/styles';
 import useFetch from 'hooks/useFetch';
-import React, { useEffect, useReducer } from 'react';
+import React, { useReducer } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import {
   defaultUserState,
@@ -24,27 +24,31 @@ const App: React.FC = () => {
   const [userState, userDispatch] = useReducer(userReducer, defaultUserState);
 
   // Kick off a request to fetch user data
-  const { data: userData } = useFetch<User>('/api/current-user');
-  useEffect(() => {
-    if (userData) {
+  useFetch<User>('/api/current-user', {
+    onRequest: () => userDispatch({ type: UserActionType.Loading }),
+    onSuccess: data =>
       userDispatch({
         type: UserActionType.Login,
-        user: userData,
-      });
-    }
-  }, [userData]);
+        user: data,
+      }),
+    onError: () => userDispatch({ type: UserActionType.LoginError }),
+  });
 
   return (
     <ThemeProvider theme={theme}>
-      <UserStateContext.Provider value={userState}>
-        <UserDispatchContext.Provider value={userDispatch}>
-          <Router>
-            <CssBaseline />
-            <HeaderBar />
-            <PageRouteContainer />
-          </Router>
-        </UserDispatchContext.Provider>
-      </UserStateContext.Provider>
+      <CssBaseline />
+      <Router>
+        {userState.loading ? (
+          <LinearProgress />
+        ) : (
+          <UserStateContext.Provider value={userState}>
+            <UserDispatchContext.Provider value={userDispatch}>
+              <HeaderBar />
+              <PageRouteContainer />
+            </UserDispatchContext.Provider>
+          </UserStateContext.Provider>
+        )}
+      </Router>
     </ThemeProvider>
   );
 };

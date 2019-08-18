@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-export type Send = (data: any) => void;
+export type Send = (data: unknown) => void;
 type EventConsumer<T = Event> = (event: T) => void;
 
 interface Callbacks {
   onOpen?: EventConsumer;
-  onMessage?: EventConsumer<{ [key: string]: any }>;
+  onMessage?: EventConsumer<{ [key: string]: unknown }>;
   onError?: EventConsumer;
   onClose?: EventConsumer<CloseEvent>;
 }
@@ -30,7 +30,7 @@ export default (
   const wsRef = useRef<WebSocket | undefined>(undefined);
 
   // Memoized send function
-  const send = useCallback<Send>((data: any) => {
+  const send = useCallback<Send>((data: unknown) => {
     const { current: ws } = wsRef;
     if (ws) {
       ws.send(JSON.stringify(data));

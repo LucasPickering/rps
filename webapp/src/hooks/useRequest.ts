@@ -1,6 +1,12 @@
 import axios, { AxiosRequestConfig } from 'axios'; // tslint:disable-line:match-default-export-name
 import { useCallback, useMemo, useReducer } from 'react';
-import { ApiAction, ApiActionType, ApiState, defaultApiState } from 'state/api';
+import {
+  ApiAction,
+  ApiActionType,
+  ApiCallbacks,
+  ApiState,
+  defaultApiState,
+} from 'state/api';
 
 // Makes a reducer for the given data type
 const apiReducer = <T>(
@@ -32,15 +38,16 @@ const apiReducer = <T>(
   }
 };
 
-interface ReturnVal<T> {
-  state: ApiState<T>;
-  request: (subConfig: AxiosRequestConfig) => void;
-}
-
 /**
  * Hook to get/post data from/to the server for the given resource/status
  */
-export default <T>(config: AxiosRequestConfig): ReturnVal<T> => {
+export default <T>(
+  config: AxiosRequestConfig,
+  { onRequest, onSuccess, onError }: ApiCallbacks<T> = {}
+): {
+  state: ApiState<T>;
+  request: (subConfig?: AxiosRequestConfig) => void;
+} => {
   const [state, dispatch] = useReducer<
     React.Reducer<ApiState<T>, ApiAction<T>>
   >(apiReducer, defaultApiState);
@@ -49,8 +56,11 @@ export default <T>(config: AxiosRequestConfig): ReturnVal<T> => {
   // effect triggers
 
   const request = useCallback(
-    (subConfig: AxiosRequestConfig) => {
+    (subConfig?: AxiosRequestConfig) => {
       dispatch({ type: ApiActionType.Request });
+      if (onRequest) {
+        onRequest();
+      }
       axios
         .request({ ...config, ...subConfig })
         .then(response => {
@@ -58,12 +68,18 @@ export default <T>(config: AxiosRequestConfig): ReturnVal<T> => {
             type: ApiActionType.Success,
             data: response.data,
           });
+          if (onSuccess) {
+            onSuccess(response.data);
+          }
         })
         .catch(error => {
           dispatch({
             type: ApiActionType.Error,
             error,
           });
+          if (onError) {
+            onError(error);
+          }
         });
     },
     [config, dispatch]

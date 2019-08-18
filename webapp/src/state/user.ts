@@ -7,31 +7,40 @@ export interface User {
 }
 
 export interface UserState {
+  loading: boolean;
   user?: User;
 }
 
 export const defaultUserState = {
-  user: undefined,
+  loading: false,
 };
 
 export enum UserActionType {
+  Loading,
   Login,
+  LoginError,
   Logout,
 }
 
 export type UserAction =
+  | { type: UserActionType.Loading }
   | { type: UserActionType.Login; user: User }
+  | { type: UserActionType.LoginError }
   | { type: UserActionType.Logout };
 
 export const userReducer: React.Reducer<UserState, UserAction> = (
-  state,
+  _state,
   action
 ) => {
   switch (action.type) {
+    case UserActionType.Loading:
+      return { loading: true };
     case UserActionType.Login:
-      return { ...state, user: action.user };
+      return { loading: false, user: action.user };
+    case UserActionType.LoginError:
+      return { loading: false };
     case UserActionType.Logout:
-      return { ...state, user: undefined };
+      return { loading: false, user: undefined };
   }
 };
 
