@@ -1,7 +1,7 @@
 import { createMuiTheme, CssBaseline, LinearProgress } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/styles';
 import useFetch from 'hooks/useFetch';
-import React, { useReducer } from 'react';
+import React, { useReducer, useCallback } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import {
   defaultUserState,
@@ -25,13 +25,22 @@ const App: React.FC = () => {
 
   // Kick off a request to fetch user data
   useFetch<User>('/api/current-user', {
-    onRequest: () => userDispatch({ type: UserActionType.Loading }),
-    onSuccess: data =>
-      userDispatch({
-        type: UserActionType.Login,
-        user: data,
-      }),
-    onError: () => userDispatch({ type: UserActionType.LoginError }),
+    onRequest: useCallback(
+      () => userDispatch({ type: UserActionType.Loading }),
+      []
+    ),
+    onSuccess: useCallback(
+      data =>
+        userDispatch({
+          type: UserActionType.Login,
+          user: data,
+        }),
+      []
+    ),
+    onError: useCallback(
+      () => userDispatch({ type: UserActionType.LoginError }),
+      []
+    ),
   });
 
   return (

@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import useSafeCallbacks from './useSafeCallbacks';
 
 export type Send = (data: unknown) => void;
 type EventConsumer<T = Event> = (event: T) => void;
 
-interface Callbacks {
+interface WebSocketCallbacks {
   onOpen?: EventConsumer;
   onMessage?: EventConsumer<{ [key: string]: unknown }>;
   onError?: EventConsumer;
@@ -20,9 +21,9 @@ export enum ConnectionStatus {
 /**
  * Hook for managing a websocket.
  */
-export default (
+const useWebSocket = (
   addr: string,
-  callbacks: Callbacks
+  callbacks: WebSocketCallbacks
 ): { status: ConnectionStatus; send: Send } => {
   const [status, setStatus] = useState<ConnectionStatus>(
     ConnectionStatus.Connecting
@@ -39,12 +40,9 @@ export default (
     }
   }, []);
 
-  // Safety check to make sure callbacks doesn't change
-  // Prevents unintended triggers on the useEffect hook
-  const callbacksRef = useRef<Callbacks>(callbacks);
-  if (callbacks !== callbacksRef.current) {
-    throw new Error('The callbacks object changed. You broke the rules!');
-  }
+  const { onOpen, onMessage, onError, onClose } = useSafeCallbacks<
+    WebSocketCallbacks
+  >(callbacks);
 
   useEffect(() => {
     const protocol = window.location.protocol === 'https' ? 'wss' : 'ws';
@@ -55,19 +53,19 @@ export default (
 
     wsRef.current.onopen = event => {
       setStatus(ConnectionStatus.Connected);
-      if (callbacks.onOpen) {
-        callbacks.onOpen(event);
+      if (onOpen) {
+        onOpen(event);
       }
     };
     ws.onmessage = event => {
-      if (callbacks.onMessage) {
-        callbacks.onMessage(JSON.parse(event.data));
+      if (onMessage) {
+        onMessage(JSON.parse(event.data));
       }
     };
     ws.onerror = event => {
       console.error('Socket error: ', event);
-      if (callbacks.onError) {
-        callbacks.onError(event);
+      if (onError) {
+        onError(event);
       }
     };
 
@@ -78,8 +76,8 @@ export default (
           ? ConnectionStatus.ClosedNormal
           : ConnectionStatus.ClosedError
       );
-      if (callbacks.onClose) {
-        callbacks.onClose(event);
+      if (onClose) {
+        onClose(event);
       }
     };
 
@@ -87,7 +85,9 @@ export default (
     return () => {
       ws.close();
     };
-  }, [addr, callbacks]);
+  }, [addr, onOpen, onMessage, onError, onClose]);
 
   return { status, send };
 };
+
+export default useWebSocket;

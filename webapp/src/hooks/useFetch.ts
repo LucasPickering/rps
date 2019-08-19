@@ -5,8 +5,10 @@ import useRequest from './useRequest';
 /**
  * Convenience method for calling useRequest with just a URL and method: GET.
  */
-export default <T>(url: string, callbacks?: ApiCallbacks<T>): ApiState<T> => {
+const useFetch = <T>(url: string, callbacks?: ApiCallbacks<T>): ApiState<T> => {
   const { state, request } = useRequest<T>({ url, method: 'GET' }, callbacks);
-  useEffect(() => request(), [url]);
+  useEffect(() => request(), [url, request]);
   return state;
 };
+
+export default useFetch;

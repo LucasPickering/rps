@@ -54,7 +54,10 @@ export const matchOutcomeSplasher: Splasher<MatchOutcome> = makeSplasher(
 /**
  * EXTREMELY important hook. Integral to the operation of the entire program.
  */
-export default <T extends Key>(splasher: Splasher<T>, key?: T): string => {
+const useSplashMessage = <T extends Key>(
+  splasher: Splasher<T>,
+  key?: T
+): string => {
   const user = useUser();
   const isAlt = Boolean(user && user.username.toLowerCase() === 'nick'); // lol
 
@@ -66,3 +69,5 @@ export default <T extends Key>(splasher: Splasher<T>, key?: T): string => {
   ]);
   return splash;
 };
+
+export default useSplashMessage;

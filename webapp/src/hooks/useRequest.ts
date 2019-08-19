@@ -7,6 +7,8 @@ import {
   ApiState,
   defaultApiState,
 } from 'state/api';
+import useSafeCallbacks from './useSafeCallbacks';
+import useDeepMemo from './useDeepMemo';
 
 // Makes a reducer for the given data type
 const apiReducer = <T>(
@@ -41,9 +43,9 @@ const apiReducer = <T>(
 /**
  * Hook to get/post data from/to the server for the given resource/status
  */
-export default <T>(
+const useRequest = <T>(
   config: AxiosRequestConfig,
-  { onRequest, onSuccess, onError }: ApiCallbacks<T> = {}
+  callbacks: ApiCallbacks<T> = {}
 ): {
   state: ApiState<T>;
   request: (subConfig?: AxiosRequestConfig) => void;
@@ -55,6 +57,11 @@ export default <T>(
   // Everything here is memoized to prevent unnecessary re-renders and
   // effect triggers
 
+  const configMemo = useDeepMemo(config);
+  const { onRequest, onSuccess, onError } = useSafeCallbacks<ApiCallbacks<T>>(
+    callbacks
+  );
+
   const request = useCallback(
     (subConfig?: AxiosRequestConfig) => {
       dispatch({ type: ApiActionType.Request });
@@ -62,7 +69,7 @@ export default <T>(
         onRequest();
       }
       axios
-        .request({ ...config, ...subConfig })
+        .request({ ...configMemo, ...subConfig })
         .then(response => {
           dispatch({
             type: ApiActionType.Success,
@@ -82,7 +89,7 @@ export default <T>(
           }
         });
     },
-    [config, dispatch]
+    [configMemo, dispatch, onRequest, onSuccess, onError]
   );
 
   return useMemo(
@@ -93,3 +100,5 @@ export default <T>(
     [state, request]
   );
 };
+
+export default useRequest;

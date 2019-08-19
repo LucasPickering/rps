@@ -1,7 +1,7 @@
 import camelcaseKeys from 'camelcase-keys';
 import withRouteParams from 'hoc/withRouteParams';
 import useWebSocket from 'hooks/useWebSocket';
-import React, { useMemo, useReducer } from 'react';
+import React, { useMemo, useReducer, useCallback } from 'react';
 import {
   LiveMatchActionType,
   LiveMatchContext,
@@ -25,24 +25,21 @@ const LiveMatchView: React.FC<Props> = ({ matchId }) => {
     `/ws/match/${matchId}`,
     // We need to memoize the callbacks to prevent hook triggers
     // Ugly solution but it works (sorry Seth!)
-    useMemo(
-      () => ({
-        onMessage: data => {
-          if (data.error) {
-            console.error('Socket error:', data); // TODO
-          } else {
-            // Let's just pray our data format agrees with the API
-            dispatch({
-              type: LiveMatchActionType.MatchUpdate,
-              state: (camelcaseKeys(data, {
-                deep: true,
-              }) as unknown) as LiveMatchState,
-            });
-          }
-        },
-      }),
-      []
-    )
+    {
+      onMessage: useCallback(data => {
+        if (data.error) {
+          console.error('Socket error:', data); // TODO
+        } else {
+          // Let's just pray our data format agrees with the API
+          dispatch({
+            type: LiveMatchActionType.MatchUpdate,
+            state: (camelcaseKeys(data, {
+              deep: true,
+            }) as unknown) as LiveMatchState,
+          });
+        }
+      }, []),
+    }
   );
 
   const contextValue = useMemo(
