@@ -42,25 +42,30 @@ class MatchConsumer(JsonWebsocketConsumer):
     def channel_group_name(self):
         return f"match_{self.match_id}"
 
-    def send_match_state(self, live_match, notify_group=True):
+    def trigger_client_update(self):
         """
-        Sends the current match state to the client.
+        Initiates an state update to all clients. This doesn't actuall send
+        the update messages - it just triggers a group message over the Channel
+        layer, which will cause an update in every consumer (including this one)
+        """
+        # Send the message to other consumers in the group
+        async_to_sync(self.channel_layer.group_send)(
+            self.channel_group_name, {"type": "match.update"}
+        )
+
+    def match_update(self, event):
+        """
+        Listener for match updates from other consumers on this match.
 
         Arguments:
-            live_match {LiveMatch} -- The current LiveMatch
-
-        Keyword Arguments:
-            notify_group {bool} -- If True, a message will be sent to the
-            channel group to tell all other consumers in the group to send and
-            update to their clients. (default: {True})
+            event {dict} -- The event received from the sender. Should contain
+            the current match state, which will be sent to the client.
         """
+        print(event)
+        # No need to lock for read-only operation
+        live_match = self.get_match(lock=False)
         state = live_match.get_state_for_player(self.player)
         self.send_json(LiveMatchStateSerializer(state).data)
-        if notify_group:
-            # Send the message to other consumers in the group
-            async_to_sync(self.channel_layer.group_send)(
-                self.channel_group_name, {"type": "match.update"}
-            )
 
     def handle_error(self, error):
         """
@@ -124,7 +129,7 @@ class MatchConsumer(JsonWebsocketConsumer):
                 self.channel_group_name, self.channel_name
             )
 
-        self.send_match_state(live_match)
+        self.trigger_client_update()
 
     def user_disconnect(self):
         # Leave the channel group
@@ -170,7 +175,7 @@ class MatchConsumer(JsonWebsocketConsumer):
                 f"Unknown message type: {msg_type}",
             )
 
-        self.send_match_state(live_match)
+        self.trigger_client_update()
 
     def connect(self):
         self.match_id = self.scope["url_route"]["kwargs"]["match_id"]
@@ -201,16 +206,3 @@ class MatchConsumer(JsonWebsocketConsumer):
             self.process_msg(msg)
         except ClientError as e:
             self.handle_error(e)
-
-    def match_update(self, event):
-        """
-        Listener for match updates from other consumers on this match.
-
-        Arguments:
-            event {dict} -- The event received from the sender. Should contain
-            the current match state, which will be sent to the client.
-        """
-        # No need to lock for read-only operation
-        live_match = self.get_match(lock=False)
-        # Notifying the group here would create an infinite loop
-        self.send_match_state(live_match, notify_group=False)
