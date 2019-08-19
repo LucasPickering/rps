@@ -9,7 +9,14 @@ type Splashes<T extends Key = string> = Record<T, string[]>;
 type Splasher<T = string> = (key: T, isAlt: boolean) => string;
 
 const welcomeSplashes: Splashes = {
-  '': ['Welcome!', 'Tere tulemast!', 'Wilkommen!', '欢迎'],
+  '': [
+    'Welcome!',
+    'Bienvenidos',
+    'Tere tulemast!',
+    'Wilkommen!',
+    'пожалуйста',
+    '欢迎',
+  ],
 };
 
 const connectionStatusSplashes: Splashes<ConnectionStatus> = {
@@ -28,6 +35,7 @@ const matchOutcomeSplashes: Splashes<MatchOutcome> = {
     'Damn, you just got dumpstered',
     'Embarrassing',
     'You are a disgrace to your family',
+    "You friggin'  moron, you just got porched",
   ],
 };
 

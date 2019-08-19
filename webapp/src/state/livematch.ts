@@ -15,7 +15,7 @@ export interface LiveMatchState {
     name: string;
     isConnected: boolean;
   };
-  isGameInProgress: boolean;
+  isReady: boolean;
   selectedMove?: Move; // undef if no move selected yet
   games: LiveGame[];
   matchOutcome?: MatchOutcome; // undef if match in progress
@@ -23,7 +23,7 @@ export interface LiveMatchState {
 
 export const defaultLiveMatchState: LiveMatchState = {
   bestOf: 0,
-  isGameInProgress: false,
+  isReady: false,
   games: [],
 };
 
@@ -50,14 +50,17 @@ export const liveMatchReducer: React.Reducer<
 };
 
 export enum ClientMessageType {
+  Ready = 'ready',
   Move = 'move',
 }
 
 // More types will be added here
-export interface ClientMessage {
-  type: ClientMessageType.Move;
-  move: Move;
-}
+export type ClientMessage =
+  | { type: ClientMessageType.Ready }
+  | {
+      type: ClientMessageType.Move;
+      move: Move;
+    };
 
 export interface LiveMatchContextType {
   connectionStatus: ConnectionStatus;

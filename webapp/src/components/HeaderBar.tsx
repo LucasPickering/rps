@@ -4,7 +4,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import routes from 'util/routes';
 import LogOutButton from './LogOutButton';
-import NewGameButton from './NewGameButton';
+import NewMatchButton from './NewMatchButton';
 
 const useLocalStyles = makeStyles(() => ({
   grow: {
@@ -19,7 +19,7 @@ const HeaderBar: React.FC = () => {
   return (
     <AppBar position="static">
       <Toolbar>
-        {user && <NewGameButton />}
+        {user && <NewMatchButton />}
         <div className={localClasses.grow} />
         {user ? (
           <LogOutButton />

@@ -4,7 +4,7 @@ import React from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import routes from 'util/routes';
 
-const NewGameButton: React.FC<RouteComponentProps> = ({ history }) => {
+const NewMatchButton: React.FC<RouteComponentProps> = ({ history }) => {
   return (
     <Button
       variant="contained"
@@ -17,9 +17,9 @@ const NewGameButton: React.FC<RouteComponentProps> = ({ history }) => {
           )
       }
     >
-      New Game
+      New Match
     </Button>
   );
 };
 
-export default withRouter(NewGameButton);
+export default withRouter(NewMatchButton);

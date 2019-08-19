@@ -6,6 +6,7 @@ class ClientErrorType(Enum):
     NOT_LOGGED_IN = "not_logged_in"
     GAME_FULL = "game_full"
     MALFORMED_MESSAGE = "malformed_message"
+    NOT_IN_MATCH = "not_in_game"
     INVALID_MOVE = "invalid_move"
 
 

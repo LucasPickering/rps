@@ -8,6 +8,7 @@ _CLIENT_MSG_SERIALIZERS = {}
 
 
 class ClientMessageType(Enum):
+    READY = "ready"
     MOVE = "move"
 
 
@@ -38,7 +39,7 @@ class LiveGameSummarySerializer(serializers.Serializer):
 class LiveMatchStateSerializer(serializers.Serializer):
     best_of = serializers.IntegerField()
     opponent = OpponentSerializer()
-    is_game_in_progress = serializers.BooleanField()
+    is_ready = serializers.BooleanField()
     selected_move = serializers.CharField()
     games = LiveGameSummarySerializer(many=True)
     match_outcome = serializers.CharField()
@@ -50,6 +51,11 @@ class ClientMessageSerializer(serializers.Serializer):
     def __init__(self, data={}, *args, **kwargs):
         data["type"] = self._TYPE
         super().__init__(data=data, *args, **kwargs)
+
+
+@register_msg(ClientMessageType.READY)
+class ClientMessageReadySerializer(ClientMessageSerializer):
+    pass
 
 
 @register_msg(ClientMessageType.MOVE)

@@ -23,13 +23,22 @@ class LivePlayerMatch(models.Model):
     """
 
     user = models.ForeignKey(User, on_delete=models.PROTECT)
+    is_ready = models.BooleanField(default=False)
     # There's potential for bugs here, if the server goes down while a user
     # is connected. Maybe we should just wipe the LiveMatch table on startup.
     connections = models.PositiveSmallIntegerField(default=0)
     move = models.CharField(choices=Move.choices(), max_length=20, blank=True)
 
+    def reset(self):
+        """
+        Reset's this player's state to for a new game. Does NOT reset connection
+        count.
+        """
+        self.is_ready = False
+        self.move = ""
+
     def __str__(self):
-        return f"user: {self.user}; connections: {self.connections}; move: {self.move}"
+        return f"user: {self.user}; ready: {self.is_ready}; move: {self.move}"
 
 
 class LiveMatch(models.Model):
@@ -81,10 +90,8 @@ class LiveMatch(models.Model):
         )
 
     @property
-    def is_match_in_progress(self):
-        return (
-            bool(self.player1 and self.player2) and not self.is_match_complete
-        )
+    def is_match_started(self):
+        return bool(self.player1 and self.player2)
 
     @property
     def is_match_complete(self):
@@ -101,8 +108,8 @@ class LiveMatch(models.Model):
             bool -- True if this is an orphan, False if not
         """
         return (
-            not self.is_match_in_progress
-            and not self.is_match_complete
+            # Unstarted matches that have no connected users
+            not self.is_match_started
             and (not self.player1 or self.player1.connections == 0)
             and (not self.player2 or self.player2.connections == 0)
         )
@@ -140,8 +147,7 @@ class LiveMatch(models.Model):
             }
             if opponent_obj
             else None,
-            # We may watch to augment this with server-side ready-up
-            "is_game_in_progress": self.is_match_in_progress,
+            "is_ready": self_obj.is_ready,
             "selected_move": self_obj.move,
             "games": [
                 game.get_game_summary_for_player(player_user)
@@ -206,6 +212,25 @@ class LiveMatch(models.Model):
             return True
         return False
 
+    def ready_up(self, player):
+        """
+        Sets the player's is_ready flag to True (and saves to the DB)
+
+        Arguments:
+            player {User} -- the player to ready up
+
+        Raises:
+            ClientError: If the player is not in this match
+        """
+        player_obj = self.get_player_obj(player)
+        if player_obj:
+            player_obj.is_ready = True
+            player_obj.save()
+        else:
+            raise ClientError(
+                ClientErrorType.NOT_IN_MATCH, "Player is not in match"
+            )
+
     def apply_move(self, player, move):
         """
         Applies the given move for the given player. If the move completes the
@@ -234,7 +259,7 @@ class LiveMatch(models.Model):
                 player_obj.save()
         else:
             raise ClientError(
-                ClientErrorType.INVALID_MOVE, "Player not in match"
+                ClientErrorType.NOT_IN_MATCH, "Player is not in match"
             )
 
         if self.is_game_complete:
@@ -262,9 +287,9 @@ class LiveMatch(models.Model):
         LivePlayerGame.from_player_match(self.player2, game).save()
 
         # Clear moves
-        self.player1.move = ""
+        self.player1.reset()
         self.player1.save()
-        self.player2.move = ""
+        self.player2.reset()
         self.player2.save()
 
         # Check if the match is over now

@@ -128,7 +128,6 @@ class MatchConsumer(JsonWebsocketConsumer):
 
     def user_disconnect(self):
         # Leave the channel group
-        print("Disconnecting player")
         async_to_sync(self.channel_layer.group_discard)(
             self.channel_group_name, self.channel_name
         )
@@ -147,7 +146,13 @@ class MatchConsumer(JsonWebsocketConsumer):
                     live_match.save()
 
     def process_msg(self, msg):
-        if msg["type"] == ClientMessageType.MOVE.value:
+        msg_type = msg["type"]
+        if msg_type == ClientMessageType.READY.value:
+            with transaction.atomic():
+                live_match = self.get_match()
+                live_match.ready_up(self.player)
+
+        elif msg_type == ClientMessageType.MOVE.value:
             move = msg["move"]
             if not Move.is_valid_move(move):
                 raise ClientError(
@@ -157,10 +162,15 @@ class MatchConsumer(JsonWebsocketConsumer):
             with transaction.atomic():
                 # If live_match doesn't exist, tenemos problemos
                 live_match = self.get_match()
-                live_match.apply_move(self.player, msg["move"])
+                live_match.apply_move(self.player, move)
                 live_match.save()
+        else:
+            raise ClientError(
+                ClientErrorType.MALFORMED_MESSAGE,
+                f"Unknown message type: {msg_type}",
+            )
 
-            self.send_match_state(live_match)
+        self.send_match_state(live_match)
 
     def connect(self):
         self.match_id = self.scope["url_route"]["kwargs"]["match_id"]

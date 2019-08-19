@@ -4,6 +4,7 @@ import {
   Theme,
   Typography,
   makeStyles,
+  Button,
 } from '@material-ui/core';
 import useSplashMessage, { matchOutcomeSplasher } from 'hooks/useSplashMessage';
 import MoveIcon from 'components/MoveIcon';
@@ -36,7 +37,7 @@ const useLocalStyles = makeStyles(({ typography }: Theme) => ({
 const Actions: React.FC = () => {
   const localClasses = useLocalStyles();
   const {
-    state: { isGameInProgress, opponent, selectedMove, matchOutcome, games },
+    state: { isReady, opponent, selectedMove, matchOutcome, games },
     sendMessage,
   } = useContext(LiveMatchContext);
   const matchOutcomeSplash = useSplashMessage(
@@ -44,9 +45,26 @@ const Actions: React.FC = () => {
     matchOutcome
   );
 
+  // Match is over
+  if (matchOutcome) {
+    return (
+      <>
+        <Typography className={localClasses.normalMessage}>
+          Match Over
+        </Typography>
+        <Typography className={localClasses.majorMessage}>
+          You {formatMatchOutcome(matchOutcome)}!
+        </Typography>
+        <Typography className={localClasses.minorMessage}>
+          {matchOutcomeSplash}
+        </Typography>
+      </>
+    );
+  }
+
   // Match is running
-  if (isGameInProgress) {
-    const lastGame = last(games);
+  const lastGame = last(games);
+  if (isReady) {
     return (
       <>
         {lastGame && (
@@ -75,25 +93,17 @@ const Actions: React.FC = () => {
     );
   }
 
-  // Match is over
-  if (matchOutcome) {
-    return (
-      <>
-        <Typography className={localClasses.normalMessage}>
-          Match Over
-        </Typography>
-        <Typography className={localClasses.majorMessage}>
-          You {formatMatchOutcome(matchOutcome)}!
-        </Typography>
-        <Typography className={localClasses.minorMessage}>
-          {matchOutcomeSplash}
-        </Typography>
-      </>
-    );
-  }
-
-  // Shouldn't ever get here (ecks dee)
-  return null;
+  return (
+    <Box>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => sendMessage({ type: ClientMessageType.Ready })}
+      >
+        Ready
+      </Button>
+    </Box>
+  );
 };
 
 const LiveMatch: React.FC = () => {
