@@ -3,11 +3,11 @@ import withRouteParams from 'hoc/withRouteParams';
 import useWebSocket from 'hooks/useWebSocket';
 import React, { useMemo, useReducer } from 'react';
 import {
-  defaultLiveMatchState,
   LiveMatchActionType,
   LiveMatchContext,
-  liveMatchReducer,
   LiveMatchState,
+  defaultLiveMatchState,
+  liveMatchReducer,
 } from 'state/livematch';
 import ConnectionIndicator from './ConnectionIndicator';
 import LiveMatch from './LiveMatch';

@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { makeHoc } from 'util/funcs';

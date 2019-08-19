@@ -1,12 +1,12 @@
 import {
   Box,
   LinearProgress,
-  makeStyles,
   Theme,
   Typography,
+  makeStyles,
 } from '@material-ui/core';
-import MoveIcon from 'components/MoveIcon';
 import useSplashMessage, { matchOutcomeSplasher } from 'hooks/useSplashMessage';
+import MoveIcon from 'components/MoveIcon';
 import { last } from 'lodash';
 import React, { useContext } from 'react';
 import { ClientMessageType, LiveMatchContext } from 'state/livematch';
@@ -60,7 +60,7 @@ const Actions: React.FC = () => {
               <MoveIcon move={selectedMove} />
             </Typography>
             <Typography className={localClasses.normalMessage}>
-              Waiting for {opponent!.name}...
+              Waiting for {opponent && opponent.name}...
             </Typography>
             <LinearProgress className={localClasses.loading} variant="query" />
           </>

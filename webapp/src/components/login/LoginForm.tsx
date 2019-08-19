@@ -1,5 +1,5 @@
 import { Box, Button, TextField } from '@material-ui/core';
-import axios from 'axios'; // tslint:disable-line match-default-export-name
+import axios from 'axios';
 import useUser from 'hooks/useUser';
 import React, { useContext, useState } from 'react';
 import { Redirect } from 'react-router';

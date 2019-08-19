@@ -1,7 +1,7 @@
 class RouteLocation<Params = {}> {
   public readonly templateRoute: string;
 
-  constructor(route: string) {
+  public constructor(route: string) {
     this.templateRoute = route;
   }
 

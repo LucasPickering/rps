@@ -10,10 +10,8 @@ const outcomeLabel = {
   [GameOutcome.Tie]: 'T',
 };
 
-interface Props {}
-
 // We have to leave the React.FC tag off to get default props to work
-const GameLog: React.FC<Props> = () => {
+const GameLog: React.FC = () => {
   const {
     state: { bestOf, games, matchOutcome },
   } = useContext(LiveMatchContext);

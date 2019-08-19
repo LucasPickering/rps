@@ -22,7 +22,10 @@ interface Props {
 }
 
 // We have to leave the React.FC tag off to get default props to work
-const PlayerScore = ({ className, isSelf }: Props) => {
+const PlayerScore: React.FC<Props> & { defaultProps: Partial<Props> } = ({
+  className,
+  isSelf,
+}) => {
   const localClasses = useLocalStyles();
   const {
     state: { games, opponent },

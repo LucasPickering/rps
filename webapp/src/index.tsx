@@ -1,4 +1,4 @@
-import axios from 'axios'; // tslint:disable-line match-default-export-name
+import axios from 'axios';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './components/App';

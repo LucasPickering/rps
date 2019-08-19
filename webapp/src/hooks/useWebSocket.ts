@@ -35,7 +35,6 @@ export default (
     if (ws) {
       ws.send(JSON.stringify(data));
     } else {
-      // tslint:disable-next-line no-console
       console.error('send called while websocket is closed');
     }
   }, []);
@@ -66,7 +65,6 @@ export default (
       }
     };
     ws.onerror = event => {
-      // tslint:disable-next-line no-console
       console.error('Socket error: ', event);
       if (callbacks.onError) {
         callbacks.onError(event);

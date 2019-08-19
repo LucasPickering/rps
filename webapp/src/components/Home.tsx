@@ -1,5 +1,5 @@
 import { Button } from '@material-ui/core';
-import axios from 'axios'; // tslint:disable-line: match-default-export-name
+import axios from 'axios';
 import React, { useState } from 'react';
 import { Redirect } from 'react-router';
 import routes from 'util/routes';

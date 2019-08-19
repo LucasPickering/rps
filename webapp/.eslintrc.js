@@ -1,0 +1,38 @@
+module.exports = {
+  env: {
+    browser: true,
+    es6: true,
+  },
+  parser: '@typescript-eslint/parser',
+  parserOptions: {
+    project: './tsconfig.json',
+  },
+  plugins: ['@typescript-eslint', 'react', 'prettier'],
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:react/recommended',
+    'prettier/@typescript-eslint',
+    'plugin:prettier/recommended',
+  ],
+  globals: {
+    Atomics: 'readonly',
+    SharedArrayBuffer: 'readonly',
+  },
+  settings: {
+    react: {
+      pragma: 'React',
+      version: 'detect',
+    },
+  },
+  rules: {
+    'no-console': 'warn',
+    'react/prop-types': 'off',
+    '@typescript-eslint/no-explicit-any': ['error', { fixToUnknown: true }],
+    '@typescript-eslint/explicit-function-return-type': [
+      'error',
+      { allowExpressions: true, allowTypedFunctionExpressions: true },
+    ],
+    '@typescript-eslint/no-object-literal-type-assertion': 'off',
+  },
+};

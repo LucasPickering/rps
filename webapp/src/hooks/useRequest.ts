@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from 'axios'; // tslint:disable-line:match-default-export-name
+import axios, { AxiosRequestConfig } from 'axios';
 import { useCallback, useMemo, useReducer } from 'react';
 import {
   ApiAction,
