@@ -2,8 +2,10 @@ import { Button } from '@material-ui/core';
 import axios from 'axios'; // tslint:disable-line match-default-export-name
 import React, { useContext } from 'react';
 import { UserActionType, UserDispatchContext } from 'state/user';
+import { RouteComponentProps, withRouter } from 'react-router';
+import routes from 'util/routes';
 
-const LogOutButton: React.FC = () => {
+const LogOutButton: React.FC<RouteComponentProps> = ({ history }) => {
   const userDispatch = useContext(UserDispatchContext);
   return (
     <Button
@@ -14,6 +16,7 @@ const LogOutButton: React.FC = () => {
           userDispatch({
             type: UserActionType.Logout,
           });
+          history.push(routes.home.build({}));
         });
       }}
     >
@@ -22,4 +25,4 @@ const LogOutButton: React.FC = () => {
   );
 };
 
-export default LogOutButton;
+export default withRouter(LogOutButton);

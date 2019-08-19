@@ -3,7 +3,7 @@ import useUser from 'hooks/useUser';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import routes from 'util/routes';
-import LogOutButton from './LogOutButton';
+import LogOutButton from './login/LogOutButton';
 import NewMatchButton from './NewMatchButton';
 
 const useLocalStyles = makeStyles(() => ({
