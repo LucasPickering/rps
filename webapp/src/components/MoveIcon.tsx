@@ -1,4 +1,4 @@
-import { Button } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import React from 'react';
 import { Move } from 'state/match';
 
@@ -10,11 +10,13 @@ const moveLabels = {
   [Move.Spock]: 'Spock',
 };
 
-interface Props extends React.ComponentProps<typeof Button> {
+interface Props {
   move: Move;
 }
 
 // TODO make this pretty
-const MoveIcon: React.FC<Props> = ({ move }) => <>{moveLabels[move]}</>;
+const MoveIcon: React.FC<Props> = ({ move }) => (
+  <Typography>{moveLabels[move]}</Typography>
+);
 
 export default MoveIcon;

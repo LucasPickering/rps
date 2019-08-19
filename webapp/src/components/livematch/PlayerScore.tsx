@@ -4,8 +4,9 @@ import React, { useContext } from 'react';
 import { LiveMatchContext } from 'state/livematch';
 import { GameOutcome } from 'state/match';
 import { countGameOutcomes } from 'util/funcs';
+import { Check as CheckIcon } from '@material-ui/icons';
 
-const useLocalStyles = makeStyles(() => ({
+const useLocalStyles = makeStyles(({ spacing }) => ({
   root: {
     // Use a fixed width here so that the game log will be exactly centered
     width: 120,
@@ -13,6 +14,9 @@ const useLocalStyles = makeStyles(() => ({
   rtl: {
     // Need this so we overflow to the left
     direction: 'rtl',
+  },
+  statusIcon: {
+    margin: `0 ${spacing(0.5)}px`,
   },
 }));
 
@@ -36,20 +40,22 @@ const PlayerScore: React.FC<Props> & { defaultProps: Partial<Props> } = ({
     isSelf ? GameOutcome.Win : GameOutcome.Loss
   );
   const name = isSelf ? 'You' : opponent ? opponent.name : 'No Opponent';
+  const showReadyIcon = !isSelf && opponent && opponent.isReady;
 
   return (
-    <Box
+    <div
       className={classNames(localClasses.root, className, {
         [localClasses.rtl]: !isSelf,
       })}
-      display="flex"
-      flexDirection="column"
     >
-      <Typography variant="h5" noWrap>
-        {name}
-      </Typography>
+      <Box display="flex" flexDirection="row" alignItems="center">
+        <Typography variant="h5" noWrap>
+          {name}
+        </Typography>
+        {showReadyIcon && <CheckIcon className={localClasses.statusIcon} />}
+      </Box>
       <Typography variant="h4">{num}</Typography>
-    </Box>
+    </div>
   );
 };
 

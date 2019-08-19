@@ -5,16 +5,21 @@ import {
   Typography,
   makeStyles,
   Button,
+  CircularProgress,
 } from '@material-ui/core';
 import useSplashMessage, { matchOutcomeSplasher } from 'hooks/useSplashMessage';
-import MoveIcon from 'components/MoveIcon';
 import { last } from 'lodash';
 import React, { useContext } from 'react';
 import { ClientMessageType, LiveMatchContext } from 'state/livematch';
-import { formatGameOutcome, formatMatchOutcome } from 'util/format';
+import {
+  formatGameOutcome,
+  formatMatchOutcome,
+  OutcomeFormat,
+} from 'util/format';
 import GameLog from './GameLog';
 import MoveButtons from './MoveButtons';
 import PlayerScore from './PlayerScore';
+import MoveIcon from 'components/MoveIcon';
 
 const useLocalStyles = makeStyles(({ typography }: Theme) => ({
   majorMessage: {
@@ -53,7 +58,7 @@ const Actions: React.FC = () => {
           Match Over
         </Typography>
         <Typography className={localClasses.majorMessage}>
-          You {formatMatchOutcome(matchOutcome)}!
+          You {formatMatchOutcome(matchOutcome, OutcomeFormat.PastTense)}!
         </Typography>
         <Typography className={localClasses.minorMessage}>
           {matchOutcomeSplash}
@@ -63,38 +68,52 @@ const Actions: React.FC = () => {
   }
 
   // Match is running
-  const lastGame = last(games);
   if (isReady) {
-    return (
+    // Player is ready, show moves
+    return selectedMove ? (
       <>
-        {lastGame && (
-          <Typography className={localClasses.minorMessage}>
-            Last Game: You {formatGameOutcome(lastGame.outcome)}
-          </Typography>
-        )}
-        {selectedMove ? (
-          <>
-            <Typography className={localClasses.normalMessage}>
-              <MoveIcon move={selectedMove} />
-            </Typography>
-            <Typography className={localClasses.normalMessage}>
+        <Box
+          width="60%"
+          display="flex"
+          flexDirection="row"
+          justifyContent="space-between"
+        >
+          <MoveIcon move={selectedMove} />
+          <Box display="flex" flexDirection="column" alignItems="center">
+            <Typography className={localClasses.minorMessage}>
               Waiting for {opponent && opponent.name}...
             </Typography>
-            <LinearProgress className={localClasses.loading} variant="query" />
-          </>
-        ) : (
-          <MoveButtons
-            onClick={move => {
-              sendMessage({ type: ClientMessageType.Move, move });
-            }}
-          />
-        )}
+            <CircularProgress size={20} />
+          </Box>
+        </Box>
       </>
+    ) : (
+      <MoveButtons
+        onClick={move => {
+          sendMessage({ type: ClientMessageType.Move, move });
+        }}
+      />
     );
   }
 
+  // Not ready yet, show a ready button
+  const lastGame = last(games);
   return (
-    <Box>
+    <>
+      {lastGame && (
+        <Box
+          width="60%"
+          display="flex"
+          flexDirection="row"
+          justifyContent="space-between"
+        >
+          <MoveIcon move={lastGame.selfMove} />
+          <Typography className={localClasses.normalMessage}>
+            {formatGameOutcome(lastGame.outcome)}
+          </Typography>
+          <MoveIcon move={lastGame.opponentMove} />
+        </Box>
+      )}
       <Button
         variant="contained"
         color="primary"
@@ -102,7 +121,7 @@ const Actions: React.FC = () => {
       >
         Ready
       </Button>
-    </Box>
+    </>
   );
 };
 

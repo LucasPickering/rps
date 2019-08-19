@@ -1,14 +1,18 @@
 import { GameOutcome, MatchOutcome } from 'state/match';
+import { capitalize } from 'lodash';
 
 export enum OutcomeFormat {
+  Noun,
   PastTense,
 }
 
 export const formatGameOutcome = (
   outcome: GameOutcome,
-  format: OutcomeFormat = OutcomeFormat.PastTense
+  format: OutcomeFormat = OutcomeFormat.Noun
 ): string => {
   switch (format) {
+    case OutcomeFormat.Noun:
+      return capitalize(outcome);
     case OutcomeFormat.PastTense:
       return {
         [GameOutcome.Win]: 'won',
@@ -20,9 +24,11 @@ export const formatGameOutcome = (
 
 export const formatMatchOutcome = (
   outcome: MatchOutcome,
-  format: OutcomeFormat = OutcomeFormat.PastTense
+  format: OutcomeFormat = OutcomeFormat.Noun
 ): string => {
   switch (format) {
+    case OutcomeFormat.Noun:
+      return capitalize(outcome);
     case OutcomeFormat.PastTense:
       return {
         [MatchOutcome.Win]: 'won',

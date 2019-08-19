@@ -28,6 +28,7 @@ class ErrorSerializer(serializers.Serializer):
 class OpponentSerializer(serializers.Serializer):
     name = serializers.CharField()
     is_connected = serializers.BooleanField()
+    is_ready = serializers.BooleanField()
 
 
 class LiveGameSummarySerializer(serializers.Serializer):

@@ -144,6 +144,7 @@ class LiveMatch(models.Model):
             "opponent": {
                 "name": opponent_obj.user.username,
                 "is_connected": opponent_obj.connections > 0,
+                "is_ready": opponent_obj.is_ready,
             }
             if opponent_obj
             else None,

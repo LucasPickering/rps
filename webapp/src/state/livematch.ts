@@ -14,6 +14,7 @@ export interface LiveMatchState {
   opponent?: {
     name: string;
     isConnected: boolean;
+    isReady: boolean;
   };
   isReady: boolean;
   selectedMove?: Move; // undef if no move selected yet
