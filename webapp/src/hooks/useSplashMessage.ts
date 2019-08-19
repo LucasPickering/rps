@@ -5,8 +5,12 @@ import { MatchOutcome } from 'state/match';
 import useUser from './useUser';
 
 type Key = string | number | symbol;
-type Splashes<T extends Key> = Record<T, string[]>;
-type Splasher<T> = (key: T, isAlt: boolean) => string;
+type Splashes<T extends Key = string> = Record<T, string[]>;
+type Splasher<T = string> = (key: T, isAlt: boolean) => string;
+
+const welcomeSplashes: Splashes = {
+  '': ['Welcome!', 'Tere tulemast!', 'Wilkommen!', '欢迎'],
+};
 
 const connectionStatusSplashes: Splashes<ConnectionStatus> = {
   [ConnectionStatus.Connecting]: [`Oooooh, he's trying!`],
@@ -37,6 +41,8 @@ const makeSplasher = <T extends Key>(
   };
 };
 
+export const welcomeSplasher: Splasher = makeSplasher(welcomeSplashes);
+
 export const connectionStatusSplasher: Splasher<
   ConnectionStatus
 > = makeSplasher(connectionStatusSplashes);
@@ -48,12 +54,12 @@ export const matchOutcomeSplasher: Splasher<MatchOutcome> = makeSplasher(
 /**
  * EXTREMELY important hook. Integral to the operation of the entire program.
  */
-export default <T>(splasher: Splasher<T>, key?: T): string => {
+export default <T extends Key>(splasher: Splasher<T>, key?: T): string => {
   const user = useUser();
   const isAlt = Boolean(user && user.username.toLowerCase() === 'nick'); // lol
 
   const [splash, setSplash] = useState('');
-  useEffect(() => setSplash(key ? splasher(key, isAlt) : ''), [
+  useEffect(() => setSplash(key !== undefined ? splasher(key, isAlt) : ''), [
     splasher,
     key,
     isAlt,

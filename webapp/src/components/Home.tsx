@@ -1,32 +1,24 @@
-import { Button } from '@material-ui/core';
-import axios from 'axios';
-import React, { useState } from 'react';
-import { Redirect } from 'react-router';
-import routes from 'util/routes';
+import React from 'react';
+import { Typography, makeStyles } from '@material-ui/core';
+import useSplashMessage, { welcomeSplasher } from 'hooks/useSplashMessage';
+
+const useLocalStyles = makeStyles(() => ({
+  root: {
+    textAlign: 'center',
+  },
+}));
 
 interface Props {
   matchId: string;
 }
 
 const Home: React.FC<Props> = () => {
-  const [matchId, setMatchId] = useState<string | undefined>(undefined);
-  if (matchId) {
-    return <Redirect to={routes.match.build({ matchId })} push />;
-  }
-
+  const localClasses = useLocalStyles();
+  const welcome = useSplashMessage(welcomeSplasher, '');
   return (
-    <div>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() =>
-          axios
-            .get('/api/matches/new')
-            .then(resp => setMatchId(resp.data.match_id))
-        }
-      >
-        New Game
-      </Button>
+    <div className={localClasses.root}>
+      <Typography variant="h3">Rock Paper Scissors (Lizard Spock)</Typography>
+      <Typography variant="h5">{welcome}</Typography>
     </div>
   );
 };
