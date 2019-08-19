@@ -8,7 +8,7 @@ export interface LiveGame {
   outcome: GameOutcome;
 }
 
-export interface LiveMatchState {
+export interface LiveMatchStateData {
   bestOf: number;
   // undef if waiting on opponent
   opponent?: {
@@ -22,20 +22,30 @@ export interface LiveMatchState {
   matchOutcome?: MatchOutcome; // undef if match in progress
 }
 
-export const defaultLiveMatchState: LiveMatchState = {
-  bestOf: 0,
-  isReady: false,
-  games: [],
-};
+export interface LiveMatchError {
+  type: string;
+  detail: string;
+}
+
+export interface LiveMatchState {
+  data?: LiveMatchStateData;
+  error?: LiveMatchError;
+}
 
 export enum LiveMatchActionType {
   MatchUpdate,
+  Error,
 }
 
-export interface LiveMatchAction {
-  type: LiveMatchActionType;
-  state: LiveMatchState;
-}
+export type LiveMatchAction =
+  | {
+      type: LiveMatchActionType.MatchUpdate;
+      data: LiveMatchStateData;
+    }
+  | {
+      type: LiveMatchActionType.Error;
+      error: LiveMatchError;
+    };
 
 // This reducer should only ever be triggered by a server message
 export const liveMatchReducer: React.Reducer<
@@ -44,7 +54,7 @@ export const liveMatchReducer: React.Reducer<
 > = (state, action) => {
   switch (action.type) {
     case LiveMatchActionType.MatchUpdate:
-      return action.state;
+      return { ...state, data: action.data };
     default:
       return state;
   }

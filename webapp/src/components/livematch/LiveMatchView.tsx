@@ -5,9 +5,9 @@ import React, { useMemo, useReducer, useCallback } from 'react';
 import {
   LiveMatchActionType,
   LiveMatchContext,
-  LiveMatchState,
-  defaultLiveMatchState,
   liveMatchReducer,
+  LiveMatchStateData,
+  LiveMatchError,
 } from 'state/livematch';
 import ConnectionIndicator from './ConnectionIndicator';
 import LiveMatch from './LiveMatch';
@@ -20,7 +20,7 @@ interface Props {
  * Data handler for the match screen.
  */
 const LiveMatchView: React.FC<Props> = ({ matchId }) => {
-  const [state, dispatch] = useReducer(liveMatchReducer, defaultLiveMatchState);
+  const [state, dispatch] = useReducer(liveMatchReducer, {});
   const { status, send } = useWebSocket(
     `/ws/match/${matchId}`,
     // We need to memoize the callbacks to prevent hook triggers
@@ -28,14 +28,17 @@ const LiveMatchView: React.FC<Props> = ({ matchId }) => {
     {
       onMessage: useCallback(data => {
         if (data.error) {
-          console.error('Socket error:', data); // TODO
+          dispatch({
+            type: LiveMatchActionType.Error,
+            error: (data as unknown) as LiveMatchError,
+          });
         } else {
           // Let's just pray our data format agrees with the API
           dispatch({
             type: LiveMatchActionType.MatchUpdate,
-            state: (camelcaseKeys(data, {
+            data: (camelcaseKeys(data, {
               deep: true,
-            }) as unknown) as LiveMatchState,
+            }) as unknown) as LiveMatchStateData,
           });
         }
       }, []),
