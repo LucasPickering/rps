@@ -72,12 +72,6 @@ class LiveMatch(models.Model):
         super().save(*args, **kwargs)
 
     @property
-    def is_game_in_progress(self):
-        return (
-            bool(self.player1 and self.player2) and not self.is_match_complete
-        )
-
-    @property
     def is_game_complete(self):
         return bool(
             self.player1
@@ -87,9 +81,31 @@ class LiveMatch(models.Model):
         )
 
     @property
+    def is_match_in_progress(self):
+        return (
+            bool(self.player1 and self.player2) and not self.is_match_complete
+        )
+
+    @property
     def is_match_complete(self):
         # Check the FK directly to avoid a query
         return self.permanent_match_id is not None
+
+    @property
+    def is_orphaned(self):
+        """
+        Is this match an orphan? . An orphan has been abandoned by its
+        ~parents~ players and there is no longer any value is holding onto it.
+
+        Returns:
+            bool -- True if this is an orphan, False if not
+        """
+        return (
+            not self.is_match_in_progress
+            and not self.is_match_complete
+            and (not self.player1 or self.player1.connections == 0)
+            and (not self.player2 or self.player2.connections == 0)
+        )
 
     def get_self_and_opponent_objs(self, player_user):
         if self.player1 and player_user == self.player1.user:
@@ -124,7 +140,8 @@ class LiveMatch(models.Model):
             }
             if opponent_obj
             else None,
-            "is_game_in_progress": self.is_game_in_progress,
+            # We may watch to augment this with server-side ready-up
+            "is_game_in_progress": self.is_match_in_progress,
             "selected_move": self_obj.move,
             "games": [
                 game.get_game_summary_for_player(player_user)
@@ -179,7 +196,7 @@ class LiveMatch(models.Model):
             player {User} -- The player (user) to disconnect
 
         Returns:
-            bool -- True if the player was disonnect, False if they aren't in
+            bool -- True if the player was disconnected, False if they aren't in
             the game
         """
         player_obj = self.get_player_obj(player)

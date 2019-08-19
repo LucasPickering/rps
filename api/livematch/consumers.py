@@ -128,6 +128,7 @@ class MatchConsumer(JsonWebsocketConsumer):
 
     def user_disconnect(self):
         # Leave the channel group
+        print("Disconnecting player")
         async_to_sync(self.channel_layer.group_discard)(
             self.channel_group_name, self.channel_name
         )
@@ -140,7 +141,10 @@ class MatchConsumer(JsonWebsocketConsumer):
                 return
 
             if live_match.disconnect_player(self.player):
-                live_match.save()
+                if live_match.is_orphaned:
+                    live_match.delete()
+                else:
+                    live_match.save()
 
     def process_msg(self, msg):
         if msg["type"] == ClientMessageType.MOVE.value:
@@ -177,7 +181,7 @@ class MatchConsumer(JsonWebsocketConsumer):
             f"Player {self.player} disconnecting from match {self.match_id}"
         )
         try:
-            self.player_disconnect()
+            self.user_disconnect()
         except ClientError as e:
             self.handle_error(e)
 

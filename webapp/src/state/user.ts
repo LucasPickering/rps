@@ -12,7 +12,7 @@ export interface UserState {
 }
 
 export const defaultUserState = {
-  loading: false,
+  loading: true,
 };
 
 export enum UserActionType {

@@ -48,7 +48,7 @@ const LiveMatchView: React.FC<Props> = ({ matchId }) => {
   const contextValue = useMemo(
     () => ({
       connectionStatus: status,
-      sendMessage: send, // TODO camel=>snake here
+      sendMessage: send,
       state,
     }),
     [send, state, status]
