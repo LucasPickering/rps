@@ -45,7 +45,7 @@ const useWebSocket = (
   >(callbacks);
 
   useEffect(() => {
-    const protocol = window.location.protocol === 'https' ? 'wss' : 'ws';
+    const protocol = window.location.protocol === 'http:' ? 'ws' : 'wss';
     wsRef.current = new WebSocket(
       `${protocol}://${window.location.host}${addr}`
     );
