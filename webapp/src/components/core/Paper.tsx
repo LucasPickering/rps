@@ -1,8 +1,8 @@
-import { makeStyles, Paper as MuiPaper, Theme } from '@material-ui/core';
+import { makeStyles, Paper as MuiPaper } from '@material-ui/core';
 import classNames from 'classnames';
 import React from 'react';
 
-const useLocalStyles = makeStyles(({ spacing }: Theme) => ({
+const useLocalStyles = makeStyles(({ spacing }) => ({
   root: {
     padding: spacing(2),
   },

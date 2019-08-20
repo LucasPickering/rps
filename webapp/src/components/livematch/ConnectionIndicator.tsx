@@ -1,10 +1,4 @@
-import {
-  Chip,
-  CircularProgress,
-  makeStyles,
-  Popover,
-  Theme,
-} from '@material-ui/core';
+import { Chip, CircularProgress, makeStyles, Popover } from '@material-ui/core';
 import {
   Cancel as CancelIcon,
   CheckCircle as CheckCircleIcon,
@@ -24,7 +18,7 @@ const statusLabels = {
   [ConnectionStatus.ClosedError]: 'Error',
 };
 
-const useLocalStyles = makeStyles(({ palette, spacing }: Theme) => ({
+const useLocalStyles = makeStyles(({ palette, spacing }) => ({
   root: {
     position: 'absolute',
     bottom: spacing(2),

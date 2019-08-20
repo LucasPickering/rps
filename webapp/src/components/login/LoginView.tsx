@@ -1,5 +1,5 @@
 import { makeStyles } from '@material-ui/core';
-import Paper from 'components/mui/Paper';
+import Paper from 'components/core/Paper';
 import React from 'react';
 import LoginForm from './LoginForm';
 

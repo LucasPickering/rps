@@ -1,7 +1,5 @@
 import {
-  Box,
   LinearProgress,
-  Theme,
   Typography,
   makeStyles,
   Button,
@@ -25,8 +23,9 @@ import MoveButtons from './MoveButtons';
 import PlayerScore from './PlayerScore';
 import MoveIcon from 'components/MoveIcon';
 import LiveMatchErrorDisplay from './LiveMatchErrorDisplay';
+import FlexBox from 'components/core/FlexBox';
 
-const useLocalStyles = makeStyles(({ typography }: Theme) => ({
+const useLocalStyles = makeStyles(({ typography }) => ({
   majorMessage: {
     ...typography.h3,
   },
@@ -76,20 +75,15 @@ const Actions: React.FC<{ match: LiveMatchData }> = ({
     // Player is ready, show moves
     return selectedMove ? (
       <>
-        <Box
-          width="60%"
-          display="flex"
-          flexDirection="row"
-          justifyContent="space-between"
-        >
+        <FlexBox width="60%" flexDirection="row" justifyContent="space-between">
           <MoveIcon move={selectedMove} />
-          <Box display="flex" flexDirection="column" alignItems="center">
+          <FlexBox flexDirection="column">
             <Typography className={localClasses.minorMessage}>
               Waiting for {opponent && opponent.name}...
             </Typography>
             <CircularProgress size={20} />
-          </Box>
-        </Box>
+          </FlexBox>
+        </FlexBox>
       </>
     ) : (
       <MoveButtons
@@ -105,18 +99,13 @@ const Actions: React.FC<{ match: LiveMatchData }> = ({
   return (
     <>
       {lastGame && (
-        <Box
-          width="60%"
-          display="flex"
-          flexDirection="row"
-          justifyContent="space-between"
-        >
+        <FlexBox width="60%" flexDirection="row" justifyContent="space-between">
           <MoveIcon move={lastGame.selfMove} />
           <Typography className={localClasses.normalMessage}>
             {formatGameOutcome(lastGame.outcome)}
           </Typography>
           <MoveIcon move={lastGame.opponentMove} />
-        </Box>
+        </FlexBox>
       )}
       <Button
         variant="contained"
@@ -143,12 +132,11 @@ const LiveMatch: React.FC = () => {
 
   return (
     <>
-      <Box display="flex" flexDirection="column" alignItems="center">
+      <FlexBox flexDirection="column">
         {opponent ? (
           // Match is running
           <>
-            <Box
-              display="flex"
+            <FlexBox
               flexDirection="row"
               justifyContent="space-between"
               width="100%"
@@ -156,7 +144,7 @@ const LiveMatch: React.FC = () => {
               <PlayerScore isSelf />
               <GameLog />
               <PlayerScore />
-            </Box>
+            </FlexBox>
             <Actions match={data} />
           </>
         ) : (
@@ -168,7 +156,7 @@ const LiveMatch: React.FC = () => {
             <LinearProgress className={localClasses.loading} />
           </>
         )}
-      </Box>
+      </FlexBox>
       <LiveMatchErrorDisplay errors={errors} />
     </>
   );

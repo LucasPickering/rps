@@ -18,7 +18,7 @@ const useLocalStyles = makeStyles(({ spacing }: Theme) => ({
 const PageRouteContainer: React.FC = () => {
   const localClasses = useLocalStyles();
   return (
-    <Container className={localClasses.root} maxWidth={false}>
+    <Container className={localClasses.root}>
       <Route path={routes.home.templateRoute} component={Home} exact />
       <Route path={routes.login.templateRoute} component={LoginView} exact />
       <Route

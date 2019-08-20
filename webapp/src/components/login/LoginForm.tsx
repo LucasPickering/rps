@@ -1,10 +1,4 @@
-import {
-  Box,
-  Button,
-  TextField,
-  makeStyles,
-  Typography,
-} from '@material-ui/core';
+import { Button, TextField, makeStyles, Typography } from '@material-ui/core';
 import axios from 'axios';
 import useUser from 'hooks/useUser';
 import React, { useContext, useState } from 'react';
@@ -12,6 +6,7 @@ import { Redirect, RouteComponentProps, withRouter } from 'react-router';
 import { UserActionType, UserDispatchContext } from 'state/user';
 import routes from 'util/routes';
 import queryString from 'query-string';
+import FlexBox from 'components/core/FlexBox';
 
 const useLocalStyles = makeStyles(({ spacing, palette }) => ({
   logInButton: {
@@ -60,7 +55,7 @@ const LoginForm: React.FC<RouteComponentProps> = ({ location }) => {
         event.preventDefault(); // Don't reload the page
       }}
     >
-      <Box display="flex" flexDirection="column">
+      <FlexBox flexDirection="column">
         <TextField
           id="username"
           label="Username"
@@ -94,7 +89,7 @@ const LoginForm: React.FC<RouteComponentProps> = ({ location }) => {
               : "Unknown error. Looks like you're really up shit creek."}
           </Typography>
         )}
-      </Box>
+      </FlexBox>
     </form>
   );
 };

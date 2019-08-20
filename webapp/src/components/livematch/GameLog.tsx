@@ -1,8 +1,9 @@
-import { Box, Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import React, { useContext } from 'react';
 import { LiveMatchContext } from 'state/livematch';
 import { GameOutcome } from 'state/match';
 import { countGameOutcomes } from 'util/funcs';
+import FlexBox from 'components/core/FlexBox';
 
 const outcomeLabel = {
   [GameOutcome.Win]: 'W',
@@ -26,15 +27,10 @@ const GameLog: React.FC = () => {
     .join(' ');
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      justifyContent="start"
-      textAlign="center"
-    >
+    <FlexBox flexDirection="column" justifyContent="start">
       <Typography variant="h5">Best of {bestOf}</Typography>
       <Typography variant="body1">{gameLogStr}</Typography>
-    </Box>
+    </FlexBox>
   );
 };
 

@@ -1,10 +1,11 @@
-import { Box, makeStyles, Typography } from '@material-ui/core';
+import { makeStyles, Typography } from '@material-ui/core';
 import classNames from 'classnames';
 import React, { useContext } from 'react';
 import { LiveMatchContext } from 'state/livematch';
 import { GameOutcome } from 'state/match';
 import { countGameOutcomes } from 'util/funcs';
 import { Check as CheckIcon } from '@material-ui/icons';
+import FlexBox from 'components/core/FlexBox';
 
 const useLocalStyles = makeStyles(({ spacing }) => ({
   root: {
@@ -50,12 +51,12 @@ const PlayerScore: React.FC<Props> & { defaultProps: Partial<Props> } = ({
         [localClasses.rtl]: !isSelf,
       })}
     >
-      <Box display="flex" flexDirection="row" alignItems="center">
+      <FlexBox flexDirection="row">
         <Typography variant="h5" noWrap>
           {name}
         </Typography>
         {showReadyIcon && <CheckIcon className={localClasses.statusIcon} />}
-      </Box>
+      </FlexBox>
       <Typography variant="h4">{num}</Typography>
     </div>
   );

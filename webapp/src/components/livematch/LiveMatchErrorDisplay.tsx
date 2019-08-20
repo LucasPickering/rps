@@ -1,7 +1,8 @@
 import React from 'react';
 import { LiveMatchError } from 'state/livematch';
-import { Snackbar, SnackbarContent, makeStyles, Box } from '@material-ui/core';
+import { Snackbar, SnackbarContent, makeStyles } from '@material-ui/core';
 import { Error as IconError } from '@material-ui/icons';
+import FlexBox from 'components/core/FlexBox';
 
 const useLocalStyles = makeStyles(({ spacing, palette }) => ({
   snackbarContent: {
@@ -27,10 +28,10 @@ const LiveMatchErrorDisplay: React.FC<{ errors: LiveMatchError[] }> = ({
           <SnackbarContent
             className={localClasses.snackbarContent}
             message={
-              <Box display="flex" flexDirection="row" alignItems="center">
+              <FlexBox flexDirection="row">
                 <IconError className={localClasses.icon} />
                 {error.error}: {error.detail}
-              </Box>
+              </FlexBox>
             }
           />
         </Snackbar>
