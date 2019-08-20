@@ -11,7 +11,7 @@ type Splasher<T = string> = (key: T, isAlt: boolean) => string;
 const welcomeSplashes: Splashes = {
   '': [
     'Welcome!',
-    'Bienvenidos',
+    'Bienvenidos!',
     'Tere tulemast!',
     'Wilkommen!',
     'пожалуйста',

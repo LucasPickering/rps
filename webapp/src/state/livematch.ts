@@ -8,7 +8,7 @@ export interface LiveGame {
   outcome: GameOutcome;
 }
 
-export interface LiveMatchStateData {
+export interface LiveMatchData {
   bestOf: number;
   // undef if waiting on opponent
   opponent?: {
@@ -22,15 +22,32 @@ export interface LiveMatchStateData {
   matchOutcome?: MatchOutcome; // undef if match in progress
 }
 
+export enum LiveMatchErrorType {
+  InvalidMatchId = 'invalid_match_id',
+  NotLoggedIn = 'not_logged_in',
+  GameFull = 'game_full',
+  MalformedMessage = 'malformed_message',
+  NotInMatch = 'not_in_match',
+  InvalidMove = 'invalid_move',
+}
+
 export interface LiveMatchError {
-  type: string;
+  type: LiveMatchErrorType;
   detail: string;
 }
 
 export interface LiveMatchState {
-  data?: LiveMatchStateData;
+  data: LiveMatchData;
   error?: LiveMatchError;
 }
+
+export const defaultLiveMatchState = {
+  data: {
+    bestOf: 0,
+    isReady: false,
+    games: [],
+  },
+};
 
 export enum LiveMatchActionType {
   MatchUpdate,
@@ -40,7 +57,7 @@ export enum LiveMatchActionType {
 export type LiveMatchAction =
   | {
       type: LiveMatchActionType.MatchUpdate;
-      data: LiveMatchStateData;
+      data: LiveMatchData;
     }
   | {
       type: LiveMatchActionType.Error;

@@ -61,7 +61,6 @@ class MatchConsumer(JsonWebsocketConsumer):
             event {dict} -- The event received from the sender. Should contain
             the current match state, which will be sent to the client.
         """
-        print(event)
         # No need to lock for read-only operation
         live_match = self.get_match(lock=False)
         state = live_match.get_state_for_player(self.player)

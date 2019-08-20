@@ -32,7 +32,9 @@ const PlayerScore: React.FC<Props> & { defaultProps: Partial<Props> } = ({
 }) => {
   const localClasses = useLocalStyles();
   const {
-    state: { games, opponent },
+    state: {
+      data: { games, opponent },
+    },
   } = useContext(LiveMatchContext);
 
   const num = countGameOutcomes(

@@ -1,16 +1,18 @@
 import camelcaseKeys from 'camelcase-keys';
 import withRouteParams from 'hoc/withRouteParams';
-import useWebSocket from 'hooks/useWebSocket';
-import React, { useMemo, useReducer, useCallback } from 'react';
+import useWebSocket, { ConnectionStatus } from 'hooks/useWebSocket';
+import React, { useReducer, useCallback } from 'react';
 import {
   LiveMatchActionType,
   LiveMatchContext,
   liveMatchReducer,
-  LiveMatchStateData,
+  LiveMatchData,
   LiveMatchError,
+  defaultLiveMatchState,
 } from 'state/livematch';
 import ConnectionIndicator from './ConnectionIndicator';
 import LiveMatch from './LiveMatch';
+import { Typography, LinearProgress } from '@material-ui/core';
 
 interface Props {
   matchId: string;
@@ -20,7 +22,7 @@ interface Props {
  * Data handler for the match screen.
  */
 const LiveMatchView: React.FC<Props> = ({ matchId }) => {
-  const [state, dispatch] = useReducer(liveMatchReducer, {});
+  const [state, dispatch] = useReducer(liveMatchReducer, defaultLiveMatchState);
   const { status, send } = useWebSocket(
     `/ws/match/${matchId}`,
     // We need to memoize the callbacks to prevent hook triggers
@@ -38,24 +40,30 @@ const LiveMatchView: React.FC<Props> = ({ matchId }) => {
             type: LiveMatchActionType.MatchUpdate,
             data: (camelcaseKeys(data, {
               deep: true,
-            }) as unknown) as LiveMatchStateData,
+            }) as unknown) as LiveMatchData,
           });
         }
       }, []),
     }
   );
 
-  const contextValue = useMemo(
-    () => ({
-      connectionStatus: status,
-      sendMessage: send,
-      state,
-    }),
-    [send, state, status]
-  );
+  if (status === ConnectionStatus.Connecting) {
+    return (
+      <>
+        <Typography>Connecting to server...</Typography>
+        <LinearProgress />
+      </>
+    );
+  }
 
   return (
-    <LiveMatchContext.Provider value={contextValue}>
+    <LiveMatchContext.Provider
+      value={{
+        connectionStatus: status,
+        sendMessage: send,
+        state,
+      }}
+    >
       <LiveMatch />
       <ConnectionIndicator />
     </LiveMatchContext.Provider>

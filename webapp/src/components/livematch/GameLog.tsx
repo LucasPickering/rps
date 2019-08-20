@@ -13,7 +13,9 @@ const outcomeLabel = {
 // We have to leave the React.FC tag off to get default props to work
 const GameLog: React.FC = () => {
   const {
-    state: { bestOf, games, matchOutcome },
+    state: {
+      data: { bestOf, games, matchOutcome },
+    },
   } = useContext(LiveMatchContext);
 
   const nonTies = games.length - countGameOutcomes(games, GameOutcome.Tie);

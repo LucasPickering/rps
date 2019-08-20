@@ -10,7 +10,11 @@ import {
 import useSplashMessage, { matchOutcomeSplasher } from 'hooks/useSplashMessage';
 import { last } from 'lodash';
 import React, { useContext } from 'react';
-import { ClientMessageType, LiveMatchContext } from 'state/livematch';
+import {
+  ClientMessageType,
+  LiveMatchContext,
+  LiveMatchData,
+} from 'state/livematch';
 import {
   formatGameOutcome,
   formatMatchOutcome,
@@ -20,6 +24,7 @@ import GameLog from './GameLog';
 import MoveButtons from './MoveButtons';
 import PlayerScore from './PlayerScore';
 import MoveIcon from 'components/MoveIcon';
+import LiveMatchErrorDisplay from './LiveMatchErrorDisplay';
 
 const useLocalStyles = makeStyles(({ typography }: Theme) => ({
   majorMessage: {
@@ -39,12 +44,11 @@ const useLocalStyles = makeStyles(({ typography }: Theme) => ({
 /**
  * Helper component to render the actions available to the player
  */
-const Actions: React.FC = () => {
+const Actions: React.FC<{ match: LiveMatchData }> = ({
+  match: { isReady, opponent, selectedMove, matchOutcome, games },
+}) => {
   const localClasses = useLocalStyles();
-  const {
-    state: { isReady, opponent, selectedMove, matchOutcome, games },
-    sendMessage,
-  } = useContext(LiveMatchContext);
+  const { sendMessage } = useContext(LiveMatchContext);
   const matchOutcomeSplash = useSplashMessage(
     matchOutcomeSplasher,
     matchOutcome
@@ -128,9 +132,14 @@ const Actions: React.FC = () => {
 const LiveMatch: React.FC = () => {
   const localClasses = useLocalStyles();
   const {
-    state: { opponent },
+    state: { data, error },
   } = useContext(LiveMatchContext);
 
+  if (error) {
+    return <LiveMatchErrorDisplay error={error} />;
+  }
+
+  const { opponent } = data;
   // No opponent
   if (!opponent) {
     return (
@@ -156,8 +165,9 @@ const LiveMatch: React.FC = () => {
           <GameLog />
           <PlayerScore />
         </Box>
-        <Actions />
+        <Actions match={data} />
       </Box>
+      <LiveMatchErrorDisplay error={error} />
     </>
   );
 };
