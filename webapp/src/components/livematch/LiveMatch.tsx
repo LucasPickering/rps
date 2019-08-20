@@ -79,7 +79,7 @@ const Actions: React.FC<{ match: LiveMatchData }> = ({
           <MoveIcon move={selectedMove} />
           <FlexBox flexDirection="column">
             <Typography className={localClasses.minorMessage}>
-              Waiting for {opponent && opponent.name}...
+              Waiting for {opponent && opponent.username}...
             </Typography>
             <CircularProgress size={20} />
           </FlexBox>

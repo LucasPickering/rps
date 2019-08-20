@@ -11,7 +11,7 @@ from .serializers import (
     get_client_msg_serializer,
     ErrorSerializer,
     ClientMessageType,
-    LiveMatchStateSerializer,
+    LiveMatchPlayerStateSerializer,
 )
 from .error import ClientError, ClientErrorType
 
@@ -70,8 +70,11 @@ class MatchConsumer(JsonWebsocketConsumer):
         """
         # No need to lock for read-only operation
         live_match = self.get_match(lock=False)
-        state = live_match.get_state_for_player(self.player)
-        self.send_json(LiveMatchStateSerializer(state).data)
+        self.send_json(
+            LiveMatchPlayerStateSerializer(
+                live_match, context={"player_user": self.player}
+            ).data
+        )
 
     def handle_error(self, error):
         """

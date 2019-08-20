@@ -11,7 +11,7 @@ export interface LiveMatchData {
   bestOf: number;
   // undef if waiting on opponent
   opponent?: {
-    name: string;
+    username: string;
     isConnected: boolean;
     isReady: boolean;
   };

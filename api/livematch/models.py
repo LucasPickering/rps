@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 
-from core.util import GameOutcome, MatchOutcome, Move, get_win_target
+from core.util import GameOutcome, Move, get_win_target
 from core.models import (
     AbstractGame,
     AbstractPlayerGame,
@@ -124,38 +124,6 @@ class LiveMatch(models.Model):
     def get_player_obj(self, player_user):
         self_obj, _ = self.get_self_and_opponent_objs(player_user)
         return self_obj
-
-    def get_state_for_player(self, player_user):
-        self_obj, opponent_obj = self.get_self_and_opponent_objs(player_user)
-
-        if not self_obj:
-            raise RuntimeError(
-                "Cannot get state for player that is not in game"
-            )
-        if self.is_match_complete:
-            if self.permanent_match.winner == player_user:
-                match_outcome = MatchOutcome.WIN.value
-            else:
-                match_outcome = MatchOutcome.LOSS.value
-        else:
-            match_outcome = None
-        return {
-            "best_of": self.best_of,
-            "opponent": {
-                "name": opponent_obj.user.username,
-                "is_connected": opponent_obj.connections > 0,
-                "is_ready": opponent_obj.is_ready,
-            }
-            if opponent_obj
-            else None,
-            "is_ready": self_obj.is_ready,
-            "selected_move": self_obj.move,
-            "games": [
-                game.get_game_summary_for_player(player_user)
-                for game in self.games.all()
-            ],
-            "match_outcome": match_outcome,
-        }
 
     def connect_player(self, player):
         """
@@ -337,14 +305,6 @@ class LiveGame(AbstractGame):
         if player2 and player_user == player2.user:
             return (player2, player1)
         return (None, None)
-
-    def get_game_summary_for_player(self, player_user):
-        self_obj, opponent_obj = self.get_self_and_opponent_objs(player_user)
-        return {
-            "self_move": self_obj.move,
-            "opponent_move": opponent_obj.move,
-            "outcome": Move.get_outcome(self_obj.move, opponent_obj.move).value,
-        }
 
     def __str__(self):
         return f"match: {self.match_id}; game_num: {self.game_num}; winner: {self.winner}"

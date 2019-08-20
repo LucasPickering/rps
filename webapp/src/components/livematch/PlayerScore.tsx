@@ -42,7 +42,7 @@ const PlayerScore: React.FC<Props> & { defaultProps: Partial<Props> } = ({
     games,
     isSelf ? GameOutcome.Win : GameOutcome.Loss
   );
-  const name = isSelf ? 'You' : opponent ? opponent.name : 'No Opponent';
+  const name = isSelf ? 'You' : opponent ? opponent.username : 'No Opponent';
   const showReadyIcon = !isSelf && opponent && opponent.isReady;
 
   return (
