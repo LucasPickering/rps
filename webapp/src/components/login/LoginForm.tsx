@@ -9,6 +9,9 @@ import queryString from 'query-string';
 import FlexBox from 'components/core/FlexBox';
 
 const useLocalStyles = makeStyles(({ spacing, palette }) => ({
+  textField: {
+    width: '100%',
+  },
   logInButton: {
     marginTop: spacing(1),
   },
@@ -57,6 +60,7 @@ const LoginForm: React.FC<RouteComponentProps> = ({ location }) => {
     >
       <FlexBox flexDirection="column">
         <TextField
+          className={localClasses.textField}
           id="username"
           label="Username"
           value={username}
@@ -65,6 +69,7 @@ const LoginForm: React.FC<RouteComponentProps> = ({ location }) => {
           }}
         />
         <TextField
+          className={localClasses.textField}
           id="password"
           label="Password"
           type="password"
