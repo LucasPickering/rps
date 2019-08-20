@@ -13,7 +13,9 @@ const NewMatchButton: React.FC<RouteComponentProps> = ({ history }) => {
         axios
           .get('/api/matches/new')
           .then(resp =>
-            history.push(routes.match.build({ matchId: resp.data.match_id }))
+            history.push(
+              routes.match.build({ matchId: resp.data.match_id }, {})
+            )
           )
       }
     >

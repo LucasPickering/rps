@@ -1,7 +1,7 @@
 import { AppBar, Button, Toolbar, makeStyles } from '@material-ui/core';
 import useUser from 'hooks/useUser';
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import routes from 'util/routes';
 import LogOutButton from './login/LogOutButton';
 import NewMatchButton from './NewMatchButton';
@@ -12,7 +12,7 @@ const useLocalStyles = makeStyles(() => ({
   },
 }));
 
-const HeaderBar: React.FC = () => {
+const HeaderBar: React.FC<RouteComponentProps> = ({ location }) => {
   const localClasses = useLocalStyles();
   const user = useUser();
 
@@ -24,7 +24,8 @@ const HeaderBar: React.FC = () => {
         {user ? (
           <LogOutButton />
         ) : (
-          <Link to={routes.login.build({})}>
+          // TODO include query params here
+          <Link to={routes.login.build({}, { next: location.pathname })}>
             <Button>Log In</Button>
           </Link>
         )}
@@ -33,4 +34,4 @@ const HeaderBar: React.FC = () => {
   );
 };
 
-export default HeaderBar;
+export default withRouter(HeaderBar);

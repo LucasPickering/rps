@@ -13,8 +13,8 @@ const LiveMatchErrorDisplay: React.FC<{ error?: LiveMatchError }> = ({
       case LiveMatchErrorType.NotLoggedIn:
         return (
           <Typography>
-            You have to <Link to={routes.login.build({})}>Log In</Link> to play
-            a match.
+            You have to <Link to={routes.login.build({}, {})}>Log In</Link> to
+            play a match.
           </Typography>
         );
       default:

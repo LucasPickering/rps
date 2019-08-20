@@ -16,7 +16,7 @@ const LogOutButton: React.FC<RouteComponentProps> = ({ history }) => {
           userDispatch({
             type: UserActionType.Logout,
           });
-          history.push(routes.home.build({}));
+          history.push(routes.home.build({}, {}));
         });
       }}
     >

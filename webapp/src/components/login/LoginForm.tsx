@@ -2,11 +2,12 @@ import { Box, Button, TextField } from '@material-ui/core';
 import axios from 'axios';
 import useUser from 'hooks/useUser';
 import React, { useContext, useState } from 'react';
-import { Redirect } from 'react-router';
+import { Redirect, RouteComponentProps, withRouter } from 'react-router';
 import { UserActionType, UserDispatchContext } from 'state/user';
 import routes from 'util/routes';
+import queryString from 'query-string';
 
-const LoginForm: React.FC = () => {
+const LoginForm: React.FC<RouteComponentProps> = ({ location }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState();
@@ -15,7 +16,9 @@ const LoginForm: React.FC = () => {
 
   // Already logged in - get up on outta here
   if (user) {
-    return <Redirect to={routes.home.build({})} />;
+    const { next } = queryString.parse(location.search);
+    const fixed = Array.isArray(next) ? next[0] : next;
+    return <Redirect to={fixed || routes.home.build({}, {})} />;
   }
 
   return (
@@ -72,4 +75,4 @@ const LoginForm: React.FC = () => {
   );
 };
 
-export default LoginForm;
+export default withRouter(LoginForm);
