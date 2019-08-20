@@ -1,4 +1,10 @@
-import { Box, Button, TextField } from '@material-ui/core';
+import {
+  Box,
+  Button,
+  TextField,
+  makeStyles,
+  Typography,
+} from '@material-ui/core';
 import axios from 'axios';
 import useUser from 'hooks/useUser';
 import React, { useContext, useState } from 'react';
@@ -7,7 +13,18 @@ import { UserActionType, UserDispatchContext } from 'state/user';
 import routes from 'util/routes';
 import queryString from 'query-string';
 
+const useLocalStyles = makeStyles(({ spacing, palette }) => ({
+  logInButton: {
+    marginTop: spacing(1),
+  },
+  errorText: {
+    marginTop: spacing(1),
+    color: palette.error.main,
+  },
+}));
+
 const LoginForm: React.FC<RouteComponentProps> = ({ location }) => {
+  const localClasses = useLocalStyles();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState();
@@ -62,6 +79,7 @@ const LoginForm: React.FC<RouteComponentProps> = ({ location }) => {
           }}
         />
         <Button
+          className={localClasses.logInButton}
           type="submit"
           variant="contained"
           color="primary"
@@ -69,7 +87,13 @@ const LoginForm: React.FC<RouteComponentProps> = ({ location }) => {
         >
           Log In
         </Button>
-        {error && <p>{JSON.stringify(error)}</p>}
+        {error && (
+          <Typography className={localClasses.errorText}>
+            {error.response.status === 401
+              ? 'Incorrect username or password'
+              : "Unknown error. Looks like you're really up shit creek."}
+          </Typography>
+        )}
       </Box>
     </form>
   );
