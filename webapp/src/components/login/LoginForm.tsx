@@ -1,19 +1,18 @@
-import { Button, TextField, makeStyles, Typography } from '@material-ui/core';
-import axios from 'axios';
+import { TextField, makeStyles, Typography } from '@material-ui/core';
 import useUser from 'hooks/useUser';
 import React, { useContext, useState } from 'react';
 import { Redirect, RouteComponentProps, withRouter } from 'react-router';
-import { UserActionType, UserDispatchContext } from 'state/user';
+import { UserActionType, UserDispatchContext, User } from 'state/user';
 import routes from 'util/routes';
 import queryString from 'query-string';
 import FlexBox from 'components/core/FlexBox';
+import useRequest from 'hooks/useRequest';
+import LoadingButton from 'components/core/LoadingButton';
 
 const useLocalStyles = makeStyles(({ spacing, palette }) => ({
   textField: {
     width: '100%',
-  },
-  logInButton: {
-    marginTop: spacing(1),
+    marginBottom: spacing(1),
   },
   errorText: {
     marginTop: spacing(1),
@@ -25,9 +24,12 @@ const LoginForm: React.FC<RouteComponentProps> = ({ location }) => {
   const localClasses = useLocalStyles();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState();
   const user = useUser();
   const userDispatch = useContext(UserDispatchContext);
+  const {
+    state: { loading, error },
+    request,
+  } = useRequest<User>({ url: '/api/login', method: 'POST' });
 
   // Already logged in - get up on outta here
   if (user) {
@@ -39,22 +41,12 @@ const LoginForm: React.FC<RouteComponentProps> = ({ location }) => {
   return (
     <form
       onSubmit={event => {
-        axios
-          .post('/api/login', {
-            username,
-            password,
+        request({ data: { username, password } }).then(data =>
+          userDispatch({
+            type: UserActionType.Login,
+            user: data,
           })
-          .then(response => {
-            userDispatch({
-              type: UserActionType.Login,
-              user: response.data,
-            });
-          })
-          .catch(err => {
-            setError(err);
-          });
-        setError(undefined);
-
+        );
         event.preventDefault(); // Don't reload the page
       }}
     >
@@ -78,18 +70,18 @@ const LoginForm: React.FC<RouteComponentProps> = ({ location }) => {
             setPassword(e.currentTarget.value);
           }}
         />
-        <Button
-          className={localClasses.logInButton}
+        <LoadingButton
           type="submit"
           variant="contained"
           color="primary"
+          loading={loading}
           disabled={!username || !password}
         >
           Log In
-        </Button>
+        </LoadingButton>
         {error && (
           <Typography className={localClasses.errorText}>
-            {error.response.status === 401
+            {error.status === 401
               ? 'Incorrect username or password'
               : "Unknown error. Looks like you're really up shit creek."}
           </Typography>

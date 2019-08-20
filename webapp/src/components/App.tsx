@@ -1,7 +1,6 @@
 import { createMuiTheme, CssBaseline, LinearProgress } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/styles';
-import useFetch from 'hooks/useFetch';
-import React, { useReducer, useCallback } from 'react';
+import React, { useReducer, useEffect } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import {
   defaultUserState,
@@ -13,6 +12,7 @@ import {
 } from 'state/user';
 import HeaderBar from './HeaderBar';
 import PageRouteContainer from './PageRouteContainer';
+import useRequest from 'hooks/useRequest';
 
 const theme = createMuiTheme({
   palette: {
@@ -22,26 +22,20 @@ const theme = createMuiTheme({
 
 const App: React.FC = () => {
   const [userState, userDispatch] = useReducer(userReducer, defaultUserState);
+  const { request } = useRequest<User>({ url: '/api/current-user' });
 
   // Kick off a request to fetch user data
-  useFetch<User>('/api/current-user', {
-    onRequest: useCallback(
-      () => userDispatch({ type: UserActionType.Loading }),
-      []
-    ),
-    onSuccess: useCallback(
-      data =>
+  useEffect(() => {
+    userDispatch({ type: UserActionType.Loading });
+    request()
+      .then(data =>
         userDispatch({
           type: UserActionType.Login,
           user: data,
-        }),
-      []
-    ),
-    onError: useCallback(
-      () => userDispatch({ type: UserActionType.LoginError }),
-      []
-    ),
-  });
+        })
+      )
+      .catch(() => userDispatch({ type: UserActionType.LoginError }));
+  }, [request]);
 
   return (
     <ThemeProvider theme={theme}>

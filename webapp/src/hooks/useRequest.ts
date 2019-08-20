@@ -1,16 +1,19 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { useCallback, useMemo, useReducer } from 'react';
-import {
-  ApiAction,
-  ApiActionType,
-  ApiCallbacks,
-  ApiState,
-  defaultApiState,
-} from 'state/api';
-import useSafeCallbacks from './useSafeCallbacks';
+import { ApiState, ApiError } from 'state/api';
 import useDeepMemo from './useDeepMemo';
 
-// Makes a reducer for the given data type
+enum ApiActionType {
+  Request,
+  Success,
+  Error,
+}
+
+type ApiAction<T> =
+  | { type: ApiActionType.Request }
+  | { type: ApiActionType.Success; data: T }
+  | { type: ApiActionType.Error; error: ApiError };
+
 const apiReducer = <T>(
   state: ApiState<T>,
   action: ApiAction<T>
@@ -40,15 +43,22 @@ const apiReducer = <T>(
   }
 };
 
+const defaultApiState = {
+  loading: false,
+};
+
 /**
- * Hook to get/post data from/to the server for the given resource/status
+ * Hook to get/post data from/to the server for the given resource/status.
+ * Returns a `state` object with loading/data/error, and a `request` function
+ * that, when called, initiates a request. `request` returns a `Promise` that
+ * resolves to data and rejects with an error. `Promise` doesn't let us type
+ * the error, but it will always be an {@link ApiError};
  */
 const useRequest = <T>(
-  config: AxiosRequestConfig,
-  callbacks: ApiCallbacks<T> = {}
+  config: AxiosRequestConfig
 ): {
   state: ApiState<T>;
-  request: (subConfig?: AxiosRequestConfig) => void;
+  request: (subConfig?: AxiosRequestConfig) => Promise<T>;
 } => {
   const [state, dispatch] = useReducer<
     React.Reducer<ApiState<T>, ApiAction<T>>
@@ -58,38 +68,26 @@ const useRequest = <T>(
   // effect triggers
 
   const configMemo = useDeepMemo(config);
-  const { onRequest, onSuccess, onError } = useSafeCallbacks<ApiCallbacks<T>>(
-    callbacks
-  );
 
   const request = useCallback(
     (subConfig?: AxiosRequestConfig) => {
       dispatch({ type: ApiActionType.Request });
-      if (onRequest) {
-        onRequest();
-      }
-      axios
-        .request({ ...configMemo, ...subConfig })
-        .then(response => {
-          dispatch({
-            type: ApiActionType.Success,
-            data: response.data,
+      return new Promise<T>((resolve, reject) => {
+        axios
+          .request({ ...configMemo, ...subConfig })
+          .then(response => {
+            const { data } = response;
+            dispatch({ type: ApiActionType.Success, data });
+            resolve(data);
+          })
+          .catch(errorContainer => {
+            const error = errorContainer.response;
+            dispatch({ type: ApiActionType.Error, error });
+            reject(error);
           });
-          if (onSuccess) {
-            onSuccess(response.data);
-          }
-        })
-        .catch(error => {
-          dispatch({
-            type: ApiActionType.Error,
-            error,
-          });
-          if (onError) {
-            onError(error);
-          }
-        });
+      });
     },
-    [configMemo, dispatch, onRequest, onSuccess, onError]
+    [configMemo, dispatch]
   );
 
   return useMemo(
