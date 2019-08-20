@@ -1,31 +1,42 @@
 import React from 'react';
-import { LiveMatchError, LiveMatchErrorType } from 'state/livematch';
-import { Typography } from '@material-ui/core';
-import { Link } from 'react-router-dom';
-import routes from 'util/routes';
+import { LiveMatchError } from 'state/livematch';
+import { Snackbar, SnackbarContent, makeStyles, Box } from '@material-ui/core';
+import { Error as IconError } from '@material-ui/icons';
 
-const LiveMatchErrorDisplay: React.FC<{ error?: LiveMatchError }> = ({
-  error,
+const useLocalStyles = makeStyles(({ spacing, palette }) => ({
+  snackbarContent: {
+    backgroundColor: palette.error.main,
+  },
+  icon: {
+    marginRight: spacing(1),
+  },
+}));
+
+const LiveMatchErrorDisplay: React.FC<{ errors: LiveMatchError[] }> = ({
+  errors,
 }) => {
-  if (error) {
-    const { type, detail } = error;
-    switch (type) {
-      case LiveMatchErrorType.NotLoggedIn:
-        return (
-          <Typography>
-            You have to <Link to={routes.login.build({}, {})}>Log In</Link> to
-            play a match.
-          </Typography>
-        );
-      default:
-        return (
-          <Typography>
-            Error {type}: {detail}
-          </Typography>
-        );
-    }
-  }
-  return null;
+  const localClasses = useLocalStyles();
+  return (
+    <>
+      {errors.map(error => (
+        <Snackbar
+          key={error.error}
+          open
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        >
+          <SnackbarContent
+            className={localClasses.snackbarContent}
+            message={
+              <Box display="flex" flexDirection="row" alignItems="center">
+                <IconError className={localClasses.icon} />
+                {error.error}: {error.detail}
+              </Box>
+            }
+          />
+        </Snackbar>
+      ))}
+    </>
+  );
 };
 
 export default LiveMatchErrorDisplay;

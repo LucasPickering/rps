@@ -15,8 +15,7 @@ import useSplashMessage, {
   connectionStatusSplasher,
 } from 'hooks/useSplashMessage';
 import { ConnectionStatus } from 'hooks/useWebSocket';
-import React, { useContext, useState } from 'react';
-import { LiveMatchContext } from 'state/livematch';
+import React, { useState } from 'react';
 
 const statusLabels = {
   [ConnectionStatus.Connecting]: 'Connecting',
@@ -62,11 +61,12 @@ const StatusIcon: React.FC<{ status: ConnectionStatus }> = ({
   }
 };
 
-const ConnectionIndicator: React.FC = () => {
+const ConnectionIndicator: React.FC<{ connectionStatus: ConnectionStatus }> = ({
+  connectionStatus,
+}) => {
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<
     HTMLElement | undefined
   >(undefined);
-  const { connectionStatus } = useContext(LiveMatchContext);
   const localClasses = useLocalStyles();
 
   const splashMessage = useSplashMessage(

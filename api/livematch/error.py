@@ -11,15 +11,10 @@ class ClientErrorType(Enum):
 
 
 class ClientError(Exception):
-    def __init__(self, error_type, detail=None, fatal=False):
+    def __init__(self, error_type, detail=None):
         super().__init__(error_type, detail)
         self._error_type = error_type
         self._detail = detail
-        self._fatal = fatal
-
-    @property
-    def fatal(self):
-        return self._fatal
 
     def to_dict(self):
         return {"error": self._error_type.value, "detail": self._detail}

@@ -129,45 +129,47 @@ const Actions: React.FC<{ match: LiveMatchData }> = ({
   );
 };
 
+/**
+ * The main component of the live match screen. As long as the socket is open,
+ * this should be rendered. This also includes error cases, e.g. not being
+ * logged in.
+ */
 const LiveMatch: React.FC = () => {
   const localClasses = useLocalStyles();
   const {
-    state: { data, error },
+    state: { data, errors },
   } = useContext(LiveMatchContext);
-
-  if (error) {
-    return <LiveMatchErrorDisplay error={error} />;
-  }
-
   const { opponent } = data;
-  // No opponent
-  if (!opponent) {
-    return (
-      <Box display="flex" flexDirection="column" alignItems="center">
-        <Typography className={localClasses.normalMessage}>
-          Waiting for opponent...
-        </Typography>
-        <LinearProgress className={localClasses.loading} />
-      </Box>
-    );
-  }
 
   return (
     <>
       <Box display="flex" flexDirection="column" alignItems="center">
-        <Box
-          display="flex"
-          flexDirection="row"
-          justifyContent="space-between"
-          width="100%"
-        >
-          <PlayerScore isSelf />
-          <GameLog />
-          <PlayerScore />
-        </Box>
-        <Actions match={data} />
+        {opponent ? (
+          // Match is running
+          <>
+            <Box
+              display="flex"
+              flexDirection="row"
+              justifyContent="space-between"
+              width="100%"
+            >
+              <PlayerScore isSelf />
+              <GameLog />
+              <PlayerScore />
+            </Box>
+            <Actions match={data} />
+          </>
+        ) : (
+          // No opponent
+          <>
+            <Typography className={localClasses.normalMessage}>
+              Waiting for opponent...
+            </Typography>
+            <LinearProgress className={localClasses.loading} />
+          </>
+        )}
       </Box>
-      <LiveMatchErrorDisplay error={error} />
+      <LiveMatchErrorDisplay errors={errors} />
     </>
   );
 };

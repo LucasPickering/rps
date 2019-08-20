@@ -19,7 +19,8 @@ interface Props {
 }
 
 /**
- * Data handler for the match screen.
+ * Data handler for the match screen. Establishes a websocket connection, and
+ * as long as that connection is open, renders a {@link LiveMatch}.
  */
 const LiveMatchView: React.FC<Props> = ({ matchId }) => {
   const [state, dispatch] = useReducer(liveMatchReducer, defaultLiveMatchState);
@@ -47,26 +48,36 @@ const LiveMatchView: React.FC<Props> = ({ matchId }) => {
     }
   );
 
-  if (status === ConnectionStatus.Connecting) {
-    return (
-      <>
-        <Typography>Connecting to server...</Typography>
-        <LinearProgress />
-      </>
-    );
-  }
+  const getContent = (): React.ReactElement | undefined => {
+    switch (status) {
+      case ConnectionStatus.Connecting:
+        return (
+          <>
+            <Typography>Connecting to server...</Typography>
+            <LinearProgress />
+          </>
+        );
+      case ConnectionStatus.Connected:
+        return (
+          <LiveMatchContext.Provider
+            value={{
+              sendMessage: send,
+              state,
+            }}
+          >
+            <LiveMatch />
+          </LiveMatchContext.Provider>
+        );
+      default:
+        return undefined;
+    }
+  };
 
   return (
-    <LiveMatchContext.Provider
-      value={{
-        connectionStatus: status,
-        sendMessage: send,
-        state,
-      }}
-    >
-      <LiveMatch />
-      <ConnectionIndicator />
-    </LiveMatchContext.Provider>
+    <>
+      {getContent()}
+      <ConnectionIndicator connectionStatus={status} />
+    </>
   );
 };
 

@@ -1,4 +1,3 @@
-import { ConnectionStatus } from 'hooks/useWebSocket';
 import React from 'react';
 import { GameOutcome, MatchOutcome, Move } from './match';
 
@@ -32,13 +31,13 @@ export enum LiveMatchErrorType {
 }
 
 export interface LiveMatchError {
-  type: LiveMatchErrorType;
+  error: LiveMatchErrorType;
   detail: string;
 }
 
 export interface LiveMatchState {
   data: LiveMatchData;
-  error?: LiveMatchError;
+  errors: LiveMatchError[];
 }
 
 export const defaultLiveMatchState = {
@@ -47,6 +46,7 @@ export const defaultLiveMatchState = {
     isReady: false,
     games: [],
   },
+  errors: [],
 };
 
 export enum LiveMatchActionType {
@@ -72,6 +72,8 @@ export const liveMatchReducer: React.Reducer<
   switch (action.type) {
     case LiveMatchActionType.MatchUpdate:
       return { ...state, data: action.data };
+    case LiveMatchActionType.Error:
+      return { ...state, errors: [...state.errors, action.error] };
     default:
       return state;
   }
@@ -91,7 +93,6 @@ export type ClientMessage =
     };
 
 export interface LiveMatchContextType {
-  connectionStatus: ConnectionStatus;
   sendMessage: (msg: ClientMessage) => void;
   state: LiveMatchState;
 }

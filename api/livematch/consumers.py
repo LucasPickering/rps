@@ -38,6 +38,13 @@ def validate_content(content):
 
 
 class MatchConsumer(JsonWebsocketConsumer):
+    """
+    In general, this consumer should accept all connection and keep them open.
+    Anything that goes wrong in terms of input/state/etc. should be reported
+    as an error over the socket, but still left open. An actual socket error
+    should indicate a bug, network error, or the like.
+    """
+
     @property
     def channel_group_name(self):
         return f"match_{self.match_id}"
@@ -69,14 +76,12 @@ class MatchConsumer(JsonWebsocketConsumer):
     def handle_error(self, error):
         """
         Processes the given error. An error message is send over the socket,
-        then if the error is marked as fatal, the socket is closed.
+        but the socket is left open.
 
         Arguments:
             error {ClientError} -- The error
         """
         self.send_json(ErrorSerializer(error.to_dict()).data)
-        if error.fatal:
-            self.close()
 
     def validate_match_id(self):
         """
@@ -86,11 +91,11 @@ class MatchConsumer(JsonWebsocketConsumer):
             ClientError: If the match ID is invalid
         """
         if not is_uuid(self.match_id):
-            raise ClientError(ClientErrorType.INVALID_MATCH_ID, fatal=True)
+            raise ClientError(ClientErrorType.INVALID_MATCH_ID)
 
     def validate_user(self):
         if not self.player.is_authenticated:
-            raise ClientError(ClientErrorType.NOT_LOGGED_IN, fatal=True)
+            raise ClientError(ClientErrorType.NOT_LOGGED_IN)
 
     def get_match(self, lock=True):
         qs = LiveMatch.objects
@@ -118,7 +123,7 @@ class MatchConsumer(JsonWebsocketConsumer):
             # connected, nothing happens here.
             if not live_match.connect_player(self.player):
                 # Get up on outta here with your game hijacking
-                raise ClientError(ClientErrorType.GAME_FULL, fatal=True)
+                raise ClientError(ClientErrorType.GAME_FULL)
             # Player was successfully added - write it to the DB
             live_match.save()
             # Join the channel group for all sockets in this match. Make sure
@@ -192,7 +197,7 @@ class MatchConsumer(JsonWebsocketConsumer):
 
     def disconnect_json(self, close_code):
         logger.info(
-            f"Player {self.player} disconnecting from match {self.match_id}"
+            f"Player {self.player} disconnecting from match {self.match_id}; code={close_code}"
         )
         try:
             self.user_disconnect()
