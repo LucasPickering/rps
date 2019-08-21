@@ -3,7 +3,7 @@ import {
   Typography,
   makeStyles,
   Button,
-  CircularProgress,
+  Grid,
 } from '@material-ui/core';
 import useSplashMessage, { matchOutcomeSplasher } from 'hooks/useSplashMessage';
 import { last } from 'lodash';
@@ -23,7 +23,7 @@ import MoveButtons from './MoveButtons';
 import PlayerScore from './PlayerScore';
 import MoveIcon from 'components/MoveIcon';
 import LiveMatchErrorDisplay from './LiveMatchErrorDisplay';
-import FlexBox from 'components/core/FlexBox';
+// import FlexBox from 'components/core/FlexBox';
 
 const useLocalStyles = makeStyles(({ typography }) => ({
   majorMessage: {
@@ -44,7 +44,7 @@ const useLocalStyles = makeStyles(({ typography }) => ({
  * Helper component to render the actions available to the player
  */
 const Actions: React.FC<{ match: LiveMatchData }> = ({
-  match: { isReady, opponent, selectedMove, matchOutcome, games },
+  match: { isReady, selectedMove, matchOutcome, games },
 }) => {
   const localClasses = useLocalStyles();
   const { sendMessage } = useContext(LiveMatchContext);
@@ -74,23 +74,22 @@ const Actions: React.FC<{ match: LiveMatchData }> = ({
   if (isReady) {
     // Player is ready, show moves
     return selectedMove ? (
-      <>
-        <FlexBox width="60%" flexDirection="row" justifyContent="space-between">
+      <Grid item container justify="space-between">
+        <Grid item>
           <MoveIcon move={selectedMove} />
-          <FlexBox flexDirection="column">
-            <Typography className={localClasses.minorMessage}>
-              Waiting for {opponent && opponent.username}...
-            </Typography>
-            <CircularProgress size={20} />
-          </FlexBox>
-        </FlexBox>
-      </>
+        </Grid>
+        <Grid item>
+          <MoveIcon />
+        </Grid>
+      </Grid>
     ) : (
-      <MoveButtons
-        onClick={move => {
-          sendMessage({ type: ClientMessageType.Move, move });
-        }}
-      />
+      <Grid item container justify="center">
+        <MoveButtons
+          onClick={move => {
+            sendMessage({ type: ClientMessageType.Move, move });
+          }}
+        />
+      </Grid>
     );
   }
 
@@ -99,21 +98,29 @@ const Actions: React.FC<{ match: LiveMatchData }> = ({
   return (
     <>
       {lastGame && (
-        <FlexBox width="60%" flexDirection="row" justifyContent="space-between">
-          <MoveIcon move={lastGame.selfMove} />
-          <Typography className={localClasses.normalMessage}>
-            {formatGameOutcome(lastGame.outcome)}
-          </Typography>
-          <MoveIcon move={lastGame.opponentMove} />
-        </FlexBox>
+        <Grid item container justify="space-between">
+          <Grid item>
+            <MoveIcon move={lastGame.selfMove} />
+          </Grid>
+          <Grid item>
+            <Typography className={localClasses.normalMessage}>
+              {formatGameOutcome(lastGame.outcome)}
+            </Typography>
+          </Grid>
+          <Grid item>
+            <MoveIcon move={lastGame.opponentMove} />
+          </Grid>
+        </Grid>
       )}
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => sendMessage({ type: ClientMessageType.Ready })}
-      >
-        Ready
-      </Button>
+      <Grid item>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => sendMessage({ type: ClientMessageType.Ready })}
+        >
+          Ready
+        </Button>
+      </Grid>
     </>
   );
 };
@@ -132,20 +139,24 @@ const LiveMatch: React.FC = () => {
 
   return (
     <>
-      <FlexBox flexDirection="column">
+      <Grid container direction="column" alignItems="center">
         {opponent ? (
           // Match is running
           <>
-            <FlexBox
-              flexDirection="row"
-              justifyContent="space-between"
-              width="100%"
-            >
-              <PlayerScore isSelf />
-              <GameLog />
-              <PlayerScore />
-            </FlexBox>
-            <Actions match={data} />
+            <Grid item container justify="space-between">
+              <Grid item>
+                <PlayerScore isSelf />
+              </Grid>
+              <Grid item>
+                <GameLog />
+              </Grid>
+              <Grid item>
+                <PlayerScore />
+              </Grid>
+            </Grid>
+            <Grid container item direction="column" alignItems="center" xs={8}>
+              <Actions match={data} />
+            </Grid>
           </>
         ) : (
           // No opponent
@@ -156,7 +167,7 @@ const LiveMatch: React.FC = () => {
             <LinearProgress className={localClasses.loading} />
           </>
         )}
-      </FlexBox>
+      </Grid>
       <LiveMatchErrorDisplay errors={errors} />
     </>
   );

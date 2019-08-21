@@ -1,4 +1,4 @@
-import { Typography } from '@material-ui/core';
+import { Typography, CircularProgress } from '@material-ui/core';
 import React from 'react';
 import { Move } from 'state/match';
 
@@ -11,12 +11,17 @@ const moveLabels = {
 };
 
 interface Props {
-  move: Move;
+  move?: Move;
 }
 
-// TODO make this pretty
-const MoveIcon: React.FC<Props> = ({ move }) => (
-  <Typography>{moveLabels[move]}</Typography>
-);
+/**
+ * An icon for a single move. If no move is specified, a loading icon is shown
+ */
+const MoveIcon: React.FC<Props> = ({ move }) =>
+  move ? (
+    <Typography>{moveLabels[move]}</Typography>
+  ) : (
+    <CircularProgress size={20} />
+  );
 
 export default MoveIcon;

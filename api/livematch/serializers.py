@@ -48,7 +48,6 @@ class LiveGameSummarySerializer(serializers.Serializer):
     outcome = serializers.SerializerMethodField()
 
     def __init__(self, live_game, *args, **kwargs):
-        print(live_game)
         try:
             player_user = kwargs["context"]["player_user"]
         except KeyError:
