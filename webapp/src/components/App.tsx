@@ -27,14 +27,18 @@ const App: React.FC = () => {
   // Kick off a request to fetch user data
   useEffect(() => {
     userDispatch({ type: UserActionType.Loading });
-    request()
-      .then(data =>
-        userDispatch({
-          type: UserActionType.Login,
-          user: data,
-        })
-      )
-      .catch(() => userDispatch({ type: UserActionType.LoginError }));
+    request().then(data => {
+      // This endpoint should always return 200. Empty data indicates we're
+      // not logged in.
+      userDispatch(
+        data
+          ? {
+              type: UserActionType.Login,
+              user: data,
+            }
+          : { type: UserActionType.Logout }
+      );
+    });
   }, [request]);
 
   return (

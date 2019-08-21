@@ -34,12 +34,11 @@ class LogoutView(views.APIView):
 class CurrentUserView(views.APIView):
     def get(self, request):
         user = request.user
-        if user.is_authenticated:
-            return Response(serializers.UserSerializer(user).data)
-        else:
-            return Response(
-                {"detail": "not logged in"}, status=status.HTTP_401_UNAUTHORIZED
-            )
+        return Response(
+            serializers.UserSerializer(user).data
+            if user.is_authenticated
+            else None
+        )
 
 
 class NewMatchView(views.APIView):

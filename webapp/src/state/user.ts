@@ -18,14 +18,12 @@ export const defaultUserState = {
 export enum UserActionType {
   Loading,
   Login,
-  LoginError,
   Logout,
 }
 
 export type UserAction =
   | { type: UserActionType.Loading }
   | { type: UserActionType.Login; user: User }
-  | { type: UserActionType.LoginError }
   | { type: UserActionType.Logout };
 
 export const userReducer: React.Reducer<UserState, UserAction> = (
@@ -37,8 +35,6 @@ export const userReducer: React.Reducer<UserState, UserAction> = (
       return { loading: true };
     case UserActionType.Login:
       return { loading: false, user: action.user };
-    case UserActionType.LoginError:
-      return { loading: false };
     case UserActionType.Logout:
       return { loading: false, user: undefined };
   }
