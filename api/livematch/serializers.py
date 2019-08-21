@@ -110,7 +110,11 @@ class LiveMatchPlayerStateSerializer(serializers.Serializer):
         return obj.best_of
 
     def get_opponent(self, obj):
-        return OpponentSerializer(self.opponent_obj).data
+        return (
+            OpponentSerializer(self.opponent_obj).data
+            if self.opponent_obj
+            else None
+        )
 
     def get_is_ready(self, obj):
         return self.self_obj.is_ready
