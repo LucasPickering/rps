@@ -164,7 +164,7 @@ const LiveMatch: React.FC = () => {
                 <PlayerScore />
               </Grid>
             </Grid>
-            <Grid container item direction="column" alignItems="center" xs={8}>
+            <Grid container item direction="column" alignItems="center">
               <Actions match={data} />
             </Grid>
           </>
