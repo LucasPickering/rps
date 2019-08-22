@@ -23,17 +23,9 @@ import MoveButtons from './MoveButtons';
 import PlayerScore from './PlayerScore';
 import MoveIcon from 'components/MoveIcon';
 import LiveMatchErrorDisplay from './LiveMatchErrorDisplay';
+import useStyles from 'hooks/useStyles';
 
-const useLocalStyles = makeStyles(({ typography }) => ({
-  majorMessage: {
-    ...typography.h3,
-  },
-  normalMessage: {
-    ...typography.h5,
-  },
-  minorMessage: {
-    ...typography.body1,
-  },
+const useLocalStyles = makeStyles(() => ({
   loading: {
     width: '100%',
   },
@@ -45,7 +37,7 @@ const useLocalStyles = makeStyles(({ typography }) => ({
 const Actions: React.FC<{ match: LiveMatchData }> = ({
   match: { isReady, selectedMove, matchOutcome, games },
 }) => {
-  const localClasses = useLocalStyles();
+  const classes = useStyles();
   const { sendMessage } = useContext(LiveMatchContext);
   const matchOutcomeSplash = useSplashMessage(
     matchOutcomeSplasher,
@@ -56,13 +48,11 @@ const Actions: React.FC<{ match: LiveMatchData }> = ({
   if (matchOutcome) {
     return (
       <>
-        <Typography className={localClasses.normalMessage}>
-          Match Over
-        </Typography>
-        <Typography className={localClasses.majorMessage}>
+        <Typography className={classes.normalMessage}>Match Over</Typography>
+        <Typography className={classes.majorMessage}>
           You {formatMatchOutcome(matchOutcome, OutcomeFormat.PastTense)}!
         </Typography>
-        <Typography className={localClasses.minorMessage}>
+        <Typography className={classes.minorMessage}>
           {matchOutcomeSplash}
         </Typography>
       </>
@@ -102,7 +92,7 @@ const Actions: React.FC<{ match: LiveMatchData }> = ({
             <MoveIcon move={lastGame.selfMove} />
           </Grid>
           <Grid item>
-            <Typography className={localClasses.normalMessage}>
+            <Typography className={classes.normalMessage}>
               {formatGameOutcome(lastGame.outcome)}
             </Typography>
           </Grid>
@@ -130,6 +120,7 @@ const Actions: React.FC<{ match: LiveMatchData }> = ({
  * logged in.
  */
 const LiveMatch: React.FC = () => {
+  const classes = useStyles();
   const localClasses = useLocalStyles();
   const {
     state: { data, errors },
@@ -148,35 +139,33 @@ const LiveMatch: React.FC = () => {
 
   return (
     <>
-      <Grid container direction="column" alignItems="center">
-        {opponent ? (
-          // Match is running
-          <>
-            <Grid item container justify="space-between">
-              <Grid item>
-                <PlayerScore isSelf />
-              </Grid>
-              <Grid item>
-                <GameLog />
-              </Grid>
-              <Grid item>
-                <PlayerScore />
-              </Grid>
+      {opponent ? (
+        // Match is running
+        <>
+          <Grid item container justify="space-between">
+            <Grid item>
+              <PlayerScore isSelf />
             </Grid>
-            <Grid container item direction="column" alignItems="center">
-              <Actions match={data} />
+            <Grid item>
+              <GameLog />
             </Grid>
-          </>
-        ) : (
-          // No opponent
-          <>
-            <Typography className={localClasses.normalMessage}>
-              Waiting for opponent...
-            </Typography>
-            <LinearProgress className={localClasses.loading} />
-          </>
-        )}
-      </Grid>
+            <Grid item>
+              <PlayerScore />
+            </Grid>
+          </Grid>
+          <Grid container item direction="column" alignItems="center">
+            <Actions match={data} />
+          </Grid>
+        </>
+      ) : (
+        // No opponent
+        <>
+          <Typography className={classes.normalMessage}>
+            Waiting for opponent...
+          </Typography>
+          <LinearProgress className={localClasses.loading} />
+        </>
+      )}
       <LiveMatchErrorDisplay errors={errors} />
     </>
   );

@@ -1,9 +1,8 @@
-import { Theme, Container } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles, Container, Grid } from '@material-ui/core';
 import React from 'react';
 import RootRoutes from './routes/RootRoutes';
 
-const useLocalStyles = makeStyles(({ spacing }: Theme) => ({
+const useLocalStyles = makeStyles(({ spacing }) => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
@@ -19,7 +18,9 @@ const PageContainer: React.FC = () => {
 
   return (
     <Container className={localClasses.root}>
-      <RootRoutes />
+      <Grid container direction="column" alignItems="center">
+        <RootRoutes />
+      </Grid>
     </Container>
   );
 };

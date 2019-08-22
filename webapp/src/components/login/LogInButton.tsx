@@ -10,12 +10,19 @@ import queryString from 'query-string';
  * worth having its own component.
  */
 const LogInButton: React.FC<
-  RouteComponentProps & React.ComponentProps<typeof Button>
-> = ({ location, ...rest }) => {
+  RouteComponentProps &
+    Pick<React.ComponentProps<typeof Button>, 'variant' | 'color'>
+> = ({ location: { pathname }, variant, color }) => {
+  const paramsStr =
+    pathname !== 'login'
+      ? '?' + queryString.stringify({ next: pathname }, { encode: false })
+      : '';
   return (
     // TODO include query params here
-    <Link to={`/login?${queryString.stringify({ next: location.pathname })}`}>
-      <Button {...rest}>Log In</Button>
+    <Link to={`/login${paramsStr}`}>
+      <Button variant={variant} color={color}>
+        Log In
+      </Button>
     </Link>
   );
 };
