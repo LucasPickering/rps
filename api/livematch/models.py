@@ -1,4 +1,5 @@
 from collections import Counter
+from datetime import timedelta
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -22,20 +23,51 @@ class LivePlayerMatch(models.Model):
     row, you own can considered its LivePlayerMatchs locked.
     """
 
+    ACTIVITY_TIMEOUT = timedelta(seconds=60)
+
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     is_ready = models.BooleanField(default=False)
-    # There's potential for bugs here, if the server goes down while a user
-    # is connected. Maybe we should just wipe the LiveMatch table on startup.
-    connections = models.PositiveSmallIntegerField(default=0)
+    last_activity = models.DateTimeField(auto_now_add=True)
     move = models.CharField(choices=Move.choices(), max_length=20, blank=True)
 
     def reset(self):
         """
-        Reset's this player's state to for a new game. Does NOT reset connection
-        count.
+        Reset's this player's state to for a new game. Does NOT update active
+        timer.
         """
         self.is_ready = False
         self.move = ""
+
+    def ready_up(self):
+        """
+        Sets the ready state to True (even if it is already True). Updates
+        last activity time.
+        """
+        self.ready = True
+        self.update_last_activity()
+
+    def apply_move(self, move):
+        """
+        Sets the player's move to the given value. Updates last activity timer.
+
+        Arguments:
+            move {string} -- move
+
+        Raises:
+            ClientError: If a move is already set
+        """
+        if self.move:
+            raise ClientError(
+                ClientErrorType.INVALID_MOVE, "Move already applied"
+            )
+        self.move = move
+        self.update_last_activity()
+
+    def update_last_activity(self):
+        self.last_activity = timezone.now()
+
+    def is_active(self):
+        return (timezone.now() - self.last_activity) <= self.ACTIVITY_TIMEOUT
 
     def __str__(self):
         return f"user: {self.user}; ready: {self.is_ready}; move: {self.move}"
@@ -110,8 +142,8 @@ class LiveMatch(models.Model):
         return (
             # Unstarted matches that have no connected users
             not self.is_match_started
-            and (not self.player1 or self.player1.connections == 0)
-            and (not self.player2 or self.player2.connections == 0)
+            and not (self.player1 and self.player1.is_active)
+            and not (self.player2 and self.player2.is_active)
         )
 
     def get_self_and_opponent_objs(self, player_user):
@@ -128,8 +160,8 @@ class LiveMatch(models.Model):
     def connect_player(self, player):
         """
         Adds the given player to this match, if there is a slot open. If the
-        player is already in the match, increments the appropriate connections
-        field. If the game already has two other players, nothing happens.
+        player is already in the match, updates their activity field. If the
+        match already has two other players, nothing happens.
 
         Arguments:
             player {User} -- The player (user) to connect
@@ -150,7 +182,7 @@ class LiveMatch(models.Model):
                 # Game is full already
                 return False
 
-        player_obj.connections += 1
+        player_obj.update_last_activity()
         player_obj.save()
 
         # We have to do this AFTER saving the player object to make sure we
@@ -162,24 +194,24 @@ class LiveMatch(models.Model):
                 self.player2 = player_obj
         return True
 
-    def disconnect_player(self, player):
+    def heartbeat(self, player):
         """
-        Disconnects the given player from the match. They will remain a player
-        in the match, but the connections field will be decremented.
+        Updates the last activity for the given player to now.
 
         Arguments:
-            player {User} -- The player (user) to disconnect
+            player {User} -- the player to mark activity for
 
-        Returns:
-            bool -- True if the player was disconnected, False if they aren't in
-            the game
+        Raises:
+            ClientError: If the player is not in this match
         """
         player_obj = self.get_player_obj(player)
         if player_obj:
-            player_obj.connections -= 1
+            player_obj.update_last_activity()
             player_obj.save()
-            return True
-        return False
+        else:
+            raise ClientError(
+                ClientErrorType.NOT_IN_MATCH, "Player is not in match"
+            )
 
     def ready_up(self, player):
         """
@@ -193,7 +225,7 @@ class LiveMatch(models.Model):
         """
         player_obj = self.get_player_obj(player)
         if player_obj:
-            player_obj.is_ready = True
+            player_obj.ready_up()
             player_obj.save()
         else:
             raise ClientError(
@@ -219,13 +251,8 @@ class LiveMatch(models.Model):
             )
         player_obj = self.get_player_obj(player)
         if player_obj:
-            if player_obj.move:
-                raise ClientError(
-                    ClientErrorType.INVALID_MOVE, "Move already applied"
-                )
-            else:
-                player_obj.move = move
-                player_obj.save()
+            player_obj.apply_move(move)
+            player_obj.save()
         else:
             raise ClientError(
                 ClientErrorType.NOT_IN_MATCH, "Player is not in match"

@@ -12,12 +12,13 @@ _CLIENT_MSG_SERIALIZERS = {}
 
 
 class ClientMessageType(Enum):
+    HEARTBEAT = "heartbeat"
     READY = "ready"
     MOVE = "move"
 
 
-def register_msg(name):
-    return register(_CLIENT_MSG_SERIALIZERS, name.value, field="_TYPE")
+def register_msg(*names):
+    return register(_CLIENT_MSG_SERIALIZERS, *(name.value for name in names))
 
 
 def get_client_msg_serializer(serializer_type):
@@ -31,15 +32,12 @@ class ErrorSerializer(serializers.Serializer):
 
 class OpponentSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source="user.username")
-    is_connected = serializers.SerializerMethodField()
+    is_active = serializers.BooleanField()
     is_ready = serializers.BooleanField()
 
     class Meta:
         model = LivePlayerMatch
-        fields = ("username", "is_connected", "is_ready")
-
-    def get_is_connected(self, obj):
-        return obj.connections > 0
+        fields = ("username", "is_active", "is_ready")
 
 
 class LiveGameSummarySerializer(serializers.Serializer):
@@ -145,8 +143,8 @@ class ClientMessageSerializer(serializers.Serializer):
         super().__init__(data=data, *args, **kwargs)
 
 
-@register_msg(ClientMessageType.READY)
-class ClientMessageReadySerializer(ClientMessageSerializer):
+@register_msg(ClientMessageType.HEARTBEAT, ClientMessageType.READY)
+class EmptyClientMessageSerializer(ClientMessageSerializer):
     pass
 
 

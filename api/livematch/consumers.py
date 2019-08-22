@@ -159,7 +159,12 @@ class MatchConsumer(JsonWebsocketConsumer):
 
     def process_msg(self, msg):
         msg_type = msg["type"]
-        if msg_type == ClientMessageType.READY.value:
+        if msg_type == ClientMessageType.HEARTBEAT.value:
+            with transaction.atomic():
+                live_match = self.get_match()
+                live_match.heartbeat(self.player)
+
+        elif msg_type == ClientMessageType.READY.value:
             with transaction.atomic():
                 live_match = self.get_match()
                 live_match.ready_up(self.player)
