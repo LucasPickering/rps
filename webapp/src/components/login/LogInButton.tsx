@@ -2,7 +2,7 @@ import { Button } from '@material-ui/core';
 import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
-import routes from 'util/routes';
+import queryString from 'query-string';
 
 /**
  * Just a link component to the login page. But, because this is used in
@@ -14,7 +14,7 @@ const LogInButton: React.FC<
 > = ({ location, ...rest }) => {
   return (
     // TODO include query params here
-    <Link to={routes.login.build({}, { next: location.pathname })}>
+    <Link to={`/login?${queryString.stringify({ next: location.pathname })}`}>
       <Button {...rest}>Log In</Button>
     </Link>
   );

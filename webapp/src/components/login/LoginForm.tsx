@@ -3,7 +3,6 @@ import useUser from 'hooks/useUser';
 import React, { useContext, useState } from 'react';
 import { Redirect, RouteComponentProps, withRouter } from 'react-router';
 import { UserActionType, UserDispatchContext, User } from 'state/user';
-import routes from 'util/routes';
 import queryString from 'query-string';
 import FlexBox from 'components/core/FlexBox';
 import useRequest from 'hooks/useRequest';
@@ -35,7 +34,7 @@ const LoginForm: React.FC<RouteComponentProps> = ({ location }) => {
   if (user) {
     const { next } = queryString.parse(location.search);
     const fixed = Array.isArray(next) ? next[0] : next;
-    return <Redirect to={fixed || routes.home.build({}, {})} />;
+    return <Redirect to={fixed || ''} />;
   }
 
   return (

@@ -11,8 +11,8 @@ import {
   UserStateContext,
 } from 'state/user';
 import HeaderBar from './HeaderBar';
-import PageRouteContainer from './PageRouteContainer';
 import useRequest from 'hooks/useRequest';
+import PageContainer from './PageContainer';
 
 const theme = createMuiTheme({
   palette: {
@@ -51,7 +51,7 @@ const App: React.FC = () => {
           <UserStateContext.Provider value={userState}>
             <UserDispatchContext.Provider value={userDispatch}>
               <HeaderBar />
-              <PageRouteContainer />
+              <PageContainer />
             </UserDispatchContext.Provider>
           </UserStateContext.Provider>
         )}

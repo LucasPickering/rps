@@ -2,7 +2,6 @@ import { AppBar, Button, Toolbar, makeStyles } from '@material-ui/core';
 import useUser from 'hooks/useUser';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import routes from 'util/routes';
 import LogOutButton from './login/LogOutButton';
 import LogInButton from './login/LogInButton';
 
@@ -20,7 +19,7 @@ const HeaderBar: React.FC = () => {
     <AppBar position="static">
       <Toolbar>
         {user && (
-          <Link to={routes.match.build({ matchId: 'new' }, {})}>
+          <Link to="/matches/live/new">
             <Button color="secondary" variant="contained">
               New Match
             </Button>

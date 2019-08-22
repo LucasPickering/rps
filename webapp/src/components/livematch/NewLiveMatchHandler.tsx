@@ -1,6 +1,5 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
-import routes from 'util/routes';
 import useFetch from 'hooks/useFetch';
 
 /**
@@ -11,7 +10,7 @@ const NewLiveMatchHandler: React.FC = () => {
   const { data } = useFetch<{ match_id: string }>('/api/matches/new');
 
   if (data) {
-    return <Redirect to={routes.match.build({ matchId: data.match_id }, {})} />;
+    return <Redirect to={`/matches/live/${data.match_id}`} />;
   }
   return null;
 };

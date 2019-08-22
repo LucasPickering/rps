@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { MatchOutcome } from 'state/match';
 import useUser from './useUser';
 
+// TODO clean this up
+
 type Key = string | number | symbol;
 type Splashes<T extends Key = string> = Record<T, string[]>;
 type Splasher<T = string> = (key: T, isAlt: boolean) => string;
@@ -17,6 +19,10 @@ const welcomeSplashes: Splashes = {
     'пожалуйста',
     '欢迎',
   ],
+};
+
+const notFoundSplashes: Splashes = {
+  '': ['It seems you are lost', 'What are you doing in my swamp?!'],
 };
 
 const connectionStatusSplashes: Splashes<ConnectionStatus> = {
@@ -50,6 +56,8 @@ const makeSplasher = <T extends Key>(
 };
 
 export const welcomeSplasher: Splasher = makeSplasher(welcomeSplashes);
+
+export const notFoundSplasher: Splasher = makeSplasher(notFoundSplashes);
 
 export const connectionStatusSplasher: Splasher<
   ConnectionStatus

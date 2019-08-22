@@ -2,7 +2,6 @@ import { Button } from '@material-ui/core';
 import React, { useContext } from 'react';
 import { UserActionType, UserDispatchContext } from 'state/user';
 import { RouteComponentProps, withRouter } from 'react-router';
-import routes from 'util/routes';
 import useRequest from 'hooks/useRequest';
 
 const LogOutButton: React.FC<RouteComponentProps> = ({ history }) => {
@@ -17,7 +16,7 @@ const LogOutButton: React.FC<RouteComponentProps> = ({ history }) => {
           userDispatch({
             type: UserActionType.Logout,
           });
-          history.push(routes.home.build({}, {}));
+          history.push('');
         });
       }}
     >

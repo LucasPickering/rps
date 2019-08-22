@@ -23,7 +23,6 @@ import MoveButtons from './MoveButtons';
 import PlayerScore from './PlayerScore';
 import MoveIcon from 'components/MoveIcon';
 import LiveMatchErrorDisplay from './LiveMatchErrorDisplay';
-// import FlexBox from 'components/core/FlexBox';
 
 const useLocalStyles = makeStyles(({ typography }) => ({
   majorMessage: {
