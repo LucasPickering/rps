@@ -11,7 +11,6 @@ const LogOutButton: React.FC<RouteComponentProps> = ({ history }) => {
 
   return (
     <Button
-      variant="contained"
       size="small"
       onClick={() => {
         request().then(() => {

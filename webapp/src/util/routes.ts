@@ -20,5 +20,5 @@ class RouteLocation<RouteParams = {}, QueryParams = {}> {
 export default {
   home: new RouteLocation('/'),
   login: new RouteLocation<{}, { next?: string }>('/login'),
-  match: new RouteLocation<{ matchId: string }>('/match/:matchId'),
+  match: new RouteLocation<{ matchId: string }>('/match/live/:matchId'),
 };

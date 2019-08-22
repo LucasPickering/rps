@@ -4,7 +4,7 @@ import React from 'react';
 import { Route } from 'react-router-dom';
 import routes from 'util/routes';
 import Home from './Home';
-import LiveMatchView from './livematch/LiveMatchView';
+import LiveMatchContainer from './livematch/LiveMatchContainer';
 import LoginView from './login/LoginView';
 
 const useLocalStyles = makeStyles(({ spacing }: Theme) => ({
@@ -23,7 +23,7 @@ const PageRouteContainer: React.FC = () => {
       <Route path={routes.login.templateRoute} component={LoginView} exact />
       <Route
         path={routes.match.templateRoute}
-        component={LiveMatchView}
+        component={LiveMatchContainer}
         exact
       />
     </Container>

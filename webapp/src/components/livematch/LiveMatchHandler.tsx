@@ -1,5 +1,4 @@
 import camelcaseKeys from 'camelcase-keys';
-import withRouteParams from 'hoc/withRouteParams';
 import useWebSocket, { ConnectionStatus } from 'hooks/useWebSocket';
 import React, { useReducer, useCallback } from 'react';
 import {
@@ -14,15 +13,13 @@ import ConnectionIndicator from './ConnectionIndicator';
 import LiveMatch from './LiveMatch';
 import { Typography, LinearProgress } from '@material-ui/core';
 
-interface Props {
-  matchId: string;
-}
-
 /**
  * Data handler for the match screen. Establishes a websocket connection, and
  * as long as that connection is open, renders a {@link LiveMatch}.
  */
-const LiveMatchView: React.FC<Props> = ({ matchId }) => {
+const LiveMatchHandler: React.FC<{
+  matchId: string;
+}> = ({ matchId }) => {
   const [state, dispatch] = useReducer(liveMatchReducer, defaultLiveMatchState);
   const { status, send } = useWebSocket(
     `/ws/match/${matchId}`,
@@ -81,4 +78,4 @@ const LiveMatchView: React.FC<Props> = ({ matchId }) => {
   );
 };
 
-export default withRouteParams(LiveMatchView);
+export default LiveMatchHandler;
