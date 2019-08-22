@@ -2,6 +2,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { useCallback, useMemo, useReducer } from 'react';
 import { ApiState, ApiError } from 'state/api';
 import useDeepMemo from './useDeepMemo';
+import useIsMounted from './useIsMounted';
 
 enum ApiActionType {
   Request,
@@ -64,6 +65,9 @@ const useRequest = <T>(
     React.Reducer<ApiState<T>, ApiAction<T>>
   >(apiReducer, defaultApiState);
 
+  // Prevent updates after unmounting
+  const isMounted = useIsMounted();
+
   // Everything here is memoized to prevent unnecessary re-renders and
   // effect triggers
 
@@ -77,17 +81,21 @@ const useRequest = <T>(
           .request({ ...configMemo, ...subConfig })
           .then(response => {
             const { data } = response;
-            dispatch({ type: ApiActionType.Success, data });
-            resolve(data);
+            if (isMounted.current) {
+              dispatch({ type: ApiActionType.Success, data });
+              resolve(data);
+            }
           })
           .catch(errorContainer => {
             const error = errorContainer.response;
-            dispatch({ type: ApiActionType.Error, error });
-            reject(error);
+            if (isMounted.current) {
+              dispatch({ type: ApiActionType.Error, error });
+              reject(error);
+            }
           });
       });
     },
-    [configMemo, dispatch]
+    [configMemo, dispatch, isMounted]
   );
 
   return useMemo(

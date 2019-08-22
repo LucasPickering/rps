@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import useSafeCallbacks from './useSafeCallbacks';
+import useIsMounted from './useIsMounted';
 
 export type Send = (data: unknown) => void;
 type EventConsumer<T = Event> = (event: T) => void;
@@ -40,6 +41,9 @@ const useWebSocket = (
     }
   }, []);
 
+  // Prevent updates after unmounting
+  const isMounted = useIsMounted();
+
   const { onOpen, onMessage, onError, onClose } = useSafeCallbacks<
     WebSocketCallbacks
   >(callbacks);
@@ -52,32 +56,38 @@ const useWebSocket = (
     const { current: ws } = wsRef;
 
     wsRef.current.onopen = event => {
-      setStatus(ConnectionStatus.Connected);
-      if (onOpen) {
-        onOpen(event);
+      if (isMounted.current) {
+        setStatus(ConnectionStatus.Connected);
+        if (onOpen) {
+          onOpen(event);
+        }
       }
     };
     ws.onmessage = event => {
-      if (onMessage) {
+      if (isMounted.current && onMessage) {
         onMessage(JSON.parse(event.data));
       }
     };
     ws.onerror = event => {
-      console.error('Socket error: ', event);
-      if (onError) {
-        onError(event);
+      if (isMounted.current) {
+        console.error('Socket error: ', event);
+        if (onError) {
+          onError(event);
+        }
       }
     };
 
     ws.onclose = event => {
-      // code === 1000 indicates normal closure
-      setStatus(
-        event.code === 1000
-          ? ConnectionStatus.ClosedNormal
-          : ConnectionStatus.ClosedError
-      );
-      if (onClose) {
-        onClose(event);
+      if (isMounted.current) {
+        setStatus(
+          // code === 1000 indicates normal closure
+          event.code === 1000
+            ? ConnectionStatus.ClosedNormal
+            : ConnectionStatus.ClosedError
+        );
+        if (onClose) {
+          onClose(event);
+        }
       }
     };
 
@@ -85,7 +95,7 @@ const useWebSocket = (
     return () => {
       ws.close();
     };
-  }, [addr, onOpen, onMessage, onError, onClose]);
+  }, [addr, onOpen, onMessage, onError, onClose, isMounted]);
 
   return { status, send };
 };
