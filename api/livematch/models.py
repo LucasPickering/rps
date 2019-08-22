@@ -23,11 +23,11 @@ class LivePlayerMatch(models.Model):
     row, you own can considered its LivePlayerMatchs locked.
     """
 
-    ACTIVITY_TIMEOUT = timedelta(seconds=60)
+    ACTIVITY_TIMEOUT = timedelta(seconds=10)
 
     user = models.ForeignKey(User, on_delete=models.PROTECT)
-    is_ready = models.BooleanField(default=False)
     last_activity = models.DateTimeField(auto_now_add=True)
+    is_ready = models.BooleanField(default=False)
     move = models.CharField(choices=Move.choices(), max_length=20, blank=True)
 
     def reset(self):
@@ -43,7 +43,7 @@ class LivePlayerMatch(models.Model):
         Sets the ready state to True (even if it is already True). Updates
         last activity time.
         """
-        self.ready = True
+        self.is_ready = True
         self.update_last_activity()
 
     def apply_move(self, move):
@@ -70,7 +70,10 @@ class LivePlayerMatch(models.Model):
         return (timezone.now() - self.last_activity) <= self.ACTIVITY_TIMEOUT
 
     def __str__(self):
-        return f"user: {self.user}; ready: {self.is_ready}; move: {self.move}"
+        return (
+            f"user: {self.user}; last_activity: {self.last_activity};"
+            + f" ready: {self.is_ready}; move: {self.move}"
+        )
 
 
 class LiveMatch(models.Model):

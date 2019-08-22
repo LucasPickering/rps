@@ -7,7 +7,7 @@ import {
 } from '@material-ui/core';
 import useSplashMessage, { matchOutcomeSplasher } from 'hooks/useSplashMessage';
 import { last } from 'lodash';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
   ClientMessageType,
   LiveMatchContext,
@@ -134,8 +134,18 @@ const LiveMatch: React.FC = () => {
   const localClasses = useLocalStyles();
   const {
     state: { data, errors },
+    sendMessage,
   } = useContext(LiveMatchContext);
   const { opponent } = data;
+
+  // Set up an interval to ping the server once per second
+  useEffect(() => {
+    const intervalId = setInterval(
+      () => sendMessage({ type: ClientMessageType.Heartbeat }),
+      1000
+    );
+    return () => clearInterval(intervalId);
+  }, [sendMessage]);
 
   return (
     <>

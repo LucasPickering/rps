@@ -7,14 +7,16 @@ export interface LiveGame {
   outcome: GameOutcome;
 }
 
+export interface LiveMatchOpponent {
+  username: string;
+  isActive: boolean;
+  isReady: boolean;
+}
+
 export interface LiveMatchData {
   bestOf: number;
   // undef if waiting on opponent
-  opponent?: {
-    username: string;
-    isConnected: boolean;
-    isReady: boolean;
-  };
+  opponent?: LiveMatchOpponent;
   isReady: boolean;
   selectedMove?: Move; // undef if no move selected yet
   games: LiveGame[];
@@ -80,13 +82,14 @@ export const liveMatchReducer: React.Reducer<
 };
 
 export enum ClientMessageType {
+  Heartbeat = 'heartbeat',
   Ready = 'ready',
   Move = 'move',
 }
 
 // More types will be added here
 export type ClientMessage =
-  | { type: ClientMessageType.Ready }
+  | { type: ClientMessageType.Heartbeat | ClientMessageType.Ready }
   | {
       type: ClientMessageType.Move;
       move: Move;

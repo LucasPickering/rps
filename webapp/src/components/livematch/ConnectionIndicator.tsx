@@ -1,8 +1,8 @@
 import { Chip, CircularProgress, makeStyles, Popover } from '@material-ui/core';
 import {
-  Cancel as CancelIcon,
-  CheckCircle as CheckCircleIcon,
-  Error as ErrorIcon,
+  Cancel as IconCancel,
+  CheckCircle as IconCheckCircle,
+  Error as IconError,
 } from '@material-ui/icons';
 import classNames from 'classnames';
 import useSplashMessage, {
@@ -47,11 +47,11 @@ const StatusIcon: React.FC<{ status: ConnectionStatus }> = ({
       // TODO fix sizing here
       return <CircularProgress size={16} color="secondary" {...rest} />;
     case ConnectionStatus.Connected:
-      return <CheckCircleIcon {...rest} />;
+      return <IconCheckCircle {...rest} />;
     case ConnectionStatus.ClosedNormal:
-      return <CancelIcon {...rest} />;
+      return <IconCancel {...rest} />;
     case ConnectionStatus.ClosedError:
-      return <ErrorIcon {...rest} />;
+      return <IconError {...rest} />;
   }
 };
 

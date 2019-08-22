@@ -1,10 +1,10 @@
-import { makeStyles, Typography } from '@material-ui/core';
+import { makeStyles, Typography, Tooltip } from '@material-ui/core';
 import classNames from 'classnames';
 import React, { useContext } from 'react';
-import { LiveMatchContext } from 'state/livematch';
+import { LiveMatchContext, LiveMatchOpponent } from 'state/livematch';
 import { GameOutcome } from 'state/match';
 import { countGameOutcomes } from 'util/funcs';
-import { Check as CheckIcon } from '@material-ui/icons';
+import { Check as IconCheck, Clear as IconClear } from '@material-ui/icons';
 import FlexBox from 'components/core/FlexBox';
 
 const useLocalStyles = makeStyles(({ spacing }) => ({
@@ -20,6 +20,26 @@ const useLocalStyles = makeStyles(({ spacing }) => ({
     margin: `0 ${spacing(0.5)}px`,
   },
 }));
+
+const ActivityIcon: React.FC<{ opponent?: LiveMatchOpponent }> = ({
+  opponent,
+}) => {
+  const localClasses = useLocalStyles();
+  if (opponent) {
+    const [icon, text] = opponent.isActive
+      ? [<IconCheck />, 'active'] // eslint-disable-line react/jsx-key
+      : [<IconClear />, 'inactive']; // eslint-disable-line react/jsx-key
+    return (
+      <Tooltip
+        className={localClasses.statusIcon}
+        title={`${opponent.username} is ${text}`}
+      >
+        {icon}
+      </Tooltip>
+    );
+  }
+  return null;
+};
 
 interface Props {
   className?: string;
@@ -43,7 +63,6 @@ const PlayerScore: React.FC<Props> & { defaultProps: Partial<Props> } = ({
     isSelf ? GameOutcome.Win : GameOutcome.Loss
   );
   const name = isSelf ? 'You' : opponent ? opponent.username : 'No Opponent';
-  const showReadyIcon = !isSelf && opponent && opponent.isReady;
 
   return (
     <div
@@ -55,7 +74,7 @@ const PlayerScore: React.FC<Props> & { defaultProps: Partial<Props> } = ({
         <Typography variant="h5" noWrap>
           {name}
         </Typography>
-        {showReadyIcon && <CheckIcon className={localClasses.statusIcon} />}
+        {!isSelf && <ActivityIcon opponent={opponent} />}
       </FlexBox>
       <Typography variant="h4">{num}</Typography>
     </div>

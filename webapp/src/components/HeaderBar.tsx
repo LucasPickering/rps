@@ -19,7 +19,6 @@ const HeaderBar: React.FC<RouteComponentProps> = ({ location }) => {
   return (
     <AppBar position="static">
       <Toolbar>
-        <Link to="/">Home</Link>
         {user && <NewMatchButton />}
         <div className={localClasses.grow} />
         {user ? (
