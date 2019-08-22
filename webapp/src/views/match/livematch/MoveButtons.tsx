@@ -1,7 +1,7 @@
 import { Button, makeStyles, Grid } from '@material-ui/core';
 import React from 'react';
 import { Move } from 'state/match';
-import MoveIcon from '../MoveIcon';
+import MoveIcon from 'components/MoveIcon';
 
 const useLocalStyles = makeStyles(({ spacing }) => ({
   button: { margin: spacing(1) },

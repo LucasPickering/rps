@@ -1,8 +1,8 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
-import Home from 'components/Home';
-import LoginView from 'components/login/LoginView';
-import NotFound from 'components/NotFound';
+import HomeView from 'views/HomeView';
+import LoginView from 'views/login/LoginView';
+import NotFoundView from 'views/NotFoundView';
 import MatchRoutes from './MatchRoutes';
 
 /**
@@ -11,10 +11,10 @@ import MatchRoutes from './MatchRoutes';
 const RootRoutes: React.FC = () => {
   return (
     <Switch>
-      <Route path="/" component={Home} exact />
+      <Route path="/" component={HomeView} exact />
       <Route path="/login" component={LoginView} exact />
       <Route path="/matches" component={MatchRoutes} />
-      <Route component={NotFound} />
+      <Route component={NotFoundView} />
     </Switch>
   );
 };

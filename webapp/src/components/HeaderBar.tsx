@@ -2,8 +2,8 @@ import { AppBar, Button, Toolbar, makeStyles } from '@material-ui/core';
 import useUser from 'hooks/useUser';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import LogOutButton from './login/LogOutButton';
-import LogInButton from './login/LogInButton';
+import LogOutButton from 'views/login/LogOutButton';
+import LogInButton from 'views/login/LogInButton';
 
 const useLocalStyles = makeStyles(() => ({
   grow: {

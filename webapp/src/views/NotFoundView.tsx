@@ -3,7 +3,7 @@ import React from 'react';
 import useSplashMessage, { notFoundSplasher } from 'hooks/useSplashMessage';
 import useStyles from 'hooks/useStyles';
 
-const NotFound: React.FC = () => {
+const NotFoundView: React.FC = () => {
   const classes = useStyles();
   const message = useSplashMessage(notFoundSplasher, '');
   return (
@@ -18,4 +18,4 @@ const NotFound: React.FC = () => {
   );
 };
 
-export default NotFound;
+export default NotFoundView;

@@ -1,17 +1,17 @@
 import React from 'react';
 import withRouteParams from 'hoc/withRouteParams';
-import LiveMatchView from './LiveMatchHandler';
+import LiveMatchHandler from './LiveMatchHandler';
 import NewLiveMatchHandler from './NewLiveMatchHandler';
 import useUser from 'hooks/useUser';
 import { Typography, Grid } from '@material-ui/core';
-import LogInButton from 'components/login/LogInButton';
+import LogInButton from 'views/login/LogInButton';
 
 /**
  * Handles all /match/live/* routes. If the guid is "new", this will render a
  * component that fetches a new guid from the API then redirects to the match
  * page with that guid.
  */
-const LiveMatchContainer: React.FC<{
+const LiveMatchView: React.FC<{
   matchId: string;
 }> = ({ matchId }) => {
   // Only show the live match page if the user is logged in
@@ -21,7 +21,7 @@ const LiveMatchContainer: React.FC<{
       return <NewLiveMatchHandler />;
     }
 
-    return <LiveMatchView matchId={matchId} />;
+    return <LiveMatchHandler matchId={matchId} />;
   }
 
   // Otherwise, show a simple message
@@ -39,4 +39,4 @@ const LiveMatchContainer: React.FC<{
   );
 };
 
-export default withRouteParams(LiveMatchContainer);
+export default withRouteParams(LiveMatchView);
