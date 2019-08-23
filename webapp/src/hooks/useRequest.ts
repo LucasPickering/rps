@@ -3,6 +3,7 @@ import { useCallback, useMemo, useReducer } from 'react';
 import { ApiState, ApiError } from 'state/api';
 import useDeepMemo from './useDeepMemo';
 import useIsMounted from './useIsMounted';
+import camelcaseKeys from 'camelcase-keys';
 
 enum ApiActionType {
   Request,
@@ -80,10 +81,12 @@ const useRequest = <T>(
         axios
           .request({ ...configMemo, ...subConfig })
           .then(response => {
-            const { data } = response;
+            const camelData = (camelcaseKeys(response.data, {
+              deep: true,
+            }) as unknown) as T;
             if (isMounted.current) {
-              dispatch({ type: ApiActionType.Success, data });
-              resolve(data);
+              dispatch({ type: ApiActionType.Success, data: camelData });
+              resolve(camelData);
             }
           })
           .catch(errorContainer => {

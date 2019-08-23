@@ -1,25 +1,24 @@
 import React from 'react';
-import { Typography, makeStyles } from '@material-ui/core';
+import { Typography, Grid } from '@material-ui/core';
+import useStyles from 'hooks/useStyles';
 import useSplashMessage, { welcomeSplasher } from 'hooks/useSplashMessage';
+import Leaderboard from './leaderboard/Leaderboard';
 
-const useLocalStyles = makeStyles(() => ({
-  root: {
-    textAlign: 'center',
-  },
-}));
-
-interface Props {
-  matchId: string;
-}
-
-const Home: React.FC<Props> = () => {
-  const localClasses = useLocalStyles();
+const Home: React.FC = () => {
+  const classes = useStyles();
   const welcome = useSplashMessage(welcomeSplasher, '');
   return (
-    <div className={localClasses.root}>
-      <Typography variant="h3">Rock Paper Scissors (Lizard Spock)</Typography>
-      <Typography variant="h5">{welcome}</Typography>
-    </div>
+    <>
+      <Grid item>
+        <Typography className={classes.majorMessage}>
+          Rock Paper Scissors (Lizard Spock)
+        </Typography>
+        <Typography className={classes.minorMessage}>{welcome}</Typography>
+      </Grid>
+      <Grid item>
+        <Leaderboard />
+      </Grid>
+    </>
   );
 };
 

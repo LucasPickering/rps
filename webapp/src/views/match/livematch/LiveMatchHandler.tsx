@@ -1,4 +1,3 @@
-import camelcaseKeys from 'camelcase-keys';
 import useWebSocket, { ConnectionStatus } from 'hooks/useWebSocket';
 import React, { useReducer, useCallback } from 'react';
 import {
@@ -27,6 +26,7 @@ const LiveMatchHandler: React.FC<{
     // Ugly solution but it works (sorry Seth!)
     {
       onMessage: useCallback(data => {
+        console.log(data);
         if (data.error) {
           dispatch({
             type: LiveMatchActionType.Error,
@@ -36,9 +36,7 @@ const LiveMatchHandler: React.FC<{
           // Let's just pray our data format agrees with the API
           dispatch({
             type: LiveMatchActionType.MatchUpdate,
-            data: (camelcaseKeys(data, {
-              deep: true,
-            }) as unknown) as LiveMatchData,
+            data: (data as unknown) as LiveMatchData,
           });
         }
       }, []),

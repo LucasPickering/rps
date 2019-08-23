@@ -18,7 +18,7 @@ const PageContainer: React.FC = () => {
 
   return (
     <Container className={localClasses.root}>
-      <Grid container direction="column" alignItems="center">
+      <Grid container direction="column" alignItems="center" spacing={2}>
         <RootRoutes />
       </Grid>
     </Container>
