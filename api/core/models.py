@@ -18,7 +18,7 @@ class AbstractGame(models.Model):
 
     class Meta:
         abstract = True
-        ordering = ("game_num",)
+        ordering = ("match_id", "game_num")
 
     def save(self, *args, **kwargs):
         self.full_clean()

@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_filters",
     "channels",
     "rest_framework",
 ]
@@ -63,7 +64,15 @@ TEMPLATES = [
     }
 ]
 
+REST_FRAMEWORK = {
+    "DEFAULT_FILTER_BACKENDS": [
+        "django_filters.rest_framework.DjangoFilterBackend"
+    ]
+}
+
 ASGI_APPLICATION = "rps.routing.application"
+
+APPEND_SLASH = True
 
 
 # Database

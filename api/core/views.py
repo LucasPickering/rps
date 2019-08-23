@@ -1,6 +1,6 @@
 import uuid
 from django.contrib import auth
-from rest_framework import generics, status, views
+from rest_framework import generics, status, views, filters
 from rest_framework.response import Response
 
 from . import models, serializers
@@ -44,6 +44,9 @@ class CurrentUserView(views.APIView):
 class MatchesView(generics.ListAPIView):
     queryset = models.Match.objects.all()
     serializer_class = serializers.MatchSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ["start_time", "duration"]
+    ordering = ["-start_time"]
 
 
 class NewMatchView(views.APIView):

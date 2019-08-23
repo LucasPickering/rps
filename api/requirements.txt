@@ -3,5 +3,6 @@ channels_redis
 daphne
 django
 django-debug-toolbar
+django-filter
 djangorestframework
 psycopg2-binary
