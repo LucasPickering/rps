@@ -41,6 +41,11 @@ class CurrentUserView(views.APIView):
         )
 
 
+class MatchesView(generics.ListAPIView):
+    queryset = models.Match.objects.all()
+    serializer_class = serializers.MatchSerializer
+
+
 class NewMatchView(views.APIView):
     def get(self, request):
         # Generate a new match ID and return it
@@ -50,6 +55,7 @@ class NewMatchView(views.APIView):
         )
 
 
-class MatchesView(generics.ListAPIView):
+class MatchView(generics.RetrieveAPIView):
+    lookup_field = "id"
     queryset = models.Match.objects.all()
     serializer_class = serializers.MatchSerializer

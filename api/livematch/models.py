@@ -82,7 +82,7 @@ class LiveMatch(models.Model):
     permanent_match = models.OneToOneField(
         Match, on_delete=models.CASCADE, blank=True, null=True
     )
-    start_time = models.DateTimeField(auto_now=True)
+    start_time = models.DateTimeField(auto_now_add=True)
     best_of = models.PositiveSmallIntegerField(default=5)
     # Null here means no player has joined yet
     player1 = models.OneToOneField(

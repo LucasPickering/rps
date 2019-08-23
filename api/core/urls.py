@@ -10,8 +10,9 @@ urlpatterns = [
         "matches/",
         include(
             [
-                path("new", views.NewMatchView.as_view()),
                 path("", views.MatchesView.as_view()),
+                path("new", views.NewMatchView.as_view()),
+                path("<int:id>", views.MatchView.as_view()),
             ]
         ),
     ),
