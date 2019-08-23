@@ -1,18 +1,13 @@
-from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from . import models
+from core import models
 
 
-class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField(default=None)
-    password = serializers.CharField(default=None)
+# For /api/matches/
 
 
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ("username",)
+class NewMatchSerializer(serializers.Serializer):
+    match_id = serializers.CharField()
 
 
 class PlayerGameSerializer(serializers.ModelSerializer):
@@ -44,7 +39,3 @@ class MatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Match
         fields = "__all__"
-
-
-class NewMatchSerializer(serializers.Serializer):
-    match_id = serializers.CharField()

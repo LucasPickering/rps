@@ -1,5 +1,6 @@
 import uuid
 from django.contrib import auth
+from django.contrib.auth.models import User
 from rest_framework import generics, status, views, filters
 from rest_framework.response import Response
 
@@ -41,14 +42,6 @@ class CurrentUserView(views.APIView):
         )
 
 
-class MatchesView(generics.ListAPIView):
-    queryset = models.Match.objects.all()
-    serializer_class = serializers.MatchSerializer
-    filter_backends = [filters.OrderingFilter]
-    ordering_fields = ["start_time", "duration"]
-    ordering = ["-start_time"]
-
-
 class NewMatchView(views.APIView):
     def get(self, request):
         # Generate a new match ID and return it
@@ -58,7 +51,26 @@ class NewMatchView(views.APIView):
         )
 
 
+class MatchesView(generics.ListAPIView):
+    queryset = models.Match.objects.all()
+    serializer_class = serializers.MatchSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ["start_time", "duration"]
+    ordering = ["-start_time"]
+
+
 class MatchView(generics.RetrieveAPIView):
     lookup_field = "id"
     queryset = models.Match.objects.all()
     serializer_class = serializers.MatchSerializer
+
+
+class PlayersView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = serializers.PlayerSummarySerializer
+
+
+class PlayerView(generics.ListAPIView):
+    lookup_field = "username"
+    queryset = User.objects.all()
+    serializer_class = serializers.PlayerSerializer

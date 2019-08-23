@@ -41,7 +41,8 @@ class Match(models.Model):
     start_time = models.DateTimeField()
     duration = models.PositiveIntegerField()  # Seconds
     best_of = models.PositiveSmallIntegerField()
-    players = models.ManyToManyField(User)  # Always len=2
+    # Always len=2
+    players = models.ManyToManyField(User, related_name="matches")
     # Null for unfinished matches, i.e. when Nick rage quits
     winner = models.ForeignKey(
         User, related_name="match_wins", null=True, on_delete=models.PROTECT
