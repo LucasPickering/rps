@@ -2,6 +2,14 @@ import axios from 'axios';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './components/App';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import {
+  faHandRock,
+  faHandPaper,
+  faHandScissors,
+  faHandLizard,
+  faHandSpock,
+} from '@fortawesome/free-solid-svg-icons';
 
 import './index.css';
 import * as serviceWorker from './serviceWorker';
@@ -9,6 +17,8 @@ import * as serviceWorker from './serviceWorker';
 // axios setup to cooperate with Django's CSRF policy
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.xsrfHeaderName = 'X-CSRFTOKEN';
+
+library.add(faHandRock, faHandPaper, faHandScissors, faHandLizard, faHandSpock);
 
 ReactDOM.render(<App />, document.getElementById('root'));
 
