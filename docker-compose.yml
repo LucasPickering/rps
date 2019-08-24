@@ -31,7 +31,7 @@ services:
   webapp:
     image: node:10-alpine
     working_dir: /app/webapp
-    command: sh -c "npm i && npm start"
+    command: sh -c "npm i && HTTPS=true npm start"
     volumes:
       - ./webapp:/app/webapp:rw
       - node_modules:/app/webapp/node_modules

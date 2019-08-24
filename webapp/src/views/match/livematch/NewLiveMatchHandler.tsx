@@ -7,7 +7,7 @@ import useFetch from 'hooks/useFetch';
  * this will redirect to the match page for that new ID.
  */
 const NewLiveMatchHandler: React.FC = () => {
-  const { data } = useFetch<{ matchId: string }>('/api/matches/new');
+  const { data } = useFetch<{ matchId: string }>('/api/matches/new/');
 
   if (data) {
     return <Redirect to={`/matches/live/${data.matchId}`} />;

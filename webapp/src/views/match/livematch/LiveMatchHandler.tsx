@@ -26,7 +26,6 @@ const LiveMatchHandler: React.FC<{
     // Ugly solution but it works (sorry Seth!)
     {
       onMessage: useCallback(data => {
-        console.log(data);
         if (data.error) {
           dispatch({
             type: LiveMatchActionType.Error,

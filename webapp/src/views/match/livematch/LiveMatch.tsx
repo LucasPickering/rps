@@ -24,6 +24,7 @@ import PlayerScore from './PlayerScore';
 import MoveIcon from 'components/MoveIcon';
 import LiveMatchErrorDisplay from './LiveMatchErrorDisplay';
 import useStyles from 'hooks/useStyles';
+import useNotifications from 'hooks/useNotifications';
 
 const useLocalStyles = makeStyles(() => ({
   loading: {
@@ -122,11 +123,12 @@ const Actions: React.FC<{ match: LiveMatchData }> = ({
 const LiveMatch: React.FC = () => {
   const classes = useStyles();
   const localClasses = useLocalStyles();
+  const notify = useNotifications();
   const {
     state: { data, errors },
     sendMessage,
   } = useContext(LiveMatchContext);
-  const { opponent } = data;
+  const { games, opponent } = data;
 
   // Set up an interval to ping the server once per second
   useEffect(() => {
@@ -136,6 +138,22 @@ const LiveMatch: React.FC = () => {
     );
     return () => clearInterval(intervalId);
   }, [sendMessage]);
+
+  const opponentName = opponent && opponent.username;
+  useEffect(() => {
+    if (opponentName) {
+      notify(`${opponentName} connected`);
+    }
+  }, [notify, opponentName]);
+
+  useEffect(() => {
+    const lastGame = last(games);
+    if (lastGame) {
+      notify(
+        `Game over - ${formatGameOutcome(lastGame.outcome, OutcomeFormat.Noun)}`
+      );
+    }
+  }, [notify, games.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>
