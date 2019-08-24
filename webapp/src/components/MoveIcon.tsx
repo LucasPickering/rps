@@ -1,4 +1,3 @@
-import { CircularProgress } from '@material-ui/core';
 import React from 'react';
 import { Move } from 'state/match';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -20,12 +19,7 @@ const moveIcons: { [move: string]: IconName } = {
  * An icon for a single move. If no move is specified, a loading icon is shown
  */
 const MoveIcon: React.FC<{
-  move?: Move;
-}> = ({ move }) =>
-  move ? (
-    <FontAwesomeIcon icon={moveIcons[move]} size="lg" />
-  ) : (
-    <CircularProgress size={20} />
-  );
+  move: Move;
+}> = ({ move }) => <FontAwesomeIcon icon={moveIcons[move]} size="lg" />;
 
 export default MoveIcon;

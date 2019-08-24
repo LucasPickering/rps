@@ -21,10 +21,10 @@ import {
 import GameLog from './GameLog';
 import MoveButtons from './MoveButtons';
 import PlayerScore from './PlayerScore';
-import MoveIcon from 'components/MoveIcon';
 import LiveMatchErrorDisplay from './LiveMatchErrorDisplay';
 import useStyles from 'hooks/useStyles';
 import useNotifications from 'hooks/useNotifications';
+import MoveIconCircle from './MoveIconCircle';
 
 const useLocalStyles = makeStyles(() => ({
   loading: {
@@ -63,22 +63,24 @@ const Actions: React.FC<{ match: LiveMatchData }> = ({
   // Match is running
   if (isReady) {
     // Player is ready, show moves
-    return selectedMove ? (
+    return (
       <Grid item container justify="space-between">
         <Grid item>
-          <MoveIcon move={selectedMove} />
+          <MoveIconCircle move={selectedMove} />
         </Grid>
         <Grid item>
-          <MoveIcon />
+          {/* Only show loading icon for opponent if user has already picked a move */}
+          <MoveIconCircle loading={Boolean(selectedMove)} />
         </Grid>
-      </Grid>
-    ) : (
-      <Grid item container justify="center">
-        <MoveButtons
-          onClick={move => {
-            sendMessage({ type: ClientMessageType.Move, move });
-          }}
-        />
+        {!selectedMove && (
+          <Grid item container justify="center">
+            <MoveButtons
+              onClick={move => {
+                sendMessage({ type: ClientMessageType.Move, move });
+              }}
+            />
+          </Grid>
+        )}
       </Grid>
     );
   }
@@ -90,7 +92,7 @@ const Actions: React.FC<{ match: LiveMatchData }> = ({
       {lastGame && (
         <Grid item container justify="space-between">
           <Grid item>
-            <MoveIcon move={lastGame.selfMove} />
+            <MoveIconCircle move={lastGame.selfMove} />
           </Grid>
           <Grid item>
             <Typography className={classes.normalMessage}>
@@ -98,7 +100,7 @@ const Actions: React.FC<{ match: LiveMatchData }> = ({
             </Typography>
           </Grid>
           <Grid item>
-            <MoveIcon move={lastGame.opponentMove} />
+            <MoveIconCircle move={lastGame.opponentMove} />
           </Grid>
         </Grid>
       )}
@@ -171,7 +173,7 @@ const LiveMatch: React.FC = () => {
               <PlayerScore />
             </Grid>
           </Grid>
-          <Grid container item direction="column" alignItems="center">
+          <Grid item sm={8} container direction="column" alignItems="center">
             <Actions match={data} />
           </Grid>
         </>
