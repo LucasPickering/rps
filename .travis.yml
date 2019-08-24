@@ -5,7 +5,4 @@ branches:
   only:
     - master
 script:
-  # Static image depends on API so it has to be in this order
-  - docker-compose -f docker-compose.build.yml build --pull api
-  - docker-compose -f docker-compose.build.yml build --pull static
-  - ./push.sh
+  - ./travis_build_push.sh
