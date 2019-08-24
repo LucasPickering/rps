@@ -179,7 +179,7 @@ class LiveMatch(models.Model):
         is_player_new = False
         if not player_obj:
             if self.player1 is None or self.player2 is None:
-                player_obj = LivePlayerMatch(user=player)
+                player_obj = LivePlayerMatch(user=player, is_ready=True)
                 is_player_new = True
             else:
                 # Game is full already
