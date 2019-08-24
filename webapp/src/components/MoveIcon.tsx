@@ -23,9 +23,8 @@ const MoveIcon: React.FC<{
   move?: Move;
 }> = ({ move }) =>
   move ? (
-    <FontAwesomeIcon icon={moveIcons[move]} />
+    <FontAwesomeIcon icon={moveIcons[move]} size="lg" />
   ) : (
-    // <Typography>{moveLabels[move]}</Typography>
     <CircularProgress size={20} />
   );
 

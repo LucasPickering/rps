@@ -6,7 +6,7 @@ import useRequest from 'hooks/useRequest';
 
 const LogOutButton: React.FC<RouteComponentProps> = ({ history }) => {
   const userDispatch = useContext(UserDispatchContext);
-  const { request } = useRequest<{}>({ url: '/api/logout', method: 'POST' });
+  const { request } = useRequest<{}>({ url: '/api/logout/', method: 'POST' });
 
   return (
     <Button

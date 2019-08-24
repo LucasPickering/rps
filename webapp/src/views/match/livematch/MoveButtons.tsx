@@ -1,10 +1,15 @@
-import { Button, makeStyles, Grid } from '@material-ui/core';
+import { makeStyles, Grid, IconButton } from '@material-ui/core';
 import React from 'react';
 import { Move } from 'state/match';
 import MoveIcon from 'components/MoveIcon';
 
-const useLocalStyles = makeStyles(({ spacing }) => ({
-  button: { margin: spacing(1) },
+const useLocalStyles = makeStyles(({ palette, spacing }) => ({
+  button: {
+    margin: spacing(1),
+    borderWidth: 2,
+    borderStyle: 'dashed',
+    borderColor: palette.divider,
+  },
 }));
 
 interface Props {
@@ -17,13 +22,12 @@ const MoveButtons: React.FC<Props> = ({ onClick }) => {
     <>
       {Object.values(Move).map((move: Move) => (
         <Grid key={move} item>
-          <Button
+          <IconButton
             className={localClasses.button}
-            variant="outlined"
             onClick={() => onClick(move)}
           >
             <MoveIcon move={move} />
-          </Button>
+          </IconButton>
         </Grid>
       ))}
     </>

@@ -7,6 +7,7 @@ import FlexBox from 'components/core/FlexBox';
 const useLocalStyles = makeStyles(({ spacing, palette }) => ({
   snackbarContent: {
     backgroundColor: palette.error.main,
+    color: palette.error.contrastText,
   },
   icon: {
     marginRight: spacing(1),

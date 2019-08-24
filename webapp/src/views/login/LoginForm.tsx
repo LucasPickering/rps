@@ -28,7 +28,7 @@ const LoginForm: React.FC<RouteComponentProps> = ({ location }) => {
   const {
     state: { loading, error },
     request,
-  } = useRequest<User>({ url: '/api/login', method: 'POST' });
+  } = useRequest<User>({ url: '/api/login/', method: 'POST' });
 
   // Already logged in - get up on outta here
   if (user) {
