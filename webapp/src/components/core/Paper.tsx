@@ -1,5 +1,5 @@
 import { makeStyles, Paper as MuiPaper } from '@material-ui/core';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import React from 'react';
 
 const useLocalStyles = makeStyles(({ spacing }) => ({
@@ -14,7 +14,7 @@ const Paper: React.FC<React.ComponentProps<typeof MuiPaper>> = ({
 }) => {
   const localClasses = useLocalStyles();
   return (
-    <MuiPaper className={classNames(localClasses.root, className)} {...rest} />
+    <MuiPaper className={clsx(localClasses.root, className)} {...rest} />
   );
 };
 

@@ -1,8 +1,8 @@
 import { Button } from '@material-ui/core';
 import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import { Link } from 'react-router-dom';
 import queryString from 'query-string';
+import ButtonLink from 'components/core/ButtonLink';
 
 /**
  * Just a link component to the login page. But, because this is used in
@@ -19,11 +19,9 @@ const LogInButton: React.FC<
       : '';
   return (
     // TODO include query params here
-    <Link to={`/login${paramsStr}`}>
-      <Button variant={variant} color={color}>
-        Log In
-      </Button>
-    </Link>
+    <ButtonLink to={`/login${paramsStr}`} variant={variant} color={color}>
+      Log In
+    </ButtonLink>
   );
 };
 

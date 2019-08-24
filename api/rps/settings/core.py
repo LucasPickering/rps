@@ -72,7 +72,7 @@ REST_FRAMEWORK = {
 
 ASGI_APPLICATION = "rps.routing.application"
 
-APPEND_SLASH = True
+APPEND_SLASH = False
 
 
 # Database

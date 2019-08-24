@@ -4,7 +4,7 @@ import {
   CheckCircle as IconCheckCircle,
   Error as IconError,
 } from '@material-ui/icons';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import useSplashMessage, {
   connectionStatusSplasher,
 } from 'hooks/useSplashMessage';
@@ -26,9 +26,11 @@ const useLocalStyles = makeStyles(({ palette, spacing }) => ({
   },
   success: {
     backgroundColor: palette.primary.main,
+    color: palette.primary.contrastText,
   },
   error: {
     backgroundColor: palette.error.main,
+    color: palette.error.contrastText,
   },
   popover: {
     pointerEvents: 'none',
@@ -72,7 +74,7 @@ const ConnectionIndicator: React.FC<{ connectionStatus: ConnectionStatus }> = ({
   return (
     <div>
       <Chip
-        className={classNames(localClasses.root, {
+        className={clsx(localClasses.root, {
           [localClasses.success]:
             connectionStatus === ConnectionStatus.Connected,
           [localClasses.error]:

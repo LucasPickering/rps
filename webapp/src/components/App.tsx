@@ -22,7 +22,7 @@ const theme = createMuiTheme({
 
 const App: React.FC = () => {
   const [userState, userDispatch] = useReducer(userReducer, defaultUserState);
-  const { request } = useRequest<User>({ url: '/api/current-user' });
+  const { request } = useRequest<User>({ url: '/api/current-user/' });
 
   // Kick off a request to fetch user data
   useEffect(() => {

@@ -1,5 +1,5 @@
 import { makeStyles, Typography, Tooltip } from '@material-ui/core';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import React, { useContext } from 'react';
 import { LiveMatchContext, LiveMatchOpponent } from 'state/livematch';
 import { GameOutcome } from 'state/match';
@@ -66,7 +66,7 @@ const PlayerScore: React.FC<Props> & { defaultProps: Partial<Props> } = ({
 
   return (
     <div
-      className={classNames(localClasses.root, className, {
+      className={clsx(localClasses.root, className, {
         [localClasses.rtl]: !isSelf,
       })}
     >

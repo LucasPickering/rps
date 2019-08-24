@@ -1,13 +1,18 @@
-import { AppBar, Button, Toolbar, makeStyles } from '@material-ui/core';
+import { AppBar, Toolbar, makeStyles } from '@material-ui/core';
 import useUser from 'hooks/useUser';
 import React from 'react';
-import { Link } from 'react-router-dom';
 import LogOutButton from 'views/login/LogOutButton';
 import LogInButton from 'views/login/LogInButton';
+import NavLink from './core/NavLink';
+import ButtonLink from './core/ButtonLink';
 
-const useLocalStyles = makeStyles(() => ({
+const useLocalStyles = makeStyles(({ spacing }) => ({
+  nav: {},
   grow: {
     flexGrow: 1,
+  },
+  newMatchButton: {
+    margin: spacing(1),
   },
 }));
 
@@ -16,16 +21,22 @@ const HeaderBar: React.FC = () => {
   const user = useUser();
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" color="default">
       <Toolbar>
-        {user && (
-          <Link to="/matches/live/new">
-            <Button color="secondary" variant="contained">
-              New Match
-            </Button>
-          </Link>
-        )}
+        <nav className={localClasses.nav}>
+          <NavLink to="/">Home</NavLink>
+        </nav>
         <div className={localClasses.grow} />
+        {user && (
+          <ButtonLink
+            className={localClasses.newMatchButton}
+            to="/matches/live/new"
+            color="secondary"
+            variant="contained"
+          >
+            New Match
+          </ButtonLink>
+        )}
         {user ? <LogOutButton /> : <LogInButton />}
       </Toolbar>
     </AppBar>

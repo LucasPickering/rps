@@ -81,9 +81,11 @@ const useRequest = <T>(
         axios
           .request({ ...configMemo, ...subConfig })
           .then(response => {
-            const camelData = (camelcaseKeys(response.data, {
-              deep: true,
-            }) as unknown) as T;
+            const camelData =
+              response.data &&
+              ((camelcaseKeys(response.data, {
+                deep: true,
+              }) as unknown) as T);
             if (isMounted.current) {
               dispatch({ type: ApiActionType.Success, data: camelData });
               resolve(camelData);
