@@ -1,6 +1,8 @@
 import React from 'react';
 import { LiveGame } from 'state/livematch';
 import { GameOutcome } from 'state/match';
+import { RequestParams } from 'state/api';
+import { Query } from 'material-table';
 
 /**
  * Wraps the given HoC in logic that will add a better name to all
@@ -56,3 +58,10 @@ export const makeReducerContexts = <State, Action>(): {
     ),
   };
 };
+
+export const tableToApiQuery = <T extends object>(
+  query: Query<T>
+): RequestParams => ({
+  page: query.page + 1,
+  page_size: query.pageSize,
+});

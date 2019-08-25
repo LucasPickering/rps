@@ -9,8 +9,20 @@ export interface ApiState<T> {
   error?: ApiError;
 }
 
-export interface ApiCallbacks<T> {
-  onRequest?: () => void;
-  onSuccess?: (data: T) => void;
-  onError?: (error: ApiError) => void;
+/**
+ * The generic request parameter format that the API uses for sorting, filters,
+ * pagination, etc.
+ */
+export interface RequestParams {
+  page?: number;
+  page_size?: number;
+  ordering?: string;
+  q?: string;
+}
+
+export interface PaginatedResponse<T> {
+  count: number;
+  previous?: string;
+  next?: string;
+  results: T;
 }

@@ -1,7 +1,9 @@
 import React from 'react';
 import MaterialTable from 'material-table';
 import { PlayerSummary } from 'state/player';
-import useFetch from 'hooks/useFetch';
+import useRequest from 'hooks/useRequest';
+import { PaginatedResponse } from 'state/api';
+import { tableToApiQuery } from 'util/funcs';
 
 const tableOptions = {
   search: false,
@@ -9,18 +11,34 @@ const tableOptions = {
 };
 
 const Leaderboard: React.FC = () => {
-  const { loading, data } = useFetch<PlayerSummary[]>('/api/players/');
+  const {
+    state: { loading },
+    request,
+  } = useRequest<PaginatedResponse<PlayerSummary[]>>({ url: '/api/players/' });
 
   return (
     <MaterialTable
       title="Leaderboard"
       columns={[
         { title: 'Player', field: 'username' },
-        { title: 'Match Wins', field: 'matchWins' },
+        { title: 'Match Wins', field: 'matchWins', type: 'numeric' },
+        { title: 'Match Losses', field: 'matchLosses', type: 'numeric' },
       ]}
       options={tableOptions}
       isLoading={loading}
-      data={data || []}
+      data={query =>
+        new Promise((resolve, reject) =>
+          request({ params: tableToApiQuery(query) })
+            .then(response =>
+              resolve({
+                data: response.results,
+                page: query.page,
+                totalCount: response.count,
+              })
+            )
+            .catch(error => reject(error))
+        )
+      }
     />
   );
 };
