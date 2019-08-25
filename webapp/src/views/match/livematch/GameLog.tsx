@@ -18,6 +18,9 @@ const useLocalStyles = makeStyles(() => ({
     gridTemplateColumns: '24px 14px 24px 14px 24px',
     alignItems: 'center',
   },
+  selfWin: {
+    gridColumn: 1,
+  },
   selfMoveIcon: {
     gridColumn: 2,
   },
@@ -30,7 +33,9 @@ const Game: React.FC<{ game?: LiveGame }> = ({ game }) => {
   const localClasses = useLocalStyles();
   return game ? (
     <>
-      {game.outcome === GameOutcome.Win && <IconChevronLeft />}
+      {game.outcome === GameOutcome.Win && (
+        <IconChevronLeft className={localClasses.selfWin} />
+      )}
       <MoveIcon className={localClasses.selfMoveIcon} move={game.selfMove} />
       <IconRemove className={localClasses.centerIcon} />
       <MoveIcon move={game.opponentMove} />

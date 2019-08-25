@@ -1,4 +1,9 @@
-import { makeStyles, Typography, Tooltip } from '@material-ui/core';
+import {
+  makeStyles,
+  Typography,
+  Tooltip,
+  CircularProgress,
+} from '@material-ui/core';
 import clsx from 'clsx';
 import React, { useContext } from 'react';
 import { LiveMatchContext, LiveMatchOpponent } from 'state/livematch';
@@ -58,25 +63,30 @@ const PlayerScore: React.FC<Props> & { defaultProps: Partial<Props> } = ({
     },
   } = useContext(LiveMatchContext);
 
-  const num = countGameOutcomes(
-    games,
-    isSelf ? GameOutcome.Win : GameOutcome.Loss
-  );
-  const name = isSelf ? 'You' : opponent ? opponent.username : 'No Opponent';
-
   return (
     <div
       className={clsx(localClasses.root, className, {
         [localClasses.rtl]: !isSelf,
       })}
     >
-      <FlexBox flexDirection="row">
-        <Typography variant="h5" noWrap>
-          {name}
-        </Typography>
-        {!isSelf && <ActivityIcon opponent={opponent} />}
-      </FlexBox>
-      <Typography variant="h4">{num}</Typography>
+      {isSelf || opponent ? (
+        <>
+          <FlexBox flexDirection="row">
+            <Typography variant="h5" noWrap>
+              {isSelf ? 'You' : opponent ? opponent.username : 'No Opponent'}
+            </Typography>
+            {!isSelf && <ActivityIcon opponent={opponent} />}
+          </FlexBox>
+          <Typography variant="h4">
+            {countGameOutcomes(
+              games,
+              isSelf ? GameOutcome.Win : GameOutcome.Loss
+            )}
+          </Typography>
+        </>
+      ) : (
+        <CircularProgress />
+      )}
     </div>
   );
 };

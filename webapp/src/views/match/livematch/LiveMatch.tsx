@@ -1,18 +1,14 @@
 import {
-  LinearProgress,
+  // LinearProgress,
   Typography,
-  makeStyles,
+  // makeStyles,
   Button,
   Grid,
 } from '@material-ui/core';
 import useSplashMessage, { matchOutcomeSplasher } from 'hooks/useSplashMessage';
 import { last } from 'lodash';
 import React, { useContext, useEffect } from 'react';
-import {
-  ClientMessageType,
-  LiveMatchContext,
-  LiveMatchData,
-} from 'state/livematch';
+import { ClientMessageType, LiveMatchContext } from 'state/livematch';
 import {
   formatGameOutcome,
   formatMatchOutcome,
@@ -26,20 +22,17 @@ import useStyles from 'hooks/useStyles';
 import useNotifications from 'hooks/useNotifications';
 import MoveIconCircle from './MoveIconCircle';
 
-const useLocalStyles = makeStyles(() => ({
-  loading: {
-    width: '100%',
-  },
-}));
-
 /**
  * Helper component to render the actions available to the player
  */
-const Actions: React.FC<{ match: LiveMatchData }> = ({
-  match: { isReady, selectedMove, matchOutcome, games },
-}) => {
+const Actions: React.FC = () => {
   const classes = useStyles();
-  const { sendMessage } = useContext(LiveMatchContext);
+  const {
+    state: {
+      data: { isReady, selectedMove, opponent, matchOutcome, games },
+    },
+    sendMessage,
+  } = useContext(LiveMatchContext);
   const matchOutcomeSplash = useSplashMessage(
     matchOutcomeSplasher,
     matchOutcome
@@ -61,26 +54,16 @@ const Actions: React.FC<{ match: LiveMatchData }> = ({
   }
 
   // Match is running
-  if (isReady) {
+  if (isReady && !selectedMove) {
     // Player is ready, show moves
     return (
-      <Grid item container justify="space-between">
-        <Grid item>
-          <MoveIconCircle move={selectedMove} />
-        </Grid>
-        <Grid item>
-          {/* Only show loading icon for opponent if user has already picked a move */}
-          <MoveIconCircle loading={Boolean(selectedMove)} />
-        </Grid>
-        {!selectedMove && (
-          <Grid item container justify="center">
-            <MoveButtons
-              onClick={move => {
-                sendMessage({ type: ClientMessageType.Move, move });
-              }}
-            />
-          </Grid>
-        )}
+      <Grid item container justify="center">
+        <MoveButtons
+          disabled={!opponent}
+          onClick={move => {
+            sendMessage({ type: ClientMessageType.Move, move });
+          }}
+        />
       </Grid>
     );
   }
@@ -90,18 +73,10 @@ const Actions: React.FC<{ match: LiveMatchData }> = ({
   return (
     <>
       {lastGame && (
-        <Grid item container justify="space-between">
-          <Grid item>
-            <MoveIconCircle move={lastGame.selfMove} />
-          </Grid>
-          <Grid item>
-            <Typography className={classes.normalMessage}>
-              {formatGameOutcome(lastGame.outcome)}
-            </Typography>
-          </Grid>
-          <Grid item>
-            <MoveIconCircle move={lastGame.opponentMove} />
-          </Grid>
+        <Grid item>
+          <Typography className={classes.normalMessage}>
+            {formatGameOutcome(lastGame.outcome)}
+          </Typography>
         </Grid>
       )}
       <Grid item>
@@ -123,24 +98,15 @@ const Actions: React.FC<{ match: LiveMatchData }> = ({
  * logged in.
  */
 const LiveMatch: React.FC = () => {
-  const classes = useStyles();
-  const localClasses = useLocalStyles();
   const notify = useNotifications();
   const {
-    state: { data, errors },
-    sendMessage,
+    state: {
+      data: { isReady, selectedMove, games, opponent },
+      errors,
+    },
   } = useContext(LiveMatchContext);
-  const { games, opponent } = data;
 
-  // Set up an interval to ping the server once per second
-  useEffect(() => {
-    const intervalId = setInterval(
-      () => sendMessage({ type: ClientMessageType.Heartbeat }),
-      1000
-    );
-    return () => clearInterval(intervalId);
-  }, [sendMessage]);
-
+  // Notification for when opponent first connects
   const opponentName = opponent && opponent.username;
   useEffect(() => {
     if (opponentName) {
@@ -148,6 +114,7 @@ const LiveMatch: React.FC = () => {
     }
   }, [notify, opponentName]);
 
+  // Notitication for end of game
   useEffect(() => {
     const lastGame = last(games);
     if (lastGame) {
@@ -157,35 +124,35 @@ const LiveMatch: React.FC = () => {
     }
   }, [notify, games.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const lastGame = last(games);
   return (
     <>
-      {opponent ? (
-        // Match is running
-        <>
-          <Grid item container justify="space-between">
-            <Grid item>
-              <PlayerScore isSelf />
-            </Grid>
-            <Grid item>
-              <GameLog />
-            </Grid>
-            <Grid item>
-              <PlayerScore />
-            </Grid>
-          </Grid>
-          <Grid item container direction="column" alignItems="center">
-            <Actions match={data} />
-          </Grid>
-        </>
-      ) : (
-        // No opponent
-        <>
-          <Typography className={classes.normalMessage}>
-            Waiting for opponent...
-          </Typography>
-          <LinearProgress className={localClasses.loading} />
-        </>
-      )}
+      <Grid item container justify="space-between">
+        <Grid item>
+          <PlayerScore isSelf />
+        </Grid>
+        <Grid item>
+          <MoveIconCircle
+            move={isReady ? selectedMove : lastGame && lastGame.selfMove}
+          />
+        </Grid>
+        <Grid item>
+          <GameLog />
+        </Grid>
+        <Grid item>
+          <MoveIconCircle
+            //  Only show loading icon for opponent if user has already picked a move
+            loading={Boolean(selectedMove)}
+            move={!isReady && lastGame ? lastGame.opponentMove : undefined}
+          />
+        </Grid>
+        <Grid item>
+          <PlayerScore />
+        </Grid>
+      </Grid>
+      <Grid item container direction="column" alignItems="center">
+        <Actions />
+      </Grid>
       <LiveMatchErrorDisplay errors={errors} />
     </>
   );

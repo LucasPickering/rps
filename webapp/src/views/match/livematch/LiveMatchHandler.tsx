@@ -1,5 +1,5 @@
 import useWebSocket, { ConnectionStatus } from 'hooks/useWebSocket';
-import React, { useReducer, useCallback } from 'react';
+import React, { useReducer, useCallback, useEffect } from 'react';
 import {
   LiveMatchActionType,
   LiveMatchContext,
@@ -7,6 +7,7 @@ import {
   LiveMatchData,
   LiveMatchError,
   defaultLiveMatchState,
+  ClientMessageType,
 } from 'state/livematch';
 import ConnectionIndicator from './ConnectionIndicator';
 import LiveMatch from './LiveMatch';
@@ -41,6 +42,17 @@ const LiveMatchHandler: React.FC<{
       }, []),
     }
   );
+
+  // Set up an interval to ping the server once per second
+  useEffect(() => {
+    if (status === ConnectionStatus.Connected) {
+      const intervalId = setInterval(
+        () => send({ type: ClientMessageType.Heartbeat }),
+        1000
+      );
+      return () => clearInterval(intervalId);
+    }
+  }, [status, send]);
 
   const getContent = (): React.ReactElement | undefined => {
     switch (status) {

@@ -11,10 +11,11 @@ const useLocalStyles = makeStyles(({ spacing }) => ({
 }));
 
 interface Props {
+  disabled: boolean;
   onClick: (move: Move) => void;
 }
 
-const MoveButtons: React.FC<Props> = ({ onClick }) => {
+const MoveButtons = ({ disabled, onClick }: Props): React.ReactElement => {
   const localClasses = useLocalStyles();
   return (
     <>
@@ -22,6 +23,7 @@ const MoveButtons: React.FC<Props> = ({ onClick }) => {
         <Grid key={move} item>
           <IconButton
             className={localClasses.button}
+            disabled={disabled}
             onClick={() => onClick(move)}
           >
             <MoveIconCircle move={move} />
@@ -30,6 +32,10 @@ const MoveButtons: React.FC<Props> = ({ onClick }) => {
       ))}
     </>
   );
+};
+
+MoveButtons.defaultProps = {
+  disabled: false,
 };
 
 export default MoveButtons;
