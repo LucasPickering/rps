@@ -24,7 +24,9 @@ const HeaderBar: React.FC = () => {
     <AppBar position="static" color="default">
       <Toolbar>
         <nav className={localClasses.nav}>
-          <NavLink to="/">Home</NavLink>
+          <NavLink to="/" exact>
+            Home
+          </NavLink>
         </nav>
         <div className={localClasses.grow} />
         {user && (

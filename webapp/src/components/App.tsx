@@ -12,10 +12,12 @@ import {
 } from 'state/user';
 import HeaderBar from './HeaderBar';
 import useRequest from 'hooks/useRequest';
+import { lightBlue } from '@material-ui/core/colors';
 import PageContainer from './PageContainer';
 
 const theme = createMuiTheme({
   palette: {
+    primary: lightBlue,
     type: 'dark',
   },
 });
