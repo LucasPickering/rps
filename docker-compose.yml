@@ -20,6 +20,7 @@ services:
 
   api:
     build: ./api/
+    entrypoint: []
     command: sh -c "pip3 install -r requirements.txt && dockerize -wait tcp://db:5432 && ./manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./api/:/app/api:rw

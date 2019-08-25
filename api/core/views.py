@@ -1,10 +1,10 @@
-import uuid
 from django.contrib import auth
 from django.contrib.auth.models import User
 from rest_framework import generics, status, views, filters
 from rest_framework.response import Response
 
 from . import models, serializers
+from .util import get_livematch_id
 
 
 class LoginView(views.APIView):
@@ -45,9 +45,10 @@ class CurrentUserView(views.APIView):
 class NewMatchView(views.APIView):
     def get(self, request):
         # Generate a new match ID and return it
-        match_id = uuid.uuid4().hex
         return Response(
-            serializers.NewMatchSerializer({"match_id": match_id}).data
+            serializers.NewMatchSerializer(
+                {"match_id": get_livematch_id()}
+            ).data
         )
 
 

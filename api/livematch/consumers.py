@@ -4,7 +4,7 @@ from channels.generic.websocket import JsonWebsocketConsumer
 from django.conf import settings
 from django.db import transaction
 
-from core.util import Move, is_uuid
+from core.util import Move, is_livematch_id
 
 from .models import LiveMatch
 from .serializers import (
@@ -93,7 +93,7 @@ class MatchConsumer(JsonWebsocketConsumer):
         Raises:
             ClientError: If the match ID is invalid
         """
-        if not is_uuid(self.match_id):
+        if not is_livematch_id(self.match_id):
             raise ClientError(ClientErrorType.INVALID_MATCH_ID)
 
     def validate_user(self):

@@ -22,5 +22,7 @@ WORKDIR /app/api/
 COPY requirements.txt .
 RUN pip install -U -r requirements.txt
 COPY . .
+RUN crontab docker/crontab
 
-CMD ["./cmd.sh"]
+ENTRYPOINT ["./docker/entrypoint.sh"]
+CMD ["./docker/cmd.sh"]

@@ -1,7 +1,9 @@
 import re
+import uuid
 from enum import Enum
 
-UUID_RGX = re.compile(r"[0-9a-f]{32}")
+LIVEMATCH_ID_LENGTH = 7  # In hex characters
+LIVEMATCH_ID_RGX = re.compile(r"[0-9a-f]{7}")
 
 
 class DbEnum(Enum):
@@ -74,8 +76,12 @@ def get_win_target(best_of):
     return (best_of // 2) + 1
 
 
-def is_uuid(s):
-    return bool(UUID_RGX.match(s))
+def get_livematch_id():
+    return uuid.uuid4().hex[:LIVEMATCH_ID_LENGTH]
+
+
+def is_livematch_id(s):
+    return bool(LIVEMATCH_ID_RGX.match(s))
 
 
 def register(registry, *names):
