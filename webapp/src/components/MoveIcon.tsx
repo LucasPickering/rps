@@ -19,7 +19,10 @@ const moveIcons: { [move: string]: IconName } = {
  * An icon for a single move. If no move is specified, a loading icon is shown
  */
 const MoveIcon: React.FC<{
+  className?: string;
   move: Move;
-}> = ({ move }) => <FontAwesomeIcon icon={moveIcons[move]} size="lg" />;
+}> = ({ className, move }) => (
+  <FontAwesomeIcon className={className} icon={moveIcons[move]} />
+);
 
 export default MoveIcon;

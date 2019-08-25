@@ -30,8 +30,9 @@ const connectionStatusSplashes: Splashes<ConnectionStatus> = {
   [ConnectionStatus.Connected]: [
     'You are Online™',
     'Welcome to the THUNDERDOME',
+    'Now with 20% less trans fat!',
   ],
-  [ConnectionStatus.ClosedError]: [':sad_parrot:'],
+  [ConnectionStatus.ClosedError]: [':sad_parrot:', "It's a feature"],
   [ConnectionStatus.ClosedNormal]: ['Head aega!', 'Nägemist!', 'Nägemiseni!'],
 };
 
@@ -39,9 +40,11 @@ const matchOutcomeSplashes: Splashes<MatchOutcome> = {
   [MatchOutcome.Win]: ['gg ez', 'gg no re', 'ez game ez life'],
   [MatchOutcome.Loss]: [
     'Damn, you just got dumpstered',
+    'Absolutely eviscerated',
     'Embarrassing',
     'You are a disgrace to your family',
     "You friggin'  moron, you just got porched",
+    'sit',
   ],
 };
 

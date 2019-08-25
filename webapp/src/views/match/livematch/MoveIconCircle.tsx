@@ -11,7 +11,7 @@ const useLocalStyles = makeStyles(({ palette }) => ({
   root: {
     width: SIZE,
     height: SIZE,
-    fontSize: 24,
+    fontSize: 32,
     borderRadius: SIZE,
     borderWidth: 2,
     borderColor: palette.divider,
