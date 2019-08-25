@@ -11,7 +11,14 @@ import {
 } from 'state/livematch';
 import ConnectionIndicator from './ConnectionIndicator';
 import LiveMatch from './LiveMatch';
-import { Typography, LinearProgress } from '@material-ui/core';
+import { Typography, LinearProgress, makeStyles } from '@material-ui/core';
+import useStyles from 'hooks/useStyles';
+
+const useLocalStyles = makeStyles(() => ({
+  loading: {
+    width: '100%',
+  },
+}));
 
 /**
  * Data handler for the match screen. Establishes a websocket connection, and
@@ -20,6 +27,8 @@ import { Typography, LinearProgress } from '@material-ui/core';
 const LiveMatchHandler: React.FC<{
   matchId: string;
 }> = ({ matchId }) => {
+  const classes = useStyles();
+  const localClasses = useLocalStyles();
   const [state, dispatch] = useReducer(liveMatchReducer, defaultLiveMatchState);
   const { status, send } = useWebSocket(
     `/ws/match/${matchId}`,
@@ -59,8 +68,10 @@ const LiveMatchHandler: React.FC<{
       case ConnectionStatus.Connecting:
         return (
           <>
-            <Typography>Connecting to server...</Typography>
-            <LinearProgress />
+            <Typography className={classes.normalMessage}>
+              Connecting to server...
+            </Typography>
+            <LinearProgress className={localClasses.loading} />
           </>
         );
       case ConnectionStatus.Connected:

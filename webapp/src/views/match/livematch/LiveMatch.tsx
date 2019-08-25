@@ -1,10 +1,4 @@
-import {
-  // LinearProgress,
-  Typography,
-  // makeStyles,
-  Button,
-  Grid,
-} from '@material-ui/core';
+import { Typography, Button, Grid } from '@material-ui/core';
 import useSplashMessage, { matchOutcomeSplasher } from 'hooks/useSplashMessage';
 import { last } from 'lodash';
 import React, { useContext, useEffect } from 'react';
