@@ -34,7 +34,7 @@ const useNotifications = (options: Partial<Options> = {}): Notify => {
       ) {
         const notification = new Notification('RPS', {
           body: text,
-          image: '/favicon.ico',
+          icon: '/favicon.ico',
         });
         setTimeout(notification.close.bind(notification), TIMEOUT);
       }
