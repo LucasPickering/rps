@@ -71,7 +71,7 @@ class PlayersView(generics.ListAPIView):
     serializer_class = serializers.PlayerSummarySerializer
 
 
-class PlayerView(generics.ListAPIView):
+class PlayerView(generics.RetrieveAPIView):
     lookup_field = "username"
     queryset = User.objects.all()
     serializer_class = serializers.PlayerSerializer
