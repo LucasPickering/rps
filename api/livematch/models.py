@@ -1,6 +1,5 @@
 from collections import Counter
 from datetime import timedelta
-from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
@@ -11,6 +10,7 @@ from core.models import (
     AbstractPlayerGame,
     Match,
     Game,
+    Player,
     PlayerGame,
 )
 from .error import ClientError, ClientErrorType
@@ -25,7 +25,7 @@ class LivePlayerMatch(models.Model):
 
     ACTIVITY_TIMEOUT = timedelta(seconds=10)
 
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    player = models.ForeignKey(Player, on_delete=models.PROTECT)
     last_activity = models.DateTimeField(auto_now_add=True)
     is_ready = models.BooleanField(default=False)
     move = models.CharField(choices=Move.choices(), max_length=20, blank=True)
@@ -108,7 +108,7 @@ class LiveMatch(models.Model):
             and self.player1.user == self.player2.user
         ):
             raise ValidationError(
-                f"User {self.player1.user} is both player1 and player2"
+                f"Player {self.player1.user} is both player1 and player2"
             )
 
     def save(self, *args, **kwargs):
@@ -167,7 +167,7 @@ class LiveMatch(models.Model):
         match already has two other players, nothing happens.
 
         Arguments:
-            player {User} -- The player (user) to connect
+            player {Player} -- The player (user) to connect
 
         Returns:
             bool -- True if the player is now connected, False if the game is
@@ -202,7 +202,7 @@ class LiveMatch(models.Model):
         Updates the last activity for the given player to now.
 
         Arguments:
-            player {User} -- the player to mark activity for
+            player {Player} -- the player to mark activity for
 
         Raises:
             ClientError: If the player is not in this match
@@ -221,7 +221,7 @@ class LiveMatch(models.Model):
         Sets the player's is_ready flag to True (and saves to the DB)
 
         Arguments:
-            player {User} -- the player to ready up
+            player {Player} -- the player to ready up
 
         Raises:
             ClientError: If the player is not in this match
@@ -241,7 +241,7 @@ class LiveMatch(models.Model):
         game, the completed game will be processed and the match may end.
 
         Arguments:
-            player {User} -- The player to make a move for
+            player {Player} -- The player to make a move for
             move {string} -- The move to make
 
         Raises:
@@ -292,7 +292,7 @@ class LiveMatch(models.Model):
         self.player2.save()
 
         # Check if the match is over now
-        # Build a dict of User.id:wins
+        # Build a dict of Player.id:wins
         wins_by_player_id = Counter(
             self.games.exclude(winner=None).values_list("winner", flat=True)
         )
@@ -322,7 +322,7 @@ class LiveGame(AbstractGame):
         LiveMatch, on_delete=models.CASCADE, related_name="games"
     )
     # Always len=2
-    players = models.ManyToManyField(User, through="LivePlayerGame")
+    players = models.ManyToManyField(Player, through="LivePlayerGame")
 
     def get_self_and_opponent_objs(self, player_user):
         if self.players.count() != 2:

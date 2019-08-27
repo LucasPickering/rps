@@ -21,8 +21,8 @@ const Leaderboard: React.FC = () => {
       title="Leaderboard"
       columns={[
         { title: 'Player', field: 'username' },
-        { title: 'Match Wins', field: 'matchWins', type: 'numeric' },
-        { title: 'Match Losses', field: 'matchLosses', type: 'numeric' },
+        { title: 'Match Wins', field: 'matchWinCount', type: 'numeric' },
+        { title: 'Match Losses', field: 'matchLossCount', type: 'numeric' },
       ]}
       options={tableOptions}
       isLoading={loading}

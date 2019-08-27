@@ -4,6 +4,7 @@ from .players import PlayerSerializer, PlayerSummarySerializer
 
 __all__ = [
     LoginSerializer,
+    UserSerializer,
     MatchSerializer,
     NewMatchSerializer,
     PlayerSerializer,

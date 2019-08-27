@@ -76,7 +76,7 @@ class LiveGameSummarySerializer(serializers.Serializer):
 class LiveMatchPlayerStateSerializer(serializers.Serializer):
     """
     Serializes a LiveMatch into a current state summary FOR A SINGLE PLAYER.
-    This expects two arguments: a LiveMatch, and a User. Creates a dict
+    This expects two arguments: a LiveMatch, and a Player. Creates a dict
     representing the current match state to be sent to that user.
     """
 

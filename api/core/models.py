@@ -4,12 +4,40 @@ from django.contrib.auth.models import User
 from .util import Move
 
 
+class PlayerQuerySet(models.QuerySet):
+    def annotate_match_outcomes(self):
+        match_win_count_q = models.Count("match_wins", distinct=True)
+        match_loss_count_q = models.Count(
+            "matches",
+            filter=~models.Q(matches__winner=models.F("id")),
+            distinct=True,
+        )
+        return self.annotate(
+            match_win_count=match_win_count_q,
+            match_loss_count=match_loss_count_q,
+            match_win_pct=models.F("match_win_count")
+            / models.F("match_loss_count"),
+        )
+
+
+class Player(User):
+    """
+    Proxy for the User model. Should be used any time a User is referred to in
+    the context of a match.
+    """
+
+    objects = PlayerQuerySet.as_manager()
+
+    class Meta:
+        proxy = True
+
+
 class AbstractGame(models.Model):
     # zero-indexed
     game_num = models.PositiveSmallIntegerField()
     # Null for ties
     winner = models.ForeignKey(
-        User,
+        Player,
         related_name="%(class)s_wins",
         null=True,
         blank=True,
@@ -26,7 +54,7 @@ class AbstractGame(models.Model):
 
 
 class AbstractPlayerGame(models.Model):
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    player = models.ForeignKey(Player, on_delete=models.PROTECT)
     move = models.CharField(choices=Move.choices(), max_length=20)
 
     class Meta:
@@ -42,10 +70,10 @@ class Match(models.Model):
     duration = models.PositiveIntegerField()  # Seconds
     best_of = models.PositiveSmallIntegerField()
     # Always len=2
-    players = models.ManyToManyField(User, related_name="matches")
+    players = models.ManyToManyField(Player, related_name="matches")
     # Null for unfinished matches, i.e. when Nick rage quits
     winner = models.ForeignKey(
-        User, related_name="match_wins", null=True, on_delete=models.PROTECT
+        Player, related_name="match_wins", null=True, on_delete=models.PROTECT
     )
 
 
@@ -54,7 +82,7 @@ class Game(AbstractGame):
         Match, on_delete=models.CASCADE, related_name="games"
     )
     # Always len=2
-    players = models.ManyToManyField(User, through="PlayerGame")
+    players = models.ManyToManyField(Player, through="PlayerGame")
 
 
 class PlayerGame(AbstractPlayerGame):

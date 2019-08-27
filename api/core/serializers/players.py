@@ -1,6 +1,6 @@
-from django.contrib.auth.models import User
 from rest_framework import serializers
 
+from core.models import Player
 from .matches import MatchSerializer
 
 
@@ -11,17 +11,23 @@ class PlayerSerializer(serializers.ModelSerializer):
     matches = MatchSerializer(many=True)
 
     class Meta:
-        model = User
+        model = Player
         fields = ("username", "matches")
 
 
 class PlayerSummarySerializer(serializers.ModelSerializer):
-    match_wins = serializers.SerializerMethodField()
-    match_losses = serializers.SerializerMethodField()
+    match_win_count = serializers.IntegerField()
+    match_loss_count = serializers.IntegerField()
+    match_win_pct = serializers.FloatField()
 
     class Meta:
-        model = User
-        fields = ("username", "match_wins", "match_losses")
+        model = Player
+        fields = (
+            "username",
+            "match_win_count",
+            "match_loss_count",
+            "match_win_pct",
+        )
 
     def get_match_wins(self, obj):
         return obj.matches.filter(winner=obj).count()
