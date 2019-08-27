@@ -1,12 +1,12 @@
 import { TextField, makeStyles, Typography } from '@material-ui/core';
-import useUser from 'hooks/useUser';
-import React, { useContext, useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Redirect, RouteComponentProps, withRouter } from 'react-router';
-import { UserActionType, UserDispatchContext, User } from 'state/user';
+import { User, UserStateContext } from 'state/user';
 import queryString from 'query-string';
 import FlexBox from 'components/core/FlexBox';
 import useRequest from 'hooks/useRequest';
 import LoadingButton from 'components/core/LoadingButton';
+import useUser from 'hooks/useUser';
 
 const useLocalStyles = makeStyles(({ spacing, palette }) => ({
   textField: {
@@ -23,14 +23,14 @@ const LoginForm: React.FC<RouteComponentProps> = ({ location }) => {
   const localClasses = useLocalStyles();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const user = useUser();
-  const userDispatch = useContext(UserDispatchContext);
+  const { user, requestUser } = useUser();
+  const { loading: userLoading } = useContext(UserStateContext);
   const {
     state: { loading, error },
     request,
-  } = useRequest<User>({ url: '/api/login/', method: 'POST' });
+  } = useRequest<User>({ url: '/api/auth/login/', method: 'POST' });
 
-  // Already logged in - get up on outta here
+  // User data is present now - get up on outta here
   if (user) {
     const { next } = queryString.parse(location.search);
     const fixed = Array.isArray(next) ? next[0] : next;
@@ -40,12 +40,9 @@ const LoginForm: React.FC<RouteComponentProps> = ({ location }) => {
   return (
     <form
       onSubmit={event => {
-        request({ data: { username, password } }).then(data =>
-          userDispatch({
-            type: UserActionType.Login,
-            user: data,
-          })
-        );
+        // Send the login request. Once it comes back, fetch user data from
+        // the API
+        request({ data: { username, password } }).then(() => requestUser());
         event.preventDefault(); // Don't reload the page
       }}
     >
@@ -73,7 +70,7 @@ const LoginForm: React.FC<RouteComponentProps> = ({ location }) => {
           type="submit"
           variant="contained"
           color="primary"
-          loading={loading}
+          loading={loading || userLoading}
           disabled={!username || !password}
         >
           Log In

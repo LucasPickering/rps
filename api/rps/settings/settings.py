@@ -34,6 +34,8 @@ INSTALLED_APPS = [
     "django_filters",
     "channels",
     "rest_framework",
+    "rest_framework.authtoken",
+    "rest_auth",
 ]
 
 MIDDLEWARE = [
@@ -69,6 +71,9 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 100,
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend"
+    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication"
     ],
 }
 

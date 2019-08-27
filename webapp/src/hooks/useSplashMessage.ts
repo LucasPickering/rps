@@ -77,7 +77,7 @@ const useSplashMessage = <T extends Key>(
   splasher: Splasher<T>,
   key?: T
 ): string => {
-  const user = useUser();
+  const { user } = useUser();
   const isAlt = Boolean(user && user.username.toLowerCase() === 'nick'); // lol
 
   const [splash, setSplash] = useState('');

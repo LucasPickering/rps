@@ -12,7 +12,7 @@ class NewMatchSerializer(serializers.Serializer):
 
 class PlayerGameSerializer(serializers.ModelSerializer):
     username = serializers.SlugRelatedField(
-        source="user", slug_field="username", read_only=True
+        source="player", slug_field="username", read_only=True
     )
 
     class Meta:

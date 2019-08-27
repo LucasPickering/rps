@@ -18,7 +18,7 @@ const useLocalStyles = makeStyles(({ spacing }) => ({
 
 const HeaderBar: React.FC = () => {
   const localClasses = useLocalStyles();
-  const user = useUser();
+  const { user } = useUser();
 
   return (
     <AppBar position="static" color="default">

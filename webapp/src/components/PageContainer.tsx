@@ -1,6 +1,7 @@
 import { makeStyles, Container, Grid } from '@material-ui/core';
-import React from 'react';
+import React, { useEffect } from 'react';
 import RootRoutes from './routes/RootRoutes';
+import useUser from 'hooks/useUser';
 
 const useLocalStyles = makeStyles(({ spacing }) => ({
   root: {
@@ -15,7 +16,12 @@ const useLocalStyles = makeStyles(({ spacing }) => ({
  */
 const PageContainer: React.FC = () => {
   const localClasses = useLocalStyles();
+  const { requestUser } = useUser();
 
+  // On first load, fetch user data
+  useEffect(() => requestUser(), [requestUser]);
+
+  // Only render the page if user data is loaded
   return (
     <Container className={localClasses.root}>
       <Grid container direction="column" alignItems="center" spacing={2}>

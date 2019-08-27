@@ -15,7 +15,7 @@ const LiveMatchView: React.FC<{
   matchId: string;
 }> = ({ matchId }) => {
   // Only show the live match page if the user is logged in
-  const user = useUser();
+  const { user } = useUser();
   if (user) {
     if (matchId === 'new') {
       return <NewLiveMatchHandler />;
