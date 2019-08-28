@@ -1,24 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+from .query import PlayerQuerySet
 from .util import Move
-
-
-class PlayerQuerySet(models.QuerySet):
-    def annotate_match_outcomes(self):
-        match_win_count_q = models.Count("match_wins", distinct=True)
-        match_loss_count_q = models.Count(
-            "matches",
-            filter=~models.Q(matches__winner=models.F("id")),
-            distinct=True,
-        )
-        return self.annotate(
-            match_win_count=match_win_count_q,
-            match_loss_count=match_loss_count_q,
-            match_win_pct=models.ExpressionWrapper(
-                match_win_count_q / models.Value(1), models.FloatField()
-            ),
-        )
 
 
 class Player(User):
