@@ -20,15 +20,33 @@ const Leaderboard: React.FC = () => {
     <MaterialTable
       title="Leaderboard"
       columns={[
-        { title: 'Player', field: 'username' },
-        { title: 'Match Wins', field: 'matchWinCount', type: 'numeric' },
-        { title: 'Match Losses', field: 'matchLossCount', type: 'numeric' },
+        { title: 'Player', field: 'username', sorting: false },
+        {
+          title: 'Match Wins',
+          field: 'matchWinCount',
+          type: 'numeric',
+          sorting: false,
+        },
+        {
+          title: 'Match Losses',
+          field: 'matchLossCount',
+          type: 'numeric',
+          sorting: false,
+        },
+        {
+          title: 'Match Win%',
+          field: 'matchWinPct',
+          type: 'numeric',
+          sorting: false,
+        },
       ]}
       options={tableOptions}
       isLoading={loading}
       data={query =>
         new Promise((resolve, reject) =>
-          request({ params: tableToApiQuery(query) })
+          request({
+            params: { ...tableToApiQuery(query), ordering: '-match_win_pct' },
+          })
             .then(response =>
               resolve({
                 data: response.results,

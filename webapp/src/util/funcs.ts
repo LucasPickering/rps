@@ -63,5 +63,5 @@ export const tableToApiQuery = <T extends object>(
   query: Query<T>
 ): RequestParams => ({
   page: query.page + 1,
-  page_size: query.pageSize,
+  page_size: query.pageSize, // eslint-disable-line @typescript-eslint/camelcase
 });

@@ -36,6 +36,6 @@ module.exports = {
       { allowExpressions: true, allowTypedFunctionExpressions: true },
     ],
     '@typescript-eslint/no-object-literal-type-assertion': 'off',
-    '@typescript-eslint/camelcase': 'off',
+    // '@typescript-eslint/camelcase': 'off',
   },
 };
