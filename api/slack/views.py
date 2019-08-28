@@ -14,10 +14,12 @@ class SlackIntegrationView(APIView):
         In the future if we include more workflow like `/rps leaderboard`,
         we can parse the message here and return different type of responses.
         """
-        return Response({
-            'response_type': 'in_channel',
-            'text': request.build_absolute_uri('/matches/live/{}'.format(get_livematch_id())),
-            'attachments': [{
-                'text': 'Let the battle begin!'
-            }]
-        })
+        return Response(
+            {
+                "response_type": "in_channel",
+                "text": request.build_absolute_uri(
+                    "/matches/live/{}".format(get_livematch_id())
+                ),
+                "attachments": [{"text": "Let the battle begin!"}],
+            }
+        )

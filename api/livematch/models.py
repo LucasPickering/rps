@@ -71,7 +71,7 @@ class LivePlayerMatch(models.Model):
 
     def __str__(self):
         return (
-            f"user: {self.user}; last_activity: {self.last_activity};"
+            f"player: {self.player}; last_activity: {self.last_activity};"
             + f" ready: {self.is_ready}; move: {self.move}"
         )
 
@@ -105,10 +105,10 @@ class LiveMatch(models.Model):
         if (
             self.player1
             and self.player2
-            and self.player1.user == self.player2.user
+            and self.player1.player == self.player2.player
         ):
             raise ValidationError(
-                f"Player {self.player1.user} is both player1 and player2"
+                f"Player {self.player1.player} is both player1 and player2"
             )
 
     def save(self, *args, **kwargs):
@@ -150,9 +150,9 @@ class LiveMatch(models.Model):
         )
 
     def get_self_and_opponent_objs(self, player_user):
-        if self.player1 and player_user == self.player1.user:
+        if self.player1 and player_user == self.player1.player:
             return (self.player1, self.player2)
-        if self.player2 and player_user == self.player2.user:
+        if self.player2 and player_user == self.player2.player:
             return (self.player2, self.player1)
         return (None, None)
 
@@ -179,7 +179,7 @@ class LiveMatch(models.Model):
         is_player_new = False
         if not player_obj:
             if self.player1 is None or self.player2 is None:
-                player_obj = LivePlayerMatch(user=player, is_ready=True)
+                player_obj = LivePlayerMatch(player=player, is_ready=True)
                 is_player_new = True
             else:
                 # Game is full already
@@ -277,7 +277,7 @@ class LiveMatch(models.Model):
         game = LiveGame(
             game_num=self.games.count(),
             match=self,
-            winner=game_winner.user if game_winner else None,
+            winner=game_winner.player if game_winner else None,
         )
         self.games.add(game, bulk=False)
 
@@ -311,7 +311,7 @@ class LiveMatch(models.Model):
             winner_id=winner_id,
         )
         self.permanent_match = match  # Connect the permanent match to this one
-        match.players.set([self.player1.user, self.player2.user])
+        match.players.set([self.player1.player, self.player2.player])
         for game in self.games.all():
             game.save_to_permanent(match)
         return match
@@ -330,9 +330,9 @@ class LiveGame(AbstractGame):
                 f"Expected 2 related players, but got {len(self.players)}"
             )
         player1, player2 = self.liveplayergame_set.all()
-        if player1 and player_user == player1.user:
+        if player1 and player_user == player1.player:
             return (player1, player2)
-        if player2 and player_user == player2.user:
+        if player2 and player_user == player2.player:
             return (player2, player1)
         return (None, None)
 
@@ -353,9 +353,11 @@ class LivePlayerGame(AbstractPlayerGame):
 
     @classmethod
     def from_player_match(cls, player_match, game):
-        return cls(user=player_match.user, move=player_match.move, game=game)
+        return cls(
+            player=player_match.player, move=player_match.move, game=game
+        )
 
     def save_to_permanent(self, game):
         return PlayerGame.objects.create(
-            user=self.user, move=self.move, game=game
+            player=self.player, move=self.move, game=game
         )

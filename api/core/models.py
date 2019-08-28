@@ -15,7 +15,9 @@ class PlayerQuerySet(models.QuerySet):
         return self.annotate(
             match_win_count=match_win_count_q,
             match_loss_count=match_loss_count_q,
-            match_win_pct=models.F("match_win_count") / models.Value(1),
+            match_win_pct=models.ExpressionWrapper(
+                match_win_count_q / models.Value(1), models.FloatField()
+            ),
         )
 
 

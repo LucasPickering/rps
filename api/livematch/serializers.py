@@ -31,7 +31,7 @@ class ErrorSerializer(serializers.Serializer):
 
 
 class OpponentSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source="user.username")
+    username = serializers.CharField(source="player.username")
     is_active = serializers.BooleanField()
     is_ready = serializers.BooleanField()
 
@@ -129,7 +129,7 @@ class LiveMatchPlayerStateSerializer(serializers.Serializer):
         if obj.is_match_complete:
             return (
                 MatchOutcome.WIN.value
-                if obj.permanent_match.winner == self.self_obj.user
+                if obj.permanent_match.winner == self.self_obj.player
                 else MatchOutcome.LOSS.value
             )
         return None
