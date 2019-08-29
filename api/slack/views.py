@@ -55,7 +55,7 @@ def leaderboard(request, *args, **kwargs):
                             username=player_data.get("username").ljust(10, ' '),
                             match_win_count=str(player_data.get("match_win_count")).ljust(5, ' '),
                             match_loss_count=str(player_data.get("match_loss_count")).ljust(5, ' '),
-                            match_win_pct=str(player_data.get("match_win_pct")).ljust(4, ' ')
+                            match_win_pct=str(player_data.get("match_win_pct") * 100).ljust(4, ' ')
                         )
             }
         })
