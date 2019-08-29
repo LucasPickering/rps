@@ -12,7 +12,7 @@ def new_game(request, *args, **kwargs):
     """
     return Response(
         {
-            "response_type": "ephemeral",
+            "response_type": "in_channel",
             "text": request.build_absolute_uri(
                 "/matches/live/{}".format(get_livematch_id())
             ),
@@ -61,7 +61,7 @@ def leaderboard(request, *args, **kwargs):
         })
     return Response(
         {
-            "response_type": "ephemeral",
+            "response_type": "in_channel",
             "blocks": blocks
         }
     )
@@ -73,7 +73,7 @@ def error_response(request, *args, **kwargs):
     """
     return Response(
         {
-            "response_type": "ephemeral",
+            "response_type": "in_channel",
             "text": "Sorry, that operation is not supported. Please try again."
         }
     )
