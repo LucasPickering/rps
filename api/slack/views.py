@@ -37,6 +37,13 @@ def leaderboard(request, *args, **kwargs):
             }
         },
         {
+            "type": "section",
+            "text": {
+                "type": "mrkdwn",
+                "text": "*Username*         *Wins*     *Losses*     *Win%*"
+            }
+        },
+        {
             "type": "divider"
         }
     ]
@@ -48,14 +55,14 @@ def leaderboard(request, *args, **kwargs):
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": "*{username}*\t"
-                        "Wins: {match_win_count}\t"
-                        "Losses: {match_loss_count}\t"
-                        "Win%: {match_win_pct}%".format(
-                            username=player_data.get("username").ljust(10, ' '),
-                            match_win_count=str(player_data.get("match_win_count")).ljust(5, ' '),
-                            match_loss_count=str(player_data.get("match_loss_count")).ljust(5, ' '),
-                            match_win_pct=str(player_data.get("match_win_pct") * 100).ljust(4, ' ')
+                "text": "*{username:<23}* "
+                        "{match_win_count:<11} "
+                        "{match_loss_count:<15} "
+                        "{match_win_pct:.3f}".format(
+                            username=player_data.get("username"),
+                            match_win_count=player_data.get("match_win_count"),
+                            match_loss_count=player_data.get("match_loss_count"),
+                            match_win_pct=player_data.get("match_win_pct")
                         )
             }
         })
