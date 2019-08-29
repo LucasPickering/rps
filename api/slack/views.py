@@ -48,7 +48,7 @@ def leaderboard(request, *args, **kwargs):
         }
     ]
     for player_data in PlayerSummarySerializer(
-            Player.objects.annotate_match_outcomes(),
+            Player.objects.annotate_match_outcomes().order_by('-match_win_pct'),
             many=True
     ).data:
         blocks.append({
