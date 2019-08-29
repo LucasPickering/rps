@@ -1,12 +1,13 @@
-export interface ApiError {
+export interface ApiError<T> {
   status: number;
+  data: T;
   // TODO
 }
 
-export interface ApiState<T> {
+export interface ApiState<T, E> {
   loading: boolean;
   data?: T;
-  error?: ApiError;
+  error?: ApiError<E>;
 }
 
 /**

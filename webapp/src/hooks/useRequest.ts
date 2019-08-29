@@ -11,15 +11,15 @@ enum ApiActionType {
   Error,
 }
 
-type ApiAction<T> =
+type ApiAction<T, E> =
   | { type: ApiActionType.Request }
   | { type: ApiActionType.Success; data: T }
-  | { type: ApiActionType.Error; error: ApiError };
+  | { type: ApiActionType.Error; error: ApiError<E> };
 
-const apiReducer = <T>(
-  state: ApiState<T>,
-  action: ApiAction<T>
-): ApiState<T> => {
+const apiReducer = <T, E>(
+  state: ApiState<T, E>,
+  action: ApiAction<T, E>
+): ApiState<T, E> => {
   switch (action.type) {
     case ApiActionType.Request:
       return {
@@ -56,14 +56,14 @@ const defaultApiState = {
  * resolves to data and rejects with an error. `Promise` doesn't let us type
  * the error, but it will always be an {@link ApiError};
  */
-const useRequest = <T>(
+const useRequest = <T, E = {}>(
   config: AxiosRequestConfig
 ): {
-  state: ApiState<T>;
+  state: ApiState<T, E>;
   request: (subConfig?: AxiosRequestConfig) => Promise<T>;
 } => {
   const [state, dispatch] = useReducer<
-    React.Reducer<ApiState<T>, ApiAction<T>>
+    React.Reducer<ApiState<T, E>, ApiAction<T, E>>
   >(apiReducer, defaultApiState);
 
   // Prevent updates after unmounting

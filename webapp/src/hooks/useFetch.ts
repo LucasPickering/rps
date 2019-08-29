@@ -5,8 +5,8 @@ import useRequest from './useRequest';
 /**
  * Fetches from a URL with a GET request.
  */
-const useFetch = <T>(url: string): ApiState<T> => {
-  const { state, request } = useRequest<T>({ url, method: 'GET' });
+const useFetch = <T, E = {}>(url: string): ApiState<T, E> => {
+  const { state, request } = useRequest<T, E>({ url, method: 'GET' });
   useEffect(() => {
     request();
   }, [url, request]);
