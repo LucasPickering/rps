@@ -41,7 +41,7 @@ const useWebSocket = (
     if (ws) {
       ws.send(JSON.stringify(data));
     } else {
-      console.error('send called while websocket is closed');
+      throw new Error('send called while websocket is closed');
     }
   }, []);
 
@@ -78,7 +78,6 @@ const useWebSocket = (
     };
     ws.onerror = event => {
       if (isMounted.current) {
-        console.error('Socket error: ', event);
         if (onError) {
           onError(event);
         }
