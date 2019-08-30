@@ -78,7 +78,7 @@ REST_FRAMEWORK = {
 }
 
 REST_AUTH_SERIALIZERS = {
-    "PASSWORD_RESET_SERIALIZER": "core.serializers.PasswordResetSerializer"
+    "PASSWORD_RESET_SERIALIZER": "auth.serializers.PasswordResetSerializer"
 }
 
 ASGI_APPLICATION = "rps.routing.application"
