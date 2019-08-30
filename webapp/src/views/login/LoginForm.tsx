@@ -77,7 +77,7 @@ const LoginForm: React.FC<RouteComponentProps> = ({ location }) => {
         </LoadingButton>
         {error && (
           <Typography className={localClasses.errorText}>
-            {error.status === 401
+            {error.status === 400
               ? 'Incorrect username or password'
               : "Unknown error. Looks like you're really up shit creek."}
           </Typography>

@@ -6,7 +6,6 @@ import LoginForm from './LoginForm';
 const useLocalStyles = makeStyles(() => ({
   root: {
     width: 300,
-    alignSelf: 'center',
   },
 }));
 

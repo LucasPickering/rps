@@ -13,9 +13,7 @@ const Paper: React.FC<React.ComponentProps<typeof MuiPaper>> = ({
   ...rest
 }) => {
   const localClasses = useLocalStyles();
-  return (
-    <MuiPaper className={clsx(localClasses.root, className)} {...rest} />
-  );
+  return <MuiPaper className={clsx(localClasses.root, className)} {...rest} />;
 };
 
 export default Paper;

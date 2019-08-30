@@ -1,4 +1,3 @@
-from django.conf import settings
 from rest_auth import serializers
 
 
@@ -9,12 +8,5 @@ class PasswordResetSerializer(serializers.PasswordResetSerializer):
     HTTPS (even in dev), but HTTP to Django because the proxy handles HTTPS.
     """
 
-    def save(self):
-        request = self.context.get("request")
-        # Set some values to trigger the send_email method.
-        opts = {
-            "use_https": True,  # This is the part that's changed
-            "from_email": getattr(settings, "DEFAULT_FROM_EMAIL"),
-            "request": request,
-        }
-        self.reset_form.save(**opts)
+    def get_email_options(self):
+        return {"use_https": True}

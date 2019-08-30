@@ -6,12 +6,17 @@ import FlexBox from 'components/core/FlexBox';
 import useRequest from 'hooks/useRequest';
 import LoadingButton from 'components/core/LoadingButton';
 import withRouteParams from 'hoc/withRouteParams';
+import { validatePassword, formatValidationError } from 'util/password';
+import Paper from 'components/core/Paper';
 
 interface ResetApiError {
   uid?: string[];
 }
 
 const useLocalStyles = makeStyles(({ spacing, palette }) => ({
+  root: {
+    width: 300,
+  },
   textField: {
     width: '100%',
     marginBottom: spacing(1),
@@ -35,62 +40,67 @@ const ResetPassword1View: React.FC<
     url: '/api/auth/password/reset/confirm/',
     method: 'POST',
   });
-  console.log('error', error);
+
+  const validationError =
+    password1 || password2 ? validatePassword(password1, password2) : undefined;
 
   return (
-    <form
-      onSubmit={event => {
-        // Send the request. Once it comes back, redirect to the home page
-        request({
-          data: {
-            uid,
-            token,
-            /* eslint-disable @typescript-eslint/camelcase */
-            new_password1: password1,
-            new_password2: password2,
-            /* eslint-enable @typescript-eslint/camelcase */
-          },
-        }).then(() => history.push(''));
-        event.preventDefault(); // Don't reload the page
-      }}
-    >
-      <FlexBox flexDirection="column">
-        <TextField
-          className={localClasses.textField}
-          id="password"
-          label="Password"
-          type="password"
-          value={password1}
-          onChange={e => {
-            setPassword1(e.currentTarget.value);
-          }}
-        />
-        <TextField
-          className={localClasses.textField}
-          id="confirm-password"
-          label="Confirm Password"
-          type="password"
-          value={password2}
-          onChange={e => {
-            setPassword2(e.currentTarget.value);
-          }}
-        />
-        <LoadingButton
-          type="submit"
-          variant="contained"
-          color="primary"
-          loading={loading}
-          disabled={!password1 || password1 !== password2}
-        >
-          Reset Password
-        </LoadingButton>
-        {error && (
-          <Typography className={localClasses.errorText}>
-            {error.data.uid}
-          </Typography>
-        )}
-      </FlexBox>
-    </form>
+    <Paper className={localClasses.root}>
+      <form
+        onSubmit={event => {
+          // Send the request. Once it comes back, redirect to the home page
+          request({
+            data: {
+              uid,
+              token,
+              /* eslint-disable @typescript-eslint/camelcase */
+              new_password1: password1,
+              new_password2: password2,
+              /* eslint-enable @typescript-eslint/camelcase */
+            },
+          }).then(() => history.push('/login'));
+          event.preventDefault(); // Don't reload the page
+        }}
+      >
+        <FlexBox flexDirection="column">
+          <TextField
+            className={localClasses.textField}
+            id="password1"
+            label="Password"
+            type="password"
+            value={password1}
+            onChange={e => setPassword1(e.currentTarget.value)}
+          />
+          <TextField
+            className={localClasses.textField}
+            id="password2"
+            label="Confirm Password"
+            type="password"
+            value={password2}
+            error={validationError !== undefined}
+            helperText={
+              validationError !== undefined &&
+              formatValidationError(validationError)
+            }
+            onChange={e => setPassword2(e.currentTarget.value)}
+          />
+          <LoadingButton
+            type="submit"
+            variant="contained"
+            color="primary"
+            loading={loading}
+            disabled={!password1 || Boolean(validationError)}
+          >
+            Reset Password
+          </LoadingButton>
+          {error && (
+            <Typography className={localClasses.errorText}>
+              {error.data.uid}
+            </Typography>
+          )}
+        </FlexBox>
+      </form>
+    </Paper>
   );
 };
 

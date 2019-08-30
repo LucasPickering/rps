@@ -15,7 +15,7 @@ const RootRoutes: React.FC = () => {
       <Route path="/" component={HomeView} exact />
       <Route path="/login" component={LoginView} exact />
       <Route
-        path="/password/reset/:uid/:token"
+        path="/account/password/reset/confirm/:uid/:token"
         component={ResetPasswordView}
         exact
       />
