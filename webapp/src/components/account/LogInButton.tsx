@@ -2,7 +2,7 @@ import { Button } from '@material-ui/core';
 import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import queryString from 'query-string';
-import ButtonLink from 'components/core/ButtonLink';
+import ButtonLink from 'components/common/ButtonLink';
 
 /**
  * Just a link component to the login page. But, because this is used in

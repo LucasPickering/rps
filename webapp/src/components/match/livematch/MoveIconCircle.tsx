@@ -3,7 +3,7 @@ import React from 'react';
 import { Move } from 'state/match';
 import MoveIcon from 'components/MoveIcon';
 import clsx from 'clsx';
-import FlexBox from 'components/core/FlexBox';
+import FlexBox from 'components/common/FlexBox';
 
 const SIZE = 60;
 

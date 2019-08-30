@@ -2,7 +2,7 @@ import React from 'react';
 import { LiveMatchError } from 'state/livematch';
 import { Snackbar, SnackbarContent, makeStyles } from '@material-ui/core';
 import { Error as IconError } from '@material-ui/icons';
-import FlexBox from 'components/core/FlexBox';
+import FlexBox from 'components/common/FlexBox';
 
 const useLocalStyles = makeStyles(({ spacing, palette }) => ({
   snackbarContent: {

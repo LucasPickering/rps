@@ -3,9 +3,9 @@ import React, { useState, useContext } from 'react';
 import { Redirect, RouteComponentProps, withRouter } from 'react-router';
 import { User, UserStateContext } from 'state/user';
 import queryString from 'query-string';
-import FlexBox from 'components/core/FlexBox';
+import FlexBox from 'components/common/FlexBox';
 import useRequest from 'hooks/useRequest';
-import LoadingButton from 'components/core/LoadingButton';
+import LoadingButton from 'components/common/LoadingButton';
 import useUser from 'hooks/useUser';
 
 const useLocalStyles = makeStyles(({ spacing, palette }) => ({

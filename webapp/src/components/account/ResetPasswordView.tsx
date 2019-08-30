@@ -2,12 +2,12 @@ import { TextField, makeStyles, Typography } from '@material-ui/core';
 import React, { useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { User } from 'state/user';
-import FlexBox from 'components/core/FlexBox';
+import FlexBox from 'components/common/FlexBox';
 import useRequest from 'hooks/useRequest';
-import LoadingButton from 'components/core/LoadingButton';
+import LoadingButton from 'components/common/LoadingButton';
 import withRouteParams from 'hoc/withRouteParams';
 import { validatePassword, formatValidationError } from 'util/password';
-import Paper from 'components/core/Paper';
+import Paper from 'components/common/Paper';
 
 interface ResetApiError {
   uid?: string[];

@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 import { LiveMatchContext, LiveGame } from 'state/livematch';
 import { GameOutcome } from 'state/match';
 import { countGameOutcomes } from 'util/funcs';
-import FlexBox from 'components/core/FlexBox';
+import FlexBox from 'components/common/FlexBox';
 import { range } from 'lodash';
 import MoveIcon from 'components/MoveIcon';
 import {

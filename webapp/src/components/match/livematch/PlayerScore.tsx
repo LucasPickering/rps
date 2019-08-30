@@ -10,7 +10,7 @@ import { LiveMatchContext, LiveMatchOpponent } from 'state/livematch';
 import { GameOutcome } from 'state/match';
 import { countGameOutcomes } from 'util/funcs';
 import { Check as IconCheck, Clear as IconClear } from '@material-ui/icons';
-import FlexBox from 'components/core/FlexBox';
+import FlexBox from 'components/common/FlexBox';
 
 const useLocalStyles = makeStyles(({ spacing }) => ({
   root: {

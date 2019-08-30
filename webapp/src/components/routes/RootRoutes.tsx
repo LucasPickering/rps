@@ -1,9 +1,9 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
-import HomeView from 'views/HomeView';
-import LoginView from 'views/login/LoginView';
-import ResetPasswordView from 'views/login/ResetPasswordView';
-import NotFoundView from 'views/NotFoundView';
+import HomeView from 'components/HomeView';
+import LoginView from 'components/account/LoginView';
+import ResetPasswordView from 'components/account/ResetPasswordView';
+import NotFoundView from 'components/NotFoundView';
 import MatchRoutes from './MatchRoutes';
 
 /**

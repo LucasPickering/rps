@@ -4,7 +4,7 @@ import LiveMatchHandler from './LiveMatchHandler';
 import NewLiveMatchHandler from './NewLiveMatchHandler';
 import useUser from 'hooks/useUser';
 import { Typography, Grid } from '@material-ui/core';
-import LogInButton from 'views/login/LogInButton';
+import LogInButton from 'components/account/LogInButton';
 
 /**
  * Handles all /match/live/* routes. If the guid is "new", this will render a

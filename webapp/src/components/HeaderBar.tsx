@@ -1,10 +1,10 @@
 import { AppBar, Toolbar, makeStyles } from '@material-ui/core';
 import React from 'react';
-import NavLink from './core/NavLink';
-import ButtonLink from './core/ButtonLink';
+import NavLink from './common/NavLink';
+import ButtonLink from './common/ButtonLink';
 import AccountMenu from './AccountMenu';
 import useUser from 'hooks/useUser';
-import LogInButton from 'views/login/LogInButton';
+import LogInButton from 'components/account/LogInButton';
 
 const useLocalStyles = makeStyles(({ spacing }) => ({
   nav: {},

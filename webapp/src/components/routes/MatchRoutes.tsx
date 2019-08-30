@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
-import LiveMatchContainer from 'views/match/livematch/LiveMatchView';
+import LiveMatchContainer from 'components/match/livematch/LiveMatchView';
 
 const MatchRoutes: React.FC = () => {
   return (
