@@ -143,21 +143,41 @@ class LiveMatch(models.Model):
             bool -- True if this is an orphan, False if not
         """
         return (
-            # Unstarted matches that have no connected users
+            # Unstarted matches that have no connected players
             not self.is_match_started
             and not (self.player1 and self.player1.is_active)
             and not (self.player2 and self.player2.is_active)
         )
 
-    def get_self_and_opponent_objs(self, player_user):
-        if self.player1 and player_user == self.player1.player:
+    def get_player_matches(self, player):
+        """
+        Gets the LivePlayerMatch object for the "self" player and the opponent
+        player, where "self" is for the player given.
+
+        Arguments:
+            player {Player} -- The "self" player
+
+        Returns:
+            (LivePlayerMatch, LivePlayerMatch) -- The (self, opponent) player
+            matches, or (None, None) if player is not in the match
+        """
+        if self.player1 and player == self.player1.player:
             return (self.player1, self.player2)
-        if self.player2 and player_user == self.player2.player:
+        if self.player2 and player == self.player2.player:
             return (self.player2, self.player1)
         return (None, None)
 
-    def get_player_obj(self, player_user):
-        self_obj, _ = self.get_self_and_opponent_objs(player_user)
+    def get_self_player_match(self, player):
+        """
+        Gets the LivePlayerMatch object for the given Player.
+
+        Arguments:
+            player {Player} -- The self player
+
+        Returns:
+            LivePlayerMatch -- The LivePlayerMatch object for that player
+        """
+        self_obj, _ = self.get_player_matches(player)
         return self_obj
 
     def connect_player(self, player):
@@ -173,7 +193,7 @@ class LiveMatch(models.Model):
             bool -- True if the player is now connected, False if the game is
             already full
         """
-        player_obj = self.get_player_obj(player)
+        player_obj = self.get_self_player_match(player)
 
         # If the player isn't in the game, try to add them
         is_player_new = False
@@ -207,7 +227,7 @@ class LiveMatch(models.Model):
         Raises:
             ClientError: If the player is not in this match
         """
-        player_obj = self.get_player_obj(player)
+        player_obj = self.get_self_player_match(player)
         if player_obj:
             player_obj.update_last_activity()
             player_obj.save()
@@ -226,7 +246,7 @@ class LiveMatch(models.Model):
         Raises:
             ClientError: If the player is not in this match
         """
-        player_obj = self.get_player_obj(player)
+        player_obj = self.get_self_player_match(player)
         if player_obj:
             player_obj.ready_up()
             player_obj.save()
@@ -252,7 +272,7 @@ class LiveMatch(models.Model):
             raise ClientError(
                 ClientErrorType.INVALID_MOVE, "Match is already complete"
             )
-        player_obj = self.get_player_obj(player)
+        player_obj = self.get_self_player_match(player)
         if player_obj:
             player_obj.apply_move(move)
             player_obj.save()
@@ -324,15 +344,29 @@ class LiveGame(AbstractGame):
     # Always len=2
     players = models.ManyToManyField(Player, through="LivePlayerGame")
 
-    def get_self_and_opponent_objs(self, player_user):
+    def get_player_games(self, player):
+        """
+        Gets the LivePlayerGame object for the "self" player and the opponent
+        player, where "self" is for the player given.
+
+        Arguments:
+            player {Player} -- The "self" player
+
+        Raises:
+            RuntimeError: If more or less than 2 players are in the game
+
+        Returns:
+            (LivePlayerGame, LivePlayerGame) -- The (self, opponent) player
+            matches, or (None, None) if player is not in the game
+        """
         if self.players.count() != 2:
             raise RuntimeError(
                 f"Expected 2 related players, but got {len(self.players)}"
             )
         player1, player2 = self.liveplayergame_set.all()
-        if player1 and player_user == player1.player:
+        if player1 and player == player1.player:
             return (player1, player2)
-        if player2 and player_user == player2.player:
+        if player2 and player == player2.player:
             return (player2, player1)
         return (None, None)
 

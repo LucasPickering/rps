@@ -72,7 +72,7 @@ class MatchConsumer(JsonWebsocketConsumer):
         live_match = self.get_match(lock=False)
         self.send_json(
             LiveMatchPlayerStateSerializer(
-                live_match, context={"player_user": self.player}
+                live_match, context={"player": self.player}
             ).data
         )
 
@@ -96,7 +96,7 @@ class MatchConsumer(JsonWebsocketConsumer):
         if not is_livematch_id(self.match_id):
             raise ClientError(ClientErrorType.INVALID_MATCH_ID)
 
-    def validate_user(self):
+    def validate_player(self):
         if not self.player.is_authenticated:
             raise ClientError(ClientErrorType.NOT_LOGGED_IN)
 
@@ -106,9 +106,9 @@ class MatchConsumer(JsonWebsocketConsumer):
             qs = qs.select_for_update()
         return qs.get(id=self.match_id)
 
-    def user_connect(self):
+    def connect_player(self):
         """
-        Tries to add the authenticated user to this match.
+        Tries to add the authenticated player to this match.
 
         Raises:
             ClientError: If the game is full or this player is already in it
@@ -138,7 +138,7 @@ class MatchConsumer(JsonWebsocketConsumer):
 
         self.trigger_client_update()
 
-    def user_disconnect(self):
+    def disconnect_player(self):
         # Leave the channel group
         async_to_sync(self.channel_layer.group_discard)(
             self.channel_group_name, self.channel_name
@@ -194,12 +194,12 @@ class MatchConsumer(JsonWebsocketConsumer):
         self.player = self.scope["user"]
         self.accept()
         try:
-            self.validate_user()
+            self.validate_player()
             self.validate_match_id()
             logger.info(
                 f"Player {self.player} connecting to match {self.match_id}"
             )
-            self.user_connect()
+            self.connect_player()
         except ClientError as e:
             self.handle_error(e)
 
@@ -208,7 +208,7 @@ class MatchConsumer(JsonWebsocketConsumer):
             f"Player {self.player} disconnecting from match {self.match_id}; code={close_code}"
         )
         try:
-            self.user_disconnect()
+            self.disconnect_player()
         except ClientError as e:
             self.handle_error(e)
 

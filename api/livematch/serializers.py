@@ -47,14 +47,12 @@ class LiveGameSummarySerializer(serializers.Serializer):
 
     def __init__(self, live_game, *args, **kwargs):
         try:
-            player_user = kwargs["context"]["player_user"]
+            player = kwargs["context"]["player"]
         except KeyError:
-            raise RuntimeError("Expected a context with a 'player_user' field")
+            raise RuntimeError("Expected a context with a 'player' field")
 
         # Get the player and opponent objects
-        self.self_obj, self.opponent_obj = live_game.get_self_and_opponent_objs(
-            player_user
-        )
+        self.self_obj, self.opponent_obj = live_game.get_player_games(player)
         if not self.self_obj:
             raise RuntimeError(
                 "Cannot get state for player that is not in game"
@@ -77,7 +75,7 @@ class LiveMatchPlayerStateSerializer(serializers.Serializer):
     """
     Serializes a LiveMatch into a current state summary FOR A SINGLE PLAYER.
     This expects two arguments: a LiveMatch, and a Player. Creates a dict
-    representing the current match state to be sent to that user.
+    representing the current match state to be sent to that player.
     """
 
     best_of = serializers.SerializerMethodField()
@@ -89,14 +87,12 @@ class LiveMatchPlayerStateSerializer(serializers.Serializer):
 
     def __init__(self, live_match, *args, **kwargs):
         try:
-            player_user = kwargs["context"]["player_user"]
+            player = kwargs["context"]["player"]
         except KeyError:
-            raise RuntimeError("Expected a context with a 'player_user' field")
+            raise RuntimeError("Expected a context with a 'player' field")
 
         # Get the player and opponent objects
-        self.self_obj, self.opponent_obj = live_match.get_self_and_opponent_objs(
-            player_user
-        )
+        self.self_obj, self.opponent_obj = live_match.get_player_matches(player)
         if not self.self_obj:
             raise RuntimeError(
                 "Cannot get state for player that is not in match"
