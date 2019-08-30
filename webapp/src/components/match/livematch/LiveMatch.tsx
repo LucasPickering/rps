@@ -15,6 +15,58 @@ import LiveMatchErrorDisplay from './LiveMatchErrorDisplay';
 import useStyles from 'hooks/useStyles';
 import useNotifications from 'hooks/useNotifications';
 import MoveIconCircle from './MoveIconCircle';
+import useScreenSize, { ScreenSize } from 'hooks/useScreenSize';
+
+/**
+ * Helper component for the current match status
+ */
+const Header: React.FC = () => {
+  const {
+    state: {
+      data: { isReady, selectedMove, games },
+    },
+  } = useContext(LiveMatchContext);
+  const screenSize = useScreenSize();
+
+  const lastGame = last(games);
+  const selfScoreEl = <PlayerScore isSelf />;
+  const selfMoveEl = (
+    <MoveIconCircle
+      move={isReady ? selectedMove : lastGame && lastGame.selfMove}
+    />
+  );
+  const opponentMoveEl = (
+    <MoveIconCircle
+      //  Only show loading icon for opponent if user has already picked a move
+      loading={Boolean(selectedMove)}
+      move={!isReady && lastGame ? lastGame.opponentMove : undefined}
+    />
+  );
+  const opponentScoreEl = <PlayerScore />;
+
+  // Responsive design!
+  return screenSize === ScreenSize.Large ? (
+    <Grid item container justify="space-between">
+      {selfScoreEl}
+      {selfMoveEl}
+      <GameLog />
+      {opponentMoveEl}
+      {opponentScoreEl}
+    </Grid>
+  ) : (
+    <>
+      <Grid item container justify="space-between">
+        {selfScoreEl}
+        {opponentScoreEl}
+      </Grid>
+      <Grid item container justify="space-between">
+        {selfMoveEl}
+        <GameLog />
+        {opponentMoveEl}
+      </Grid>
+    </>
+  );
+};
 
 /**
  * Helper component to render the actions available to the player
@@ -97,7 +149,7 @@ const LiveMatch: React.FC = () => {
   const notify = useNotifications();
   const {
     state: {
-      data: { isReady, selectedMove, games, opponent },
+      data: { games, opponent },
       errors,
     },
   } = useContext(LiveMatchContext);
@@ -120,32 +172,9 @@ const LiveMatch: React.FC = () => {
     }
   }, [notify, games.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const lastGame = last(games);
   return (
     <>
-      <Grid item container justify="space-between">
-        <Grid item>
-          <PlayerScore isSelf />
-        </Grid>
-        <Grid item>
-          <MoveIconCircle
-            move={isReady ? selectedMove : lastGame && lastGame.selfMove}
-          />
-        </Grid>
-        <Grid item>
-          <GameLog />
-        </Grid>
-        <Grid item>
-          <MoveIconCircle
-            //  Only show loading icon for opponent if user has already picked a move
-            loading={Boolean(selectedMove)}
-            move={!isReady && lastGame ? lastGame.opponentMove : undefined}
-          />
-        </Grid>
-        <Grid item>
-          <PlayerScore />
-        </Grid>
-      </Grid>
+      <Header />
       <Grid item container direction="column" alignItems="center">
         <Actions />
       </Grid>

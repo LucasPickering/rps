@@ -2,18 +2,25 @@ import { makeStyles, Grid, IconButton } from '@material-ui/core';
 import React from 'react';
 import { Move } from 'state/match';
 import MoveIconCircle from './MoveIconCircle';
+import useScreenSize, { ScreenSize } from 'hooks/useScreenSize';
+import clsx from 'clsx';
 
 const useLocalStyles = makeStyles(() => ({
   root: {
     display: 'grid',
     gridTemplateColumns: 'repeat(5, 1fr)',
     gridTemplateRows: 'repeat(3, 1fr)',
-    gridRowGap: 48,
     gridTemplateAreas: `
     '.. .. ro .. ..'
     'li .. .. .. pa'
     '.. sp .. sc ..'
     `,
+  },
+  small: {
+    gridRowGap: 0,
+  },
+  large: {
+    gridRowGap: 48,
   },
   button: {
     padding: 0,
@@ -35,8 +42,18 @@ interface Props {
 
 const MoveButtons = ({ disabled, onClick }: Props): React.ReactElement => {
   const localClasses = useLocalStyles();
+  const screenSize = useScreenSize();
+
   return (
-    <Grid className={localClasses.root} item>
+    <Grid
+      className={clsx(
+        localClasses.root,
+        screenSize === ScreenSize.Large
+          ? localClasses.large
+          : localClasses.small
+      )}
+      item
+    >
       {Object.values(Move).map((move: Move) => (
         <IconButton
           key={move}

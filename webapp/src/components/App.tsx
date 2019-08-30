@@ -8,7 +8,6 @@ import {
   userReducer,
   UserStateContext,
 } from 'state/user';
-import HeaderBar from './HeaderBar';
 import { lightBlue } from '@material-ui/core/colors';
 import PageContainer from './PageContainer';
 
@@ -28,7 +27,6 @@ const App: React.FC = () => {
       <Router>
         <UserStateContext.Provider value={userState}>
           <UserDispatchContext.Provider value={userDispatch}>
-            <HeaderBar />
             <PageContainer />
           </UserDispatchContext.Provider>
         </UserStateContext.Provider>

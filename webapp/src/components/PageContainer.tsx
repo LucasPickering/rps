@@ -1,10 +1,15 @@
 import { makeStyles, Container, Grid } from '@material-ui/core';
 import React, { useEffect } from 'react';
 import RootRoutes from './routes/RootRoutes';
+import HeaderBar from './HeaderBar';
 import useUser from 'hooks/useUser';
 
 const useLocalStyles = makeStyles(({ spacing }) => ({
   root: {
+    minWidth: 360,
+    minHeight: 640,
+  },
+  body: {
     display: 'flex',
     flexDirection: 'column',
     padding: spacing(4),
@@ -23,11 +28,14 @@ const PageContainer: React.FC = () => {
 
   // Only render the page if user data is loaded
   return (
-    <Container className={localClasses.root}>
-      <Grid container direction="column" alignItems="center" spacing={2}>
-        <RootRoutes />
-      </Grid>
-    </Container>
+    <div className={localClasses.root}>
+      <HeaderBar />
+      <Container className={localClasses.body}>
+        <Grid container direction="column" alignItems="center" spacing={2}>
+          <RootRoutes />
+        </Grid>
+      </Container>
+    </div>
   );
 };
 
