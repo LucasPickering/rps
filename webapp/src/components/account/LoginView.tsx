@@ -1,22 +1,14 @@
 import { makeStyles, TextField, Typography } from '@material-ui/core';
-import Paper from 'components/common/Paper';
 import React, { useState, useContext } from 'react';
 import useUser from 'hooks/useUser';
 import { UserStateContext, User } from 'state/user';
 import useRequest from 'hooks/useRequest';
 import { Redirect, RouteComponentProps, withRouter } from 'react-router';
-import FlexBox from 'components/common/FlexBox';
 import LoadingButton from 'components/common/LoadingButton';
 import queryString from 'query-string';
+import Form from 'components/common/Form';
 
 const useLocalStyles = makeStyles(({ spacing, palette }) => ({
-  root: {
-    width: 300,
-  },
-  textField: {
-    width: '100%',
-    marginBottom: spacing(1),
-  },
   errorText: {
     marginTop: spacing(1),
     color: palette.error.main,
@@ -42,54 +34,47 @@ const LoginView: React.FC<RouteComponentProps> = ({ location }) => {
   }
 
   return (
-    <Paper className={localClasses.root}>
-      <form
-        onSubmit={event => {
-          // Send the login request. Once it comes back, fetch user data from
-          // the API
-          request({ data: { username, password } }).then(() => requestUser());
-          event.preventDefault(); // Don't reload the page
+    <Form
+      // Send the login request. Once it comes back, fetch user data from
+      // the API
+      onSubmit={() =>
+        request({ data: { username, password } }).then(() => requestUser())
+      }
+    >
+      <TextField
+        id="username"
+        label="Username"
+        value={username}
+        onChange={e => {
+          setUsername(e.currentTarget.value);
         }}
+      />
+      <TextField
+        id="password"
+        label="Password"
+        type="password"
+        value={password}
+        onChange={e => {
+          setPassword(e.currentTarget.value);
+        }}
+      />
+      <LoadingButton
+        type="submit"
+        variant="contained"
+        color="primary"
+        loading={loading || userLoading}
+        disabled={!username || !password}
       >
-        <FlexBox flexDirection="column">
-          <TextField
-            className={localClasses.textField}
-            id="username"
-            label="Username"
-            value={username}
-            onChange={e => {
-              setUsername(e.currentTarget.value);
-            }}
-          />
-          <TextField
-            className={localClasses.textField}
-            id="password"
-            label="Password"
-            type="password"
-            value={password}
-            onChange={e => {
-              setPassword(e.currentTarget.value);
-            }}
-          />
-          <LoadingButton
-            type="submit"
-            variant="contained"
-            color="primary"
-            loading={loading || userLoading}
-            disabled={!username || !password}
-          >
-            Log In
-          </LoadingButton>
-          {error && (
-            <Typography className={localClasses.errorText}>
-              {error.status === 400
-                ? 'Incorrect username or password'
-                : "Unknown error. Looks like you're really up shit creek."}
-            </Typography>
-          )}
-        </FlexBox>
-      </form>
-    </Paper>
+        Log In
+      </LoadingButton>
+      {error && (
+        <Typography className={localClasses.errorText}>
+          {error.status === 400
+            ? 'Incorrect username or password'
+            : "Unknown error. Looks like you're really up shit creek."}
+        </Typography>
+      )}
+    </Form>
   );
 };
 
