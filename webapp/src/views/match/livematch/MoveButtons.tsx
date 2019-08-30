@@ -3,12 +3,12 @@ import React from 'react';
 import { Move } from 'state/match';
 import MoveIconCircle from './MoveIconCircle';
 
-const useLocalStyles = makeStyles(({ spacing }) => ({
+const useLocalStyles = makeStyles(() => ({
   root: {
     display: 'grid',
     gridTemplateColumns: 'repeat(5, 1fr)',
     gridTemplateRows: 'repeat(3, 1fr)',
-    gridRowGap: 60,
+    gridRowGap: 48,
     gridTemplateAreas: `
     '.. .. ro .. ..'
     'li .. .. .. pa'
@@ -16,7 +16,6 @@ const useLocalStyles = makeStyles(({ spacing }) => ({
     `,
   },
   button: {
-    margin: spacing(1),
     padding: 0,
   },
 }));

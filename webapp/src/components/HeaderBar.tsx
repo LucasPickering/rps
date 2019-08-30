@@ -1,10 +1,10 @@
 import { AppBar, Toolbar, makeStyles } from '@material-ui/core';
-import useUser from 'hooks/useUser';
 import React from 'react';
-import LogOutButton from 'views/login/LogOutButton';
-import LogInButton from 'views/login/LogInButton';
 import NavLink from './core/NavLink';
 import ButtonLink from './core/ButtonLink';
+import AccountMenu from './AccountMenu';
+import useUser from 'hooks/useUser';
+import LogInButton from 'views/login/LogInButton';
 
 const useLocalStyles = makeStyles(({ spacing }) => ({
   nav: {},
@@ -39,7 +39,7 @@ const HeaderBar: React.FC = () => {
             New Match
           </ButtonLink>
         )}
-        {user ? <LogOutButton /> : <LogInButton />}
+        {user ? <AccountMenu /> : <LogInButton />}
       </Toolbar>
     </AppBar>
   );

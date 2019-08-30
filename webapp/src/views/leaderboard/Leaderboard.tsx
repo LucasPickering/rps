@@ -22,19 +22,19 @@ const Leaderboard: React.FC = () => {
       columns={[
         { title: 'Player', field: 'username', sorting: false },
         {
-          title: 'Match Wins',
+          title: 'Wins',
           field: 'matchWinCount',
           type: 'numeric',
           sorting: false,
         },
         {
-          title: 'Match Losses',
+          title: 'Losses',
           field: 'matchLossCount',
           type: 'numeric',
           sorting: false,
         },
         {
-          title: 'Match Win%',
+          title: 'Win%',
           field: 'matchWinPct',
           type: 'numeric',
           sorting: false,

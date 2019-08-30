@@ -51,14 +51,12 @@ const Actions: React.FC = () => {
   if (isReady && !selectedMove) {
     // Player is ready, show moves
     return (
-      <Grid item container justify="center">
-        <MoveButtons
-          disabled={!opponent}
-          onClick={move => {
-            sendMessage({ type: ClientMessageType.Move, move });
-          }}
-        />
-      </Grid>
+      <MoveButtons
+        disabled={!opponent}
+        onClick={move => {
+          sendMessage({ type: ClientMessageType.Move, move });
+        }}
+      />
     );
   }
 
