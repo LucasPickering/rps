@@ -19,7 +19,11 @@ const LogInButton: React.FC<
       : '';
   return (
     // TODO include query params here
-    <ButtonLink to={`/login${paramsStr}`} variant={variant} color={color}>
+    <ButtonLink
+      to={`/account/login${paramsStr}`}
+      variant={variant}
+      color={color}
+    >
       Log In
     </ButtonLink>
   );
