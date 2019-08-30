@@ -63,27 +63,31 @@ const Actions: React.FC = () => {
   }
 
   // Not ready yet, show a ready button
-  const lastGame = last(games);
-  return (
-    <>
-      {lastGame && (
+  if (!isReady) {
+    const lastGame = last(games);
+    return (
+      <>
+        {lastGame && (
+          <Grid item>
+            <Typography className={classes.normalMessage}>
+              {formatGameOutcome(lastGame.outcome)}
+            </Typography>
+          </Grid>
+        )}
         <Grid item>
-          <Typography className={classes.normalMessage}>
-            {formatGameOutcome(lastGame.outcome)}
-          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => sendMessage({ type: ClientMessageType.Ready })}
+          >
+            Ready
+          </Button>
         </Grid>
-      )}
-      <Grid item>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => sendMessage({ type: ClientMessageType.Ready })}
-        >
-          Ready
-        </Button>
-      </Grid>
-    </>
-  );
+      </>
+    );
+  }
+
+  return null;
 };
 
 /**
