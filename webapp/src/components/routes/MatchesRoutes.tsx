@@ -2,7 +2,7 @@ import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import LiveMatchView from 'components/matches/live/LiveMatchView';
 
-const MatchRoutes: React.FC = () => {
+const MatchesRoutes: React.FC = () => {
   return (
     <Switch>
       <Route path="/matches/live/:matchId" component={LiveMatchView} exact />
@@ -10,4 +10,4 @@ const MatchRoutes: React.FC = () => {
   );
 };
 
-export default MatchRoutes;
+export default MatchesRoutes;

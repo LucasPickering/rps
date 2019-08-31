@@ -16,9 +16,13 @@ docker-compose up
 
 Deployed via [Keskne](https://github.com/LucasPickering/keskne). Images are automatically built and pushed on every push to master.
 
-## Nomenclature
+## Notes
 
 ### React
+
+#### Directory Structure
+
+Files are first broken out by type. Within `components/`, files are meant to mirror the route structure.
 
 #### Component names
 
