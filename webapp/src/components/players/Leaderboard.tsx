@@ -4,6 +4,7 @@ import { PlayerSummary } from 'state/player';
 import useRequest from 'hooks/useRequest';
 import { PaginatedResponse } from 'state/api';
 import { tableToApiQuery } from 'util/funcs';
+import PlayerLink from './PlayerLink';
 
 const tableOptions = {
   search: false,
@@ -21,7 +22,12 @@ const Leaderboard: React.FC = () => {
     <MaterialTable
       title="Leaderboard"
       columns={[
-        { title: 'Player', field: 'username', sorting: false },
+        {
+          title: 'Player',
+          field: 'username',
+          sorting: false,
+          render: row => <PlayerLink username={row.username} />,
+        },
         {
           title: 'Wins',
           field: 'matchWinCount',

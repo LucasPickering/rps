@@ -4,6 +4,7 @@ import useRequest from 'hooks/useRequest';
 import { PaginatedResponse } from 'state/api';
 import { tableToApiQuery } from 'util/funcs';
 import { Match } from 'state/match';
+import PlayerLink from 'components/players/PlayerLink';
 
 const tableOptions = {
   search: false,
@@ -30,6 +31,7 @@ const RecentMatches: React.FC = () => {
           title: 'Winner',
           field: 'winner',
           type: 'string',
+          render: row => <PlayerLink username={row.winner} />,
         },
       ]}
       options={tableOptions}
