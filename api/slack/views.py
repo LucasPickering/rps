@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from core.models import Player
-from core.serializers.players import PlayerSummarySerializer
+from core.serializers import PlayerSummarySerializer
 from core.util import get_livematch_id
 
 

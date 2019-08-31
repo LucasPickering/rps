@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from core import models
+from . import models
 
 
 # For /api/matches/
@@ -39,3 +39,35 @@ class MatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Match
         fields = "__all__"
+
+
+# For /api/players/
+
+
+class PlayerSerializer(serializers.ModelSerializer):
+    matches = MatchSerializer(many=True)
+
+    class Meta:
+        model = models.Player
+        fields = ("username", "matches")
+
+
+class PlayerSummarySerializer(serializers.ModelSerializer):
+    match_win_count = serializers.IntegerField()
+    match_loss_count = serializers.IntegerField()
+    match_win_pct = serializers.FloatField()
+
+    class Meta:
+        model = models.Player
+        fields = (
+            "username",
+            "match_win_count",
+            "match_loss_count",
+            "match_win_pct",
+        )
+
+    def get_match_wins(self, obj):
+        return obj.matches.filter(winner=obj).count()
+
+    def get_match_losses(self, obj):
+        return obj.matches.exclude(winner=obj).count()
