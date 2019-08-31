@@ -2,8 +2,8 @@ import React from 'react';
 import { Typography, Grid } from '@material-ui/core';
 import useStyles from 'hooks/useStyles';
 import useSplashMessage, { welcomeSplasher } from 'hooks/useSplashMessage';
-import Leaderboard from './leaderboard/Leaderboard';
-import RecentMatches from './match/RecentMatches';
+import Leaderboard from './players/Leaderboard';
+import RecentMatches from './matches/RecentMatches';
 
 const Home: React.FC = () => {
   const classes = useStyles();
