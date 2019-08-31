@@ -1,9 +1,9 @@
 import React from 'react';
 import MaterialTable from 'material-table';
-import { PlayerSummary } from 'state/player';
 import useRequest from 'hooks/useRequest';
 import { PaginatedResponse } from 'state/api';
 import { tableToApiQuery } from 'util/funcs';
+import { Match } from 'state/match';
 
 const tableOptions = {
   search: false,
@@ -11,31 +11,25 @@ const tableOptions = {
   sorting: false,
 };
 
-const Leaderboard: React.FC = () => {
+const RecentMatches: React.FC = () => {
   const {
     state: { loading },
     request,
-  } = useRequest<PaginatedResponse<PlayerSummary[]>>({ url: '/api/players/' });
+  } = useRequest<PaginatedResponse<Match[]>>({ url: '/api/matches/' });
 
   return (
     <MaterialTable
-      title="Leaderboard"
+      title="Recent Matches"
       columns={[
-        { title: 'Player', field: 'username', sorting: false },
         {
-          title: 'Wins',
-          field: 'matchWinCount',
-          type: 'numeric',
+          title: 'Time',
+          field: 'startTime',
+          type: 'string',
         },
         {
-          title: 'Losses',
-          field: 'matchLossCount',
-          type: 'numeric',
-        },
-        {
-          title: 'Win%',
-          field: 'matchWinPct',
-          type: 'numeric',
+          title: 'Winner',
+          field: 'winner',
+          type: 'string',
         },
       ]}
       options={tableOptions}
@@ -43,7 +37,7 @@ const Leaderboard: React.FC = () => {
       data={query =>
         new Promise((resolve, reject) =>
           request({
-            params: { ...tableToApiQuery(query), ordering: '-match_win_pct' },
+            params: { ...tableToApiQuery(query), ordering: '-start_time' },
           })
             .then(response =>
               resolve({
@@ -59,4 +53,4 @@ const Leaderboard: React.FC = () => {
   );
 };
 
-export default Leaderboard;
+export default RecentMatches;
