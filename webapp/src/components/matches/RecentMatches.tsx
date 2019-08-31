@@ -5,6 +5,7 @@ import { PaginatedResponse } from 'state/api';
 import { tableToApiQuery } from 'util/funcs';
 import { Match } from 'state/match';
 import PlayerLink from 'components/players/PlayerLink';
+import MatchLink from './MatchLink';
 
 const tableOptions = {
   search: false,
@@ -22,16 +23,22 @@ const RecentMatches: React.FC = () => {
     <MaterialTable
       title="Recent Matches"
       columns={[
+        { field: 'id', hidden: true },
         {
           title: 'Time',
           field: 'startTime',
           type: 'string',
+          render: row => (
+            <MatchLink matchId={row.id}>{row.startTime}</MatchLink>
+          ),
         },
         {
           title: 'Winner',
           field: 'winner',
           type: 'string',
-          render: row => <PlayerLink username={row.winner} />,
+          render: row => (
+            <PlayerLink username={row.winner}>{row.winner}</PlayerLink>
+          ),
         },
       ]}
       options={tableOptions}

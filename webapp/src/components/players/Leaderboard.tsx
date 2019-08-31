@@ -26,7 +26,9 @@ const Leaderboard: React.FC = () => {
           title: 'Player',
           field: 'username',
           sorting: false,
-          render: row => <PlayerLink username={row.username} />,
+          render: row => (
+            <PlayerLink username={row.username}>{row.username}</PlayerLink>
+          ),
         },
         {
           title: 'Wins',

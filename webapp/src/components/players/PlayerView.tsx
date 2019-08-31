@@ -13,8 +13,9 @@ import ErrorSnackbar from 'components/common/ErrorSnackbar';
 import useStyles from 'hooks/useStyles';
 import { Match } from 'state/match';
 import { formatMatchOutcome, formatDateTime } from 'util/format';
-import Link from 'components/common/Link';
 import moment from 'moment';
+import PlayerLink from './PlayerLink';
+import MatchLink from 'components/matches/MatchLink';
 
 const useLocalStyles = makeStyles(({ typography }) => ({
   matchPanel: {
@@ -48,14 +49,14 @@ const MatchPanel: React.FC<{ username: string; match: Match }> = ({
     <Paper className={localClasses.matchPanel}>
       <Typography>
         vs{' '}
-        <Link to={`/players/${playerMatch.opponentName}`}>
+        <PlayerLink username={playerMatch.opponentName}>
           <strong>{playerMatch.opponentName}</strong>
-        </Link>
+        </PlayerLink>
       </Typography>
       <Typography className={localClasses.matchStartTime}>
-        <Link to={`/matches/${match.id}`}>
+        <MatchLink matchId={match.id}>
           {formatDateTime(moment(match.startTime))}
-        </Link>
+        </MatchLink>
       </Typography>
       <Typography className={localClasses.matchScore}>
         {playerMatch.wins}-{playerMatch.losses}
@@ -78,7 +79,7 @@ const PlayerView: React.FC<{
   return (
     <Grid item container direction="column" spacing={2} xs={4} sm={6}>
       <Grid item>
-        <Typography className={classes.normalMessage}> {username}</Typography>
+        <Typography className={classes.normalMessage}>{username}</Typography>
       </Grid>
       {loading && (
         <Grid item>
