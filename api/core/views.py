@@ -38,5 +38,5 @@ class PlayersView(generics.ListAPIView):
 
 class PlayerView(generics.RetrieveAPIView):
     lookup_field = "username"
-    queryset = models.Player.objects.all()
+    queryset = models.Player.objects.prefetch_related("matches").all()
     serializer_class = serializers.PlayerSerializer

@@ -45,6 +45,7 @@ const matchOutcomeSplashes: Splashes<MatchOutcome> = {
     'You are a disgrace to your family',
     "You friggin'  moron, you just got porched",
     'sit',
+    "That's the way she goes",
   ],
 };
 

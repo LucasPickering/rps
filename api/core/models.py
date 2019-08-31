@@ -61,6 +61,9 @@ class Match(models.Model):
         Player, related_name="match_wins", null=True, on_delete=models.PROTECT
     )
 
+    class Meta:
+        ordering = ("-start_time",)
+
 
 class Game(AbstractGame):
     match = models.ForeignKey(

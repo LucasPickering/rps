@@ -3,11 +3,7 @@ import useSplashMessage, { matchOutcomeSplasher } from 'hooks/useSplashMessage';
 import { last } from 'lodash';
 import React, { useContext, useEffect } from 'react';
 import { ClientMessageType, LiveMatchContext } from 'state/livematch';
-import {
-  formatGameOutcome,
-  formatMatchOutcome,
-  OutcomeFormat,
-} from 'util/format';
+import { formatGameOutcome, formatMatchOutcome } from 'util/format';
 import GameLog from './GameLog';
 import MoveButtons from './MoveButtons';
 import PlayerScore from './PlayerScore';
@@ -90,7 +86,7 @@ const Actions: React.FC = () => {
       <>
         <Typography className={classes.normalMessage}>Match Over</Typography>
         <Typography className={classes.majorMessage}>
-          You {formatMatchOutcome(matchOutcome, OutcomeFormat.PastTense)}!
+          You {formatMatchOutcome(matchOutcome, 'past')}!
         </Typography>
         <Typography className={classes.minorMessage}>
           {matchOutcomeSplash}
@@ -166,9 +162,7 @@ const LiveMatch: React.FC = () => {
   useEffect(() => {
     const lastGame = last(games);
     if (lastGame) {
-      notify(
-        `Game over - ${formatGameOutcome(lastGame.outcome, OutcomeFormat.Noun)}`
-      );
+      notify(`Game over - ${formatGameOutcome(lastGame.outcome, 'noun')}`);
     }
   }, [notify, games.length]); // eslint-disable-line react-hooks/exhaustive-deps
 

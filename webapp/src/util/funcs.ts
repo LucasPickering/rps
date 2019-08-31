@@ -1,5 +1,4 @@
 import React from 'react';
-import { LiveGame } from 'state/livematch';
 import { GameOutcome } from 'state/match';
 import { RequestParams } from 'state/api';
 import { Query } from 'material-table';
@@ -38,7 +37,7 @@ export const freq = <T>(arr: T[], el: T): number =>
   arr.filter(e => e === el).length;
 
 export const countGameOutcomes = (
-  games: LiveGame[],
+  games: { outcome: GameOutcome }[],
   outcome: GameOutcome
 ): number => freq(games.map(game => game.outcome), outcome);
 

@@ -18,7 +18,8 @@ export enum MatchOutcome {
 }
 
 export interface Match {
-  startTime: Date;
+  id: number;
+  startTime: string;
   duration: number;
   bestOf: number;
   games: {
