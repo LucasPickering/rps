@@ -44,6 +44,7 @@ const Leaderboard: React.FC = () => {
           title: 'Win%',
           field: 'matchWinPct',
           type: 'numeric',
+          render: row => row.matchWinPct.toFixed(3),
         },
       ]}
       options={tableOptions}
