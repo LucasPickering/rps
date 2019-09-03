@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 
-from core.util import GameOutcome, Move, get_win_target
+from core.util import GameOutcome, Move, get_livematch_id, get_win_target
 from core.models import (
     AbstractGame,
     AbstractPlayerGame,
@@ -77,13 +77,15 @@ class LivePlayerMatch(models.Model):
 
 
 class LiveMatch(models.Model):
-    id = models.CharField(primary_key=True, max_length=32)
+    id = models.CharField(
+        primary_key=True, max_length=32, default=get_livematch_id
+    )
     # Null if in progress, populated once the permanent match exists
     permanent_match = models.OneToOneField(
         Match, on_delete=models.CASCADE, blank=True, null=True
     )
     start_time = models.DateTimeField(auto_now_add=True)
-    best_of = models.PositiveSmallIntegerField(default=5)
+    best_of = models.PositiveSmallIntegerField()
     # Null here means no player has joined yet
     player1 = models.OneToOneField(
         LivePlayerMatch,
@@ -101,7 +103,9 @@ class LiveMatch(models.Model):
     )
 
     def clean(self):
-        # Validation
+        super().clean()
+
+        # Validate players
         if (
             self.player1
             and self.player2

@@ -1,18 +1,6 @@
-from rest_framework import generics, views, filters
-from rest_framework.response import Response
+from rest_framework import generics, filters
 
 from . import models, serializers
-from .util import get_livematch_id
-
-
-class NewMatchView(views.APIView):
-    def get(self, request):
-        # Generate a new match ID and return it
-        return Response(
-            serializers.NewMatchSerializer(
-                {"match_id": get_livematch_id()}
-            ).data
-        )
 
 
 class MatchesView(generics.ListAPIView):

@@ -2,7 +2,7 @@ from enum import Enum
 from rest_framework import serializers
 
 from core.util import MatchOutcome, Move, register
-from .models import LivePlayerMatch
+from . import models
 
 
 # This file is pretty jank. Sorry.
@@ -36,7 +36,7 @@ class OpponentSerializer(serializers.ModelSerializer):
     is_ready = serializers.BooleanField()
 
     class Meta:
-        model = LivePlayerMatch
+        model = models.LivePlayerMatch
         fields = ("username", "is_active", "is_ready")
 
 
@@ -129,6 +129,24 @@ class LiveMatchPlayerStateSerializer(serializers.Serializer):
                 else MatchOutcome.LOSS.value
             )
         return None
+
+
+class LiveMatchConfigSerializer(serializers.ModelSerializer):
+    """
+    Serializer used to read/write the config fields of a LiveMatch
+    """
+
+    best_of = serializers.IntegerField(default=5)
+
+    class Meta:
+        model = models.LiveMatch
+        fields = ("id", "best_of")
+        read_only_fields = ("id",)
+
+    def validate_best_of(self, best_of):
+        if best_of <= 0 or best_of % 2 == 0:
+            raise serializers.ValidationError("Must be a positive odd number")
+        return best_of
 
 
 class ClientMessageSerializer(serializers.Serializer):

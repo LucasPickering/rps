@@ -8,7 +8,9 @@ urlpatterns = [
         include(
             [
                 path("", views.MatchesView.as_view()),
-                path("new/", views.NewMatchView.as_view()),
+                # This is a subdivision of matches/ to stay consistent with
+                # the frontend URLs
+                path("live/", include("livematch.urls")),
                 path("<int:id>/", views.MatchView.as_view()),
             ]
         ),
