@@ -13,10 +13,21 @@ export interface LiveMatchOpponent {
   isReady: boolean;
 }
 
-export interface LiveMatchData {
+/**
+ * Static data for a live match. This data is provided by an endpoint on first
+ * connect, and never changes after that.
+ */
+export interface LiveMatchConfig {
+  id: string;
   bestOf: number;
-  // undef if waiting on opponent
-  opponent?: LiveMatchOpponent;
+}
+
+/**
+ * Dynamic data for a live match. Provided via websocket, and changes
+ * throughout a match.
+ */
+export interface LiveMatchData {
+  opponent?: LiveMatchOpponent; // undef if waiting on opponent
   isReady: boolean;
   selectedMove?: Move; // undef if no move selected yet
   games: LiveGame[];
@@ -37,6 +48,9 @@ export interface LiveMatchError {
   detail: string;
 }
 
+/**
+ * All the dynamic content that can come the live match websocket.
+ */
 export interface LiveMatchState {
   data: LiveMatchData;
   errors: LiveMatchError[];
@@ -44,7 +58,6 @@ export interface LiveMatchState {
 
 export const defaultLiveMatchState = {
   data: {
-    bestOf: 0,
     isReady: false,
     games: [],
   },
@@ -97,6 +110,7 @@ export type ClientMessage =
 
 export interface LiveMatchContextType {
   sendMessage: (msg: ClientMessage) => void;
+  config: LiveMatchConfig;
   state: LiveMatchState;
 }
 

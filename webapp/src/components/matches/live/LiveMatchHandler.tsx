@@ -8,6 +8,7 @@ import {
   LiveMatchError,
   defaultLiveMatchState,
   ClientMessageType,
+  LiveMatchConfig,
 } from 'state/livematch';
 import ConnectionIndicator from './ConnectionIndicator';
 import LiveMatch from './LiveMatch';
@@ -25,13 +26,13 @@ const useLocalStyles = makeStyles(() => ({
  * as long as that connection is open, renders a {@link LiveMatch}.
  */
 const LiveMatchHandler: React.FC<{
-  matchId: string;
-}> = ({ matchId }) => {
+  matchConfig: LiveMatchConfig;
+}> = ({ matchConfig }) => {
   const classes = useStyles();
   const localClasses = useLocalStyles();
   const [state, dispatch] = useReducer(liveMatchReducer, defaultLiveMatchState);
   const { status, send } = useWebSocket(
-    `/ws/match/${matchId}`,
+    `/ws/match/${matchConfig.id}`,
     // We need to memoize the callbacks to prevent hook triggers
     // Ugly solution but it works (sorry Seth!)
     {
@@ -79,6 +80,7 @@ const LiveMatchHandler: React.FC<{
           <LiveMatchContext.Provider
             value={{
               sendMessage: send,
+              config: matchConfig,
               state,
             }}
           >

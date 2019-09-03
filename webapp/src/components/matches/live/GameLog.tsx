@@ -50,8 +50,9 @@ const Game: React.FC<{ game?: LiveGame }> = ({ game }) => {
 const GameLog: React.FC = () => {
   const localClasses = useLocalStyles();
   const {
+    config: { bestOf },
     state: {
-      data: { bestOf, games, matchOutcome },
+      data: { games, matchOutcome },
     },
   } = useContext(LiveMatchContext);
 
