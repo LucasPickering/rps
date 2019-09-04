@@ -50,10 +50,10 @@ def leaderboard(request, *args, **kwargs):
         many=True,
     ).data:
         table.add_row([
-            player_data.get("username"),
-            player_data.get("match_win_count"),
-            player_data.get("match_loss_count"),
-            "{:.3f}".format(player_data.get("match_win_pct"))
+            player_data["username"],
+            player_data["match_win_count"],
+            player_data["match_loss_count"],
+            "{:.3f}".format(player_data["match_win_pct"])
         ])
     blocks.append({
         "type": "section",
