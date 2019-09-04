@@ -10,6 +10,10 @@ docker-compose up
 ./managepy.sh loaddata init.json
 ```
 
+This will pre-load some initial data to make development easier. There are three default users: `user1`, `user2`, and `user3`. The password for all three is `rockpaper`.
+
+If you want to add more users, you can do so in the Django Admin UI (`/api/admin/`).
+
 ## Deployment
 
 ### Building & Pushing Images
