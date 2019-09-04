@@ -1,3 +1,4 @@
+from prettytable import PrettyTable
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -38,36 +39,26 @@ def leaderboard(request, *args, **kwargs):
             "type": "section",
             "text": {"type": "mrkdwn", "text": "*Leaderboard*"},
         },
-        {
-            "type": "section",
-            "text": {
-                "type": "mrkdwn",
-                "text": "*Username*         *Wins*     *Losses*     *Win%*",
-            },
-        },
-        {"type": "divider"},
     ]
+    table = PrettyTable(["Username", "Wins", "Losses", "Win%"])
+    table.align["Username"] = "l"
+    table.align["Wins"] = "r"
+    table.align["Losses"] = "r"
+    table.align["Win%"] = "r"
     for player_data in PlayerSummarySerializer(
         Player.objects.annotate_match_outcomes().order_by("-match_win_pct"),
         many=True,
     ).data:
-        blocks.append(
-            {
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": "*{username:<23}* "
-                    "{match_win_count:<11} "
-                    "{match_loss_count:<15} "
-                    "{match_win_pct:.3f}".format(
-                        username=player_data.get("username"),
-                        match_win_count=player_data.get("match_win_count"),
-                        match_loss_count=player_data.get("match_loss_count"),
-                        match_win_pct=player_data.get("match_win_pct"),
-                    ),
-                },
-            }
-        )
+        table.add_row([
+            player_data.get("username"),
+            player_data.get("match_win_count"),
+            player_data.get("match_loss_count"),
+            "{:.3f}".format(player_data.get("match_win_pct"))
+        ])
+    blocks.append({
+        "type": "section",
+        "text": {"type": "mrkdwn", "text": "```{}```".format(table)},
+    })
     return Response({"response_type": "in_channel", "blocks": blocks})
 
 
