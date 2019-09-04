@@ -60,7 +60,10 @@ export const makeReducerContexts = <State, Action>(): {
 
 export const tableToApiQuery = <T extends object>(
   query: Query<T>
-): RequestParams => ({
-  page: query.page + 1,
-  page_size: query.pageSize, // eslint-disable-line @typescript-eslint/camelcase
-});
+): RequestParams => {
+  console.log(query);
+  return {
+    limit: query.pageSize,
+    offset: query.page * query.pageSize,
+  };
+};

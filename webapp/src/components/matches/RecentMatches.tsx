@@ -1,5 +1,5 @@
 import React from 'react';
-import MaterialTable from 'material-table';
+import MaterialTable, { Options } from 'material-table';
 import useRequest from 'hooks/useRequest';
 import { PaginatedResponse } from 'state/api';
 import { tableToApiQuery } from 'util/funcs';
@@ -7,7 +7,7 @@ import { Match } from 'state/match';
 import PlayerLink from 'components/players/PlayerLink';
 import MatchLink from './MatchLink';
 
-const tableOptions = {
+const tableOptions: Options = {
   search: false,
   paging: false,
   sorting: false,
@@ -46,7 +46,11 @@ const RecentMatches: React.FC = () => {
       data={query =>
         new Promise((resolve, reject) =>
           request({
-            params: { ...tableToApiQuery(query), ordering: '-start_time' },
+            params: {
+              ...tableToApiQuery(query),
+              ordering: '-start_time',
+              limit: 5,
+            },
           })
             .then(response =>
               resolve({

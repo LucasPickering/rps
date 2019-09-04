@@ -15,8 +15,8 @@ export interface ApiState<T, E> {
  * pagination, etc.
  */
 export interface RequestParams {
-  page?: number;
-  page_size?: number;
+  limit?: number;
+  offset?: number;
   ordering?: string;
   q?: string;
 }
