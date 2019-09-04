@@ -12,7 +12,7 @@ const Home: React.FC = () => {
     <>
       <Grid item>
         <Typography className={classes.majorMessage}>
-          Rock Paper Scissors (Lizard Spock)
+          Rock Paper Scissors
         </Typography>
         <Typography className={classes.minorMessage}>{welcome}</Typography>
       </Grid>
