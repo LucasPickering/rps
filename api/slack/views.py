@@ -35,10 +35,7 @@ def leaderboard(request, *args, **kwargs):
     using .ljust() to make sure each section of strings have the same length.
     """
     blocks = [
-        {
-            "type": "section",
-            "text": {"type": "mrkdwn", "text": "*Leaderboard*"},
-        },
+        {"type": "section", "text": {"type": "mrkdwn", "text": "*Leaderboard*"}}
     ]
     table = PrettyTable(["Username", "Wins", "Losses", "Win%"])
     table.align["Username"] = "l"
@@ -46,19 +43,25 @@ def leaderboard(request, *args, **kwargs):
     table.align["Losses"] = "r"
     table.align["Win%"] = "r"
     for player_data in PlayerSummarySerializer(
-        Player.objects.annotate_match_outcomes().order_by("-match_win_pct"),
+        Player.objects.annotate_match_outcomes().order_by(
+            "-match_win_pct", "match_count"
+        ),
         many=True,
     ).data:
-        table.add_row([
-            player_data["username"],
-            player_data["match_win_count"],
-            player_data["match_loss_count"],
-            "{:.3f}".format(player_data["match_win_pct"])
-        ])
-    blocks.append({
-        "type": "section",
-        "text": {"type": "mrkdwn", "text": "```{}```".format(table)},
-    })
+        table.add_row(
+            [
+                player_data["username"],
+                player_data["match_win_count"],
+                player_data["match_loss_count"],
+                "{:.3f}".format(player_data["match_win_pct"]),
+            ]
+        )
+    blocks.append(
+        {
+            "type": "section",
+            "text": {"type": "mrkdwn", "text": "```{}```".format(table)},
+        }
+    )
     return Response({"response_type": "in_channel", "blocks": blocks})
 
 

@@ -16,7 +16,9 @@ const Leaderboard: React.FC = () => {
   const {
     state: { loading },
     request,
-  } = useRequest<PaginatedResponse<PlayerSummary[]>>({ url: '/api/players/' });
+  } = useRequest<PaginatedResponse<PlayerSummary[]>>({
+    url: '/api/players/',
+  });
 
   return (
     <MaterialTable
@@ -52,7 +54,10 @@ const Leaderboard: React.FC = () => {
       data={query =>
         new Promise((resolve, reject) =>
           request({
-            params: { ...tableToApiQuery(query), ordering: '-match_win_pct' },
+            params: {
+              ...tableToApiQuery(query),
+              ordering: '-match_win_pct,match_count',
+            },
           })
             .then(response =>
               resolve({
