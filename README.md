@@ -1,4 +1,4 @@
-# Rock Paper Scissors (Lizard Spock)
+# Rock Paper Scissors
 
 ## Development
 
@@ -6,8 +6,8 @@
 
 ```
 docker-compose up
-./exec_api.sh ./manage.py migrate
-./exec_api.sh ./manage.py createsuperuser
+./managepy.sh migrate
+./managepy.sh loaddata init.json
 ```
 
 ## Deployment
