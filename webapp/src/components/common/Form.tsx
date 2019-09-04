@@ -5,9 +5,10 @@ import Paper from 'components/common/Paper';
 import { noop } from 'lodash';
 
 const useLocalStyles = makeStyles(({ spacing }) => ({
-  small: { width: 300 },
+  small: { width: 200 },
+  medium: { width: 300 },
   innerBox: {
-    '& .MuiTextField-root': {
+    '& .MuiFormControl-root': {
       width: '100%',
       marginBottom: spacing(1),
     },
@@ -15,7 +16,7 @@ const useLocalStyles = makeStyles(({ spacing }) => ({
 }));
 
 interface Props {
-  size: 'small';
+  size: 'small' | 'medium';
   onSubmit: () => void;
 }
 
@@ -46,7 +47,7 @@ const Form = ({
 };
 
 Form.defaultProps = {
-  size: 'small',
+  size: 'medium',
   onSubmit: noop,
 };
 

@@ -33,12 +33,12 @@ const useLocalStyles = makeStyles(() => ({
 const LiveMatchView: React.FC<{
   matchId: string;
 }> = ({ matchId }) => {
+  const classes = useStyles();
+  const localClasses = useLocalStyles();
+
   const { loading: configLoading, data: config, error: configError } = useFetch<
     LiveMatchConfig
   >(`/api/matches/live/${matchId}/`);
-
-  const classes = useStyles();
-  const localClasses = useLocalStyles();
   const [state, dispatch] = useReducer(liveMatchReducer, defaultLiveMatchState);
   const { status, send } = useWebSocket(
     `/ws/match/${matchId}`,

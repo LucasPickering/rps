@@ -1,8 +1,4 @@
-import {
-  makeStyles,
-  Button as MuiButton,
-  CircularProgress,
-} from '@material-ui/core';
+import { makeStyles, Button, CircularProgress } from '@material-ui/core';
 import React from 'react';
 
 const useLocalStyles = makeStyles(() => ({
@@ -19,14 +15,12 @@ interface Props {
   loading: boolean;
 }
 
-const LoadingButton: React.FC<
-  Props & React.ComponentProps<typeof MuiButton>
-> & {
+const LoadingButton: React.FC<Props & React.ComponentProps<typeof Button>> & {
   defaultProps: Partial<Props>;
 } = ({ loading, color, disabled, children, ...rest }) => {
   const localClasses = useLocalStyles();
   return (
-    <MuiButton disabled={disabled || loading} {...rest}>
+    <Button color={color} disabled={disabled || loading} {...rest}>
       {children}
       {loading && (
         <CircularProgress
@@ -35,7 +29,7 @@ const LoadingButton: React.FC<
           size={24}
         />
       )}
-    </MuiButton>
+    </Button>
   );
 };
 

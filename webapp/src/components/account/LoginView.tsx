@@ -1,4 +1,4 @@
-import { makeStyles, TextField, Typography } from '@material-ui/core';
+import { TextField, Typography } from '@material-ui/core';
 import React, { useState, useContext } from 'react';
 import useUser from 'hooks/useUser';
 import { UserStateContext, User } from 'state/user';
@@ -7,16 +7,10 @@ import { Redirect, RouteComponentProps, withRouter } from 'react-router';
 import LoadingButton from 'components/common/LoadingButton';
 import queryString from 'query-string';
 import Form from 'components/common/Form';
-
-const useLocalStyles = makeStyles(({ spacing, palette }) => ({
-  errorText: {
-    marginTop: spacing(1),
-    color: palette.error.main,
-  },
-}));
+import useStyles from 'hooks/useStyles';
 
 const LoginView: React.FC<RouteComponentProps> = ({ location }) => {
-  const localClasses = useLocalStyles();
+  const classes = useStyles();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const { user, requestUser } = useUser();
@@ -45,9 +39,7 @@ const LoginView: React.FC<RouteComponentProps> = ({ location }) => {
         id="username"
         label="Username"
         value={username}
-        onChange={e => {
-          setUsername(e.currentTarget.value);
-        }}
+        onChange={e => setUsername(e.currentTarget.value)}
       />
       <TextField
         id="password"
@@ -68,7 +60,7 @@ const LoginView: React.FC<RouteComponentProps> = ({ location }) => {
         Log In
       </LoadingButton>
       {error && (
-        <Typography className={localClasses.errorText}>
+        <Typography className={classes.errorMessage}>
           {error.status === 400
             ? 'Incorrect username or password'
             : "Unknown error. Looks like you're really up shit creek."}
