@@ -40,5 +40,5 @@ export const formatMatchOutcome = (
 };
 
 export const formatDateTime = (date: Moment): string => {
-  return date.format('MMMM D YYYY, h:mm a');
+  return date.format('MMM D YYYY, h:mm a');
 };

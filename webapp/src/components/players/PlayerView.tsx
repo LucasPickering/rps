@@ -20,21 +20,17 @@ import MatchLink from 'components/matches/MatchLink';
 const useLocalStyles = makeStyles(({ typography }) => ({
   matchPanel: {
     display: 'grid',
-    gridTemplateColumns: '70% 20% 10%',
-    gridTemplateRows: 'repeat(3, 1fr)',
+    gridTemplateColumns: '4fr 1fr 1fr',
+    gridTemplateRows: 'repeat(2, 1fr)',
+    alignItems: 'center',
   },
   matchStartTime: {
-    gridRow: 3,
+    gridRow: 2,
     gridColumn: 1,
   },
-  matchScore: {
-    gridRow: 2,
-    gridColumn: 2,
-    ...typography.h5,
-  },
-  matchOutcome: {
-    gridRow: 2,
-    gridColumn: 3,
+  rightText: {
+    gridRow: '1 / 3',
+    textAlign: 'right',
     ...typography.h5,
   },
 }));
@@ -58,10 +54,10 @@ const MatchPanel: React.FC<{ username: string; match: Match }> = ({
           {formatDateTime(moment(match.startTime))}
         </MatchLink>
       </Typography>
-      <Typography className={localClasses.matchScore}>
+      <Typography className={localClasses.rightText}>
         {playerMatch.wins}-{playerMatch.losses}
       </Typography>
-      <Typography className={localClasses.matchOutcome}>
+      <Typography className={localClasses.rightText}>
         {formatMatchOutcome(playerMatch.outcome, 'abbreviation')}
       </Typography>
     </Paper>
@@ -77,7 +73,7 @@ const PlayerView: React.FC<{
   );
 
   return (
-    <Grid item container direction="column" spacing={2} xs={4} sm={6}>
+    <Grid item container direction="column" spacing={2} sm={6}>
       <Grid item>
         <Typography className={classes.normalMessage}>{username}</Typography>
       </Grid>
