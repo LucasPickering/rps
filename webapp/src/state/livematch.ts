@@ -20,6 +20,7 @@ export interface LiveMatchOpponent {
 export interface LiveMatchConfig {
   id: string;
   bestOf: number;
+  extendedMode: boolean;
 }
 
 /**

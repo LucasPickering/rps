@@ -31,8 +31,13 @@ class Move(DbEnum):
     SPOCK = "spock"
 
     @staticmethod
-    def is_valid_move(move):
-        return move in set(m.value for m in Move)
+    def is_valid_move(move, extended):
+        valid_moves = (
+            set(m.value for m in Move)
+            if extended
+            else {Move.ROCK.value, Move.PAPER.value, Move.SCISSORS.value}
+        )
+        return move in valid_moves
 
     @staticmethod
     def get_outcome(move1, move2):

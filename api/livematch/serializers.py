@@ -137,10 +137,11 @@ class LiveMatchConfigSerializer(serializers.ModelSerializer):
     """
 
     best_of = serializers.IntegerField(default=5)
+    extended_mode = serializers.BooleanField(default=False)
 
     class Meta:
         model = models.LiveMatch
-        fields = ("id", "best_of")
+        fields = ("id", "best_of", "extended_mode")
         read_only_fields = ("id",)
 
     def validate_best_of(self, best_of):

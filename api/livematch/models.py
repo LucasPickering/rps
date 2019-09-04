@@ -80,12 +80,13 @@ class LiveMatch(models.Model):
     id = models.CharField(
         primary_key=True, max_length=32, default=get_livematch_id
     )
+    best_of = models.PositiveSmallIntegerField()
+    extended_mode = models.BooleanField()  # i.e. are lizard/spock enabled
     # Null if in progress, populated once the permanent match exists
     permanent_match = models.OneToOneField(
         Match, on_delete=models.CASCADE, blank=True, null=True
     )
     start_time = models.DateTimeField(auto_now_add=True)
-    best_of = models.PositiveSmallIntegerField()
     # Null here means no player has joined yet
     player1 = models.OneToOneField(
         LivePlayerMatch,
@@ -272,6 +273,11 @@ class LiveMatch(models.Model):
             ClientError: If the move is invalid, this player has already moved,
             or they are not in the match
         """
+        if not Move.is_valid_move(move, self.extended_mode):
+            raise ClientError(
+                ClientErrorType.INVALID_MOVE, f"Unknown move: {move}"
+            )
+
         if self.is_match_complete:
             raise ClientError(
                 ClientErrorType.INVALID_MOVE, "Match is already complete"

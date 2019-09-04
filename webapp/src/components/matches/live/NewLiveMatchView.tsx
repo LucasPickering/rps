@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
-import { Typography, MenuItem } from '@material-ui/core';
+import {
+  Typography,
+  MenuItem,
+  FormControlLabel,
+  Switch,
+} from '@material-ui/core';
 import { Dictionary, range } from 'lodash';
 import useRequest from 'hooks/useRequest';
 import { LiveMatchConfig } from 'state/livematch';
@@ -18,6 +23,7 @@ const bestOfOptions = range(1, 23, 2);
 const NewLiveMatchView: React.FC = () => {
   const classes = useStyles();
   const [bestOf, setBestOf] = useState(5);
+  const [extendedMode, setExtendedMode] = useState(false);
   const {
     request,
     state: { loading, error },
@@ -41,7 +47,9 @@ const NewLiveMatchView: React.FC = () => {
     <Form
       size="small"
       onSubmit={() =>
-        request({ data: { best_of: bestOf } }).then(data => setData(data))
+        request({
+          data: { best_of: bestOf, extended_mode: extendedMode },
+        }).then(data => setData(data))
       }
     >
       <SelectControl
@@ -56,6 +64,15 @@ const NewLiveMatchView: React.FC = () => {
           </MenuItem>
         ))}
       </SelectControl>
+      <FormControlLabel
+        control={
+          <Switch
+            checked={extendedMode}
+            onChange={() => setExtendedMode(oldValue => !oldValue)}
+          />
+        }
+        label="Lizard Spock"
+      />
       <LoadingButton
         type="submit"
         variant="contained"

@@ -1,12 +1,19 @@
 import { makeStyles, Grid, IconButton } from '@material-ui/core';
-import React from 'react';
+import React, { useContext } from 'react';
 import { Move } from 'state/match';
 import MoveIconCircle from './MoveIconCircle';
 import useScreenSize, { ScreenSize } from 'hooks/useScreenSize';
 import clsx from 'clsx';
+import { LiveMatchContext } from 'state/livematch';
 
-const useLocalStyles = makeStyles(() => ({
-  root: {
+const useLocalStyles = makeStyles(({ spacing }) => ({
+  base: {
+    display: 'flex',
+    '& > button': {
+      margin: spacing(1),
+    },
+  },
+  extended: {
     display: 'grid',
     gridTemplateColumns: 'repeat(5, 1fr)',
     gridTemplateRows: 'repeat(3, 1fr)',
@@ -27,6 +34,9 @@ const useLocalStyles = makeStyles(() => ({
   },
 }));
 
+const baseMoves = [Move.Rock, Move.Paper, Move.Scissors];
+const extendedMoves = baseMoves.concat(Move.Lizard, Move.Spock);
+
 const areaMapping = {
   [Move.Rock]: 'ro',
   [Move.Paper]: 'pa',
@@ -43,18 +53,22 @@ interface Props {
 const MoveButtons = ({ disabled, onClick }: Props): React.ReactElement => {
   const localClasses = useLocalStyles();
   const screenSize = useScreenSize();
+  const {
+    config: { extendedMode },
+  } = useContext(LiveMatchContext);
+  const moves = extendedMode ? extendedMoves : baseMoves;
 
   return (
     <Grid
       className={clsx(
-        localClasses.root,
+        extendedMode ? localClasses.extended : localClasses.base,
         screenSize === ScreenSize.Large
           ? localClasses.large
           : localClasses.small
       )}
       item
     >
-      {Object.values(Move).map((move: Move) => (
+      {moves.map((move: Move) => (
         <IconButton
           key={move}
           className={localClasses.button}

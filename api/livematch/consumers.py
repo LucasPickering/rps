@@ -170,16 +170,10 @@ class MatchConsumer(JsonWebsocketConsumer):
                 live_match.ready_up(self.player)
 
         elif msg_type == ClientMessageType.MOVE.value:
-            move = msg["move"]
-            if not Move.is_valid_move(move):
-                raise ClientError(
-                    ClientErrorType.INVALID_MOVE, f"Unknown move: {move}"
-                )
-
             with transaction.atomic():
                 # If live_match doesn't exist, tenemos problemos
                 live_match = self.get_match()
-                live_match.apply_move(self.player, move)
+                live_match.apply_move(self.player, msg["move"])
                 live_match.save()
         else:
             raise ClientError(
