@@ -6,6 +6,7 @@ import { tableToApiQuery } from 'util/funcs';
 import { Match } from 'state/match';
 import PlayerLink from 'components/players/PlayerLink';
 import MatchLink from './MatchLink';
+import moment from 'moment';
 
 const tableOptions: Options = {
   search: false,
@@ -29,7 +30,9 @@ const RecentMatches: React.FC = () => {
           field: 'startTime',
           type: 'string',
           render: row => (
-            <MatchLink matchId={row.id}>{row.startTime}</MatchLink>
+            <MatchLink matchId={row.id}>
+              {moment(row.startTime).fromNow()}
+            </MatchLink>
           ),
         },
         {

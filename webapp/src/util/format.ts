@@ -39,6 +39,9 @@ export const formatMatchOutcome = (
   }
 };
 
-export const formatDateTime = (date: Moment): string => {
-  return date.format('MMM D YYYY, h:mm a');
+export const formatDateTime = (
+  date: Moment,
+  format: string = 'MMM D YYYY, h:mm a'
+): string => {
+  return date.format(format);
 };
