@@ -4,7 +4,7 @@ import withRouteParams from 'hoc/withRouteParams';
 import { Typography, LinearProgress, makeStyles } from '@material-ui/core';
 import useFetch from 'hooks/useFetch';
 import {
-  LiveMatchConfig,
+  LiveMatchMetadata,
   liveMatchReducer,
   defaultLiveMatchState,
   LiveMatchActionType,
@@ -36,9 +36,11 @@ const LiveMatchView: React.FC<{
   const classes = useStyles();
   const localClasses = useLocalStyles();
 
-  const { loading: configLoading, data: config, error: configError } = useFetch<
-    LiveMatchConfig
-  >(`/api/matches/live/${matchId}/`);
+  const {
+    loading: metadataLoading,
+    data: metadata,
+    error: metadataError,
+  } = useFetch<LiveMatchMetadata>(`/api/matches/live/${matchId}/`);
   const [state, dispatch] = useReducer(liveMatchReducer, defaultLiveMatchState);
   const { status, send } = useWebSocket(
     `/ws/match/${matchId}`,
@@ -74,7 +76,7 @@ const LiveMatchView: React.FC<{
   }, [status, send]);
 
   const getContent = (): React.ReactElement => {
-    if (configLoading || status === ConnectionStatus.Connecting) {
+    if (metadataLoading || status === ConnectionStatus.Connecting) {
       return (
         <>
           <Typography className={classes.normalMessage}>
@@ -85,20 +87,22 @@ const LiveMatchView: React.FC<{
       );
     }
 
-    if (configError) {
+    if (metadataError) {
       return (
         <Typography>
-          {configError.status === 404 ? 'Match not found' : 'An error occurred'}
+          {metadataError.status === 404
+            ? 'Match not found'
+            : 'An error occurred'}
         </Typography>
       );
     }
 
-    if (config) {
+    if (metadata) {
       return (
         <LiveMatchContext.Provider
           value={{
             sendMessage: send,
-            config,
+            metadata,
             state,
           }}
         >

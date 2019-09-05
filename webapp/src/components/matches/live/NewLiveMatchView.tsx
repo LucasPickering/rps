@@ -6,9 +6,9 @@ import {
   FormControlLabel,
   Switch,
 } from '@material-ui/core';
-import { Dictionary, range } from 'lodash';
+import { range } from 'lodash';
 import useRequest from 'hooks/useRequest';
-import { LiveMatchConfig } from 'state/livematch';
+import { LiveMatchMetadata } from 'state/livematch';
 import Form from 'components/common/Form';
 import useStyles from 'hooks/useStyles';
 import LoadingButton from 'components/common/LoadingButton';
@@ -27,16 +27,16 @@ const NewLiveMatchView: React.FC = () => {
   const {
     request,
     state: { loading, error },
-  } = useRequest<LiveMatchConfig, {}, undefined, Omit<LiveMatchConfig, 'id'>>({
+  } = useRequest<
+    LiveMatchMetadata,
+    {},
+    undefined,
+    Omit<LiveMatchMetadata, 'id'>
+  >({
     method: 'POST',
     url: '/api/matches/live/',
   });
-  const [data, setData] = useState<LiveMatchConfig | undefined>(undefined);
-
-  const validationErrors: Dictionary<string> = {
-    bestOf:
-      bestOf <= 0 || bestOf % 2 === 0 ? 'Must be a positive odd number' : '',
-  };
+  const [data, setData] = useState<LiveMatchMetadata | undefined>(undefined);
 
   // Once a response has come in, redirect based on the match ID
   if (data) {
@@ -48,7 +48,7 @@ const NewLiveMatchView: React.FC = () => {
       size="small"
       onSubmit={() =>
         request({
-          data: { bestOf, extendedMode },
+          data: { config: { bestOf, extendedMode } },
         }).then(data => setData(data))
       }
     >
@@ -78,7 +78,6 @@ const NewLiveMatchView: React.FC = () => {
         variant="contained"
         color="primary"
         loading={loading}
-        disabled={Object.values(validationErrors).some(Boolean)}
       >
         Create Match
       </LoadingButton>

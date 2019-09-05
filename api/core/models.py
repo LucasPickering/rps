@@ -50,10 +50,20 @@ class AbstractPlayerGame(models.Model):
         super().save(*args, **kwargs)
 
 
+class MatchConfig(models.Model):
+    """
+    Static configuration fields for a match. These fields are set when the
+    match is created and will never change. Used by both Match and LiveMatch.
+    """
+
+    best_of = models.PositiveSmallIntegerField()
+    extended_mode = models.BooleanField()
+
+
 class Match(models.Model):
     start_time = models.DateTimeField()
     duration = models.PositiveIntegerField()  # Seconds
-    best_of = models.PositiveSmallIntegerField()
+    config = models.ForeignKey(MatchConfig, on_delete=models.PROTECT)
     # Always len=2
     players = models.ManyToManyField(Player, related_name="matches")
     # Null for unfinished matches, i.e. when Nick rage quits

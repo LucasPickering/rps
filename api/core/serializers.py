@@ -29,7 +29,22 @@ class GameSerializer(serializers.ModelSerializer):
         exclude = ("id", "match")
 
 
+class MatchConfigSerializer(serializers.ModelSerializer):
+    best_of = serializers.IntegerField(default=5)
+    extended_mode = serializers.BooleanField(default=False)
+
+    class Meta:
+        model = models.MatchConfig
+        fields = ("best_of", "extended_mode")
+
+    def validate_best_of(self, best_of):
+        if best_of <= 0 or best_of % 2 == 0:
+            raise serializers.ValidationError("Must be a positive odd number")
+        return best_of
+
+
 class MatchSerializer(serializers.ModelSerializer):
+    config = MatchConfigSerializer()
     games = GameSerializer(many=True)
     players = serializers.SlugRelatedField(
         slug_field="username", many=True, read_only=True

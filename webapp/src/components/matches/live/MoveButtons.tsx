@@ -21,7 +21,9 @@ interface Props {
 const MoveButtons = ({ disabled, onClick }: Props): React.ReactElement => {
   const localClasses = useLocalStyles();
   const {
-    config: { extendedMode },
+    metadata: {
+      config: { extendedMode },
+    },
   } = useContext(LiveMatchContext);
 
   const MoveButton: React.FC<{ move: Move }> = ({ move }) => (

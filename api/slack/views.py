@@ -4,7 +4,7 @@ from rest_framework.response import Response
 
 from core.models import Player
 from core.serializers import PlayerSummarySerializer
-from livematch.serializers import LiveMatchConfigSerializer
+from livematch.serializers import LiveMatchSerializer
 
 
 def new_match(request, *args, **kwargs):
@@ -12,7 +12,7 @@ def new_match(request, *args, **kwargs):
     Return a slack message with a link to a new match
     """
     # Could potentially add arguments to allow game configuration here
-    serializer = LiveMatchConfigSerializer(data={})
+    serializer = LiveMatchSerializer(data={})
     serializer.is_valid(raise_exception=True)
     live_match = serializer.save()
 

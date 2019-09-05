@@ -8,6 +8,7 @@ from core.util import GameOutcome, Move, get_livematch_id, get_win_target
 from core.models import (
     AbstractGame,
     AbstractPlayerGame,
+    MatchConfig,
     Match,
     Game,
     Player,
@@ -80,8 +81,7 @@ class LiveMatch(models.Model):
     id = models.CharField(
         primary_key=True, max_length=32, default=get_livematch_id
     )
-    best_of = models.PositiveSmallIntegerField()
-    extended_mode = models.BooleanField()  # i.e. are lizard/spock enabled
+    config = models.ForeignKey(MatchConfig, on_delete=models.PROTECT)
     # Null if in progress, populated once the permanent match exists
     permanent_match = models.OneToOneField(
         Match, on_delete=models.CASCADE, blank=True, null=True
@@ -273,7 +273,7 @@ class LiveMatch(models.Model):
             ClientError: If the move is invalid, this player has already moved,
             or they are not in the match
         """
-        if not Move.is_valid_move(move, self.extended_mode):
+        if not Move.is_valid_move(move, self.config.extended_mode):
             raise ClientError(
                 ClientErrorType.INVALID_MOVE, f"Unknown move: {move}"
             )
@@ -330,14 +330,16 @@ class LiveMatch(models.Model):
         winner_id, wins = max(
             wins_by_player_id.items(), key=lambda t: t[1], default=(None, None)
         )
-        if winner_id is not None and wins >= get_win_target(self.best_of):
+        if winner_id is not None and wins >= get_win_target(
+            self.config.best_of
+        ):
             self.save_to_permanent(winner_id=winner_id)
 
     def save_to_permanent(self, winner_id):
         match = Match.objects.create(
             start_time=self.start_time,
             duration=(timezone.now() - self.start_time).total_seconds(),
-            best_of=self.best_of,
+            config=self.config,
             winner_id=winner_id,
         )
         self.permanent_match = match  # Connect the permanent match to this one

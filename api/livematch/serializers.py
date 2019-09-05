@@ -2,6 +2,8 @@ from enum import Enum
 from rest_framework import serializers
 
 from core.util import MatchOutcome, Move, register
+from core.serializers import MatchConfigSerializer
+from core.models import MatchConfig
 from . import models
 
 
@@ -78,7 +80,6 @@ class LiveMatchPlayerStateSerializer(serializers.Serializer):
     representing the current match state to be sent to that player.
     """
 
-    best_of = serializers.SerializerMethodField()
     opponent = serializers.SerializerMethodField()
     is_ready = serializers.SerializerMethodField()
     selected_move = serializers.SerializerMethodField()
@@ -98,9 +99,6 @@ class LiveMatchPlayerStateSerializer(serializers.Serializer):
                 "Cannot get state for player that is not in match"
             )
         super().__init__(live_match, *args, **kwargs)
-
-    def get_best_of(self, obj):
-        return obj.best_of
 
     def get_opponent(self, obj):
         return (
@@ -131,23 +129,23 @@ class LiveMatchPlayerStateSerializer(serializers.Serializer):
         return None
 
 
-class LiveMatchConfigSerializer(serializers.ModelSerializer):
+class LiveMatchSerializer(serializers.ModelSerializer):
     """
     Serializer used to read/write the config fields of a LiveMatch
     """
 
-    best_of = serializers.IntegerField(default=5)
-    extended_mode = serializers.BooleanField(default=False)
+    config = MatchConfigSerializer()
 
     class Meta:
         model = models.LiveMatch
-        fields = ("id", "best_of", "extended_mode")
+        fields = ("id", "config")
         read_only_fields = ("id",)
 
-    def validate_best_of(self, best_of):
-        if best_of <= 0 or best_of % 2 == 0:
-            raise serializers.ValidationError("Must be a positive odd number")
-        return best_of
+    def create(self, validated_data):
+        config_data = validated_data.pop("config")
+        print(config_data)
+        config = MatchConfig.objects.create(**config_data)
+        return models.LiveMatch.objects.create(config=config)
 
 
 class ClientMessageSerializer(serializers.Serializer):

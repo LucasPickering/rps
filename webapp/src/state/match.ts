@@ -17,11 +17,16 @@ export enum MatchOutcome {
   Loss = 'loss',
 }
 
+export interface MatchConfig {
+  bestOf: number;
+  extendedMode: boolean;
+}
+
 export interface Match {
   id: number;
   startTime: string;
   duration: number;
-  bestOf: number;
+  config: MatchConfig;
   games: {
     winner?: string;
     players: {

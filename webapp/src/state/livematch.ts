@@ -1,5 +1,5 @@
 import React from 'react';
-import { GameOutcome, MatchOutcome, Move } from './match';
+import { GameOutcome, MatchOutcome, Move, MatchConfig } from './match';
 
 export interface LiveGame {
   selfMove: Move;
@@ -17,10 +17,9 @@ export interface LiveMatchOpponent {
  * Static data for a live match. This data is provided by an endpoint on first
  * connect, and never changes after that.
  */
-export interface LiveMatchConfig {
+export interface LiveMatchMetadata {
   id: string;
-  bestOf: number;
-  extendedMode: boolean;
+  config: MatchConfig;
 }
 
 /**
@@ -111,7 +110,7 @@ export type ClientMessage =
 
 export interface LiveMatchContextType {
   sendMessage: (msg: ClientMessage) => void;
-  config: LiveMatchConfig;
+  metadata: LiveMatchMetadata;
   state: LiveMatchState;
 }
 
