@@ -30,7 +30,6 @@ Files are first broken out by type. Within `components/`, files are meant to mir
 
 #### Component names
 
-| Suffix  | Meaning                                                |
-| ------- | ------------------------------------------------------ |
-| View    | High-level component rendered directly by a route      |
-| Handler | Loads API data, then renders another component with it |
+| Suffix | Meaning                                           |
+| ------ | ------------------------------------------------- |
+| View   | High-level component rendered directly by a route |
