@@ -50,6 +50,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint 'src/**/*.{ts,tsx}'",
+    "check": "CI=true npm run test -- --passWithNoTests && npm run lint",
     "analyze": "source-map-explorer 'build/static/js/*.js' --html public/sme.html"
   },
   "eslintConfig": {

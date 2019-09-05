@@ -103,6 +103,7 @@ const useWebSocket = (
     return () => {
       ws.close();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addr, onOpen, onMessage, onError, onClose, isMounted, ...dependencies]);
 
   return { status, send };
