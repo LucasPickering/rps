@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import useSafeCallbacks from './useSafeCallbacks';
 import useIsMounted from './useIsMounted';
-import camelcaseKeys from 'camelcase-keys';
+import { camelCaseKeys } from 'util/funcs';
 
 export type Send = (data: unknown) => void;
 type EventConsumer<T = Event> = (event: T) => void;
@@ -70,9 +70,9 @@ const useWebSocket = (
     ws.onmessage = event => {
       if (isMounted.current && onMessage) {
         // This is probably safe, right?
-        const camelData = (camelcaseKeys(JSON.parse(event.data), {
-          deep: true,
-        }) as unknown) as MessageData;
+        const camelData = (camelCaseKeys(
+          JSON.parse(event.data)
+        ) as unknown) as MessageData;
         onMessage(camelData);
       }
     };

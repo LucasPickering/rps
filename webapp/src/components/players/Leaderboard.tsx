@@ -2,7 +2,7 @@ import React from 'react';
 import MaterialTable from 'material-table';
 import { PlayerSummary } from 'state/player';
 import useRequest from 'hooks/useRequest';
-import { PaginatedResponse } from 'state/api';
+import { PaginatedResponse, BaseRequestParams } from 'state/api';
 import { tableToApiQuery } from 'util/funcs';
 import PlayerLink from './PlayerLink';
 
@@ -16,7 +16,7 @@ const Leaderboard: React.FC = () => {
   const {
     state: { loading },
     request,
-  } = useRequest<PaginatedResponse<PlayerSummary[]>>({
+  } = useRequest<PaginatedResponse<PlayerSummary[]>, {}, BaseRequestParams>({
     url: '/api/players/',
   });
 

@@ -27,7 +27,7 @@ const NewLiveMatchView: React.FC = () => {
   const {
     request,
     state: { loading, error },
-  } = useRequest<LiveMatchConfig>({
+  } = useRequest<LiveMatchConfig, {}, undefined, Omit<LiveMatchConfig, 'id'>>({
     method: 'POST',
     url: '/api/matches/live/',
   });
@@ -48,7 +48,7 @@ const NewLiveMatchView: React.FC = () => {
       size="small"
       onSubmit={() =>
         request({
-          data: { best_of: bestOf, extended_mode: extendedMode },
+          data: { bestOf, extendedMode },
         }).then(data => setData(data))
       }
     >

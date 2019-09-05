@@ -1,7 +1,7 @@
 import React from 'react';
 import MaterialTable, { Options } from 'material-table';
 import useRequest from 'hooks/useRequest';
-import { PaginatedResponse } from 'state/api';
+import { PaginatedResponse, BaseRequestParams } from 'state/api';
 import { tableToApiQuery } from 'util/funcs';
 import { Match } from 'state/match';
 import PlayerLink from 'components/players/PlayerLink';
@@ -18,7 +18,9 @@ const RecentMatches: React.FC = () => {
   const {
     state: { loading },
     request,
-  } = useRequest<PaginatedResponse<Match[]>>({ url: '/api/matches/' });
+  } = useRequest<PaginatedResponse<Match[]>, {}, BaseRequestParams>({
+    url: '/api/matches/',
+  });
 
   return (
     <MaterialTable

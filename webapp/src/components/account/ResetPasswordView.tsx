@@ -12,6 +12,13 @@ interface ResetApiError {
   uid?: string[];
 }
 
+interface PasswordResetFormData {
+  uid: string;
+  token: string;
+  newPassword1: string;
+  newPassword2: string;
+}
+
 const useLocalStyles = makeStyles(({ spacing, palette }) => ({
   errorText: {
     marginTop: spacing(1),
@@ -28,7 +35,7 @@ const ResetPasswordView: React.FC<
   const {
     state: { loading, error },
     request,
-  } = useRequest<User, ResetApiError>({
+  } = useRequest<User, ResetApiError, undefined, PasswordResetFormData>({
     url: '/api/auth/password/reset/confirm/',
     method: 'POST',
   });
@@ -44,10 +51,8 @@ const ResetPasswordView: React.FC<
           data: {
             uid,
             token,
-            /* eslint-disable @typescript-eslint/camelcase */
-            new_password1: password1,
-            new_password2: password2,
-            /* eslint-enable @typescript-eslint/camelcase */
+            newPassword1: password1,
+            newPassword2: password2,
           },
         }).then(() => history.push('/login'))
       }

@@ -1,9 +1,9 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios from 'axios';
 import { useCallback, useMemo, useReducer } from 'react';
-import { ApiState, ApiError } from 'state/api';
+import { ApiState, ApiError, RequestConfig } from 'state/api';
 import useDeepMemo from './useDeepMemo';
 import useIsMounted from './useIsMounted';
-import camelcaseKeys from 'camelcase-keys';
+import { camelCaseKeys, snakeCaseKeys } from 'util/funcs';
 
 enum ApiActionType {
   Request,
@@ -55,15 +55,20 @@ const defaultApiState = {
  * that, when called, initiates a request. `request` returns a `Promise` that
  * resolves to data and rejects with an error. `Promise` doesn't let us type
  * the error, but it will always be an {@link ApiError};
+ *
+ * @typeparam R the type of the response data
+ * @typeparam E the type of the response error
+ * @typeparam P the type of the query params object
+ * @typeparam D the type of POST data
  */
-const useRequest = <T, E = {}>(
-  config: AxiosRequestConfig
+const useRequest = <R, E = {}, P = undefined, D = undefined>(
+  config: RequestConfig<P, D>
 ): {
-  state: ApiState<T, E>;
-  request: (subConfig?: AxiosRequestConfig) => Promise<T>;
+  state: ApiState<R, E>;
+  request: (subConfig?: RequestConfig<P, D>) => Promise<R>;
 } => {
   const [state, dispatch] = useReducer<
-    React.Reducer<ApiState<T, E>, ApiAction<T, E>>
+    React.Reducer<ApiState<R, E>, ApiAction<R, E>>
   >(apiReducer, defaultApiState);
 
   // Prevent updates after unmounting
@@ -75,17 +80,16 @@ const useRequest = <T, E = {}>(
   const configMemo = useDeepMemo(config);
 
   const request = useCallback(
-    (subConfig?: AxiosRequestConfig) => {
+    (subConfig?: RequestConfig<P, D>) => {
       dispatch({ type: ApiActionType.Request });
-      return new Promise<T>((resolve, reject) => {
+      // Convert keys to snake case so the API can handle them
+      const data = subConfig && subConfig.data && snakeCaseKeys(subConfig.data);
+      return new Promise<R>((resolve, reject) => {
         axios
-          .request({ ...configMemo, ...subConfig })
+          .request({ ...configMemo, ...subConfig, data })
           .then(response => {
             const camelData =
-              response.data &&
-              ((camelcaseKeys(response.data, {
-                deep: true,
-              }) as unknown) as T);
+              response.data && ((camelCaseKeys(response.data) as unknown) as R);
             if (isMounted.current) {
               dispatch({ type: ApiActionType.Success, data: camelData });
               resolve(camelData);

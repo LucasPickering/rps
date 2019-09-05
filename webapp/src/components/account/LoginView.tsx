@@ -9,6 +9,11 @@ import queryString from 'query-string';
 import Form from 'components/common/Form';
 import useStyles from 'hooks/useStyles';
 
+interface LoginFormData {
+  username: string;
+  password: string;
+}
+
 const LoginView: React.FC<RouteComponentProps> = ({ location }) => {
   const classes = useStyles();
   const [username, setUsername] = useState('');
@@ -18,7 +23,10 @@ const LoginView: React.FC<RouteComponentProps> = ({ location }) => {
   const {
     state: { loading, error },
     request,
-  } = useRequest<User>({ url: '/api/auth/login/', method: 'POST' });
+  } = useRequest<User, {}, undefined, LoginFormData>({
+    url: '/api/auth/login/',
+    method: 'POST',
+  });
 
   // User data is present now - get up on outta here
   if (user) {
