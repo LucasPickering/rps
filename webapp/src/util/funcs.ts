@@ -2,7 +2,6 @@ import React from 'react';
 import { GameOutcome } from 'state/match';
 import { BaseRequestParams } from 'state/api';
 import { Query } from 'material-table';
-import { mapKeys, snakeCase, camelCase } from 'lodash';
 
 /**
  * Wraps the given HoC in logic that will add a better name to all
@@ -58,20 +57,6 @@ export const makeReducerContexts = <State, Action>(): {
     ),
   };
 };
-
-/**
- * Recursively convert all keys in the object to camel case.
- */
-export const camelCaseKeys = (obj: {
-  [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-}): { [key: string]: unknown } => mapKeys(obj, (_v, k) => camelCase(k));
-
-/**
- * Recursively convert all keys in the object to camel case.
- */
-export const snakeCaseKeys = (obj: {
-  [key: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-}): { [key: string]: unknown } => mapKeys(obj, (_v, k) => snakeCase(k));
 
 export const tableToApiQuery = <T extends object>(
   query: Query<T>

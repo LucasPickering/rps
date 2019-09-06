@@ -3,7 +3,9 @@ import { useCallback, useMemo, useReducer } from 'react';
 import { ApiState, ApiError, RequestConfig } from 'state/api';
 import useDeepMemo from './useDeepMemo';
 import useIsMounted from './useIsMounted';
-import { camelCaseKeys, snakeCaseKeys } from 'util/funcs';
+import snakeCaseKeys from 'snakecase-keys';
+import camelcaseKeys from 'camelcase-keys';
+import { Dictionary } from 'lodash';
 
 enum ApiActionType {
   Request,
@@ -83,13 +85,17 @@ const useRequest = <R, E = {}, P = undefined, D = undefined>(
     (subConfig?: RequestConfig<P, D>) => {
       dispatch({ type: ApiActionType.Request });
       // Convert keys to snake case so the API can handle them
-      const data = subConfig && subConfig.data && snakeCaseKeys(subConfig.data);
+      const data =
+        subConfig &&
+        subConfig.data &&
+        snakeCaseKeys((subConfig.data as unknown) as Dictionary<unknown>);
       return new Promise<R>((resolve, reject) => {
         axios
           .request({ ...configMemo, ...subConfig, data })
           .then(response => {
             const camelData =
-              response.data && ((camelCaseKeys(response.data) as unknown) as R);
+              response.data &&
+              ((camelcaseKeys(response.data, { deep: true }) as unknown) as R);
             if (isMounted.current) {
               dispatch({ type: ApiActionType.Success, data: camelData });
               resolve(camelData);
