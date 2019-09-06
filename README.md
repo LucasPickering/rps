@@ -14,6 +14,14 @@ This will pre-load some initial data to make development easier. There are three
 
 If you want to add more users, you can do so in the Django Admin UI (`/api/admin/`).
 
+### Updating Fixture
+
+If you do a migration or want to add more data to the dev DB, you should update the fixture with:
+
+```
+./managepy.sh dumpdata auth core > api/core/fixtures/init.json
+```
+
 ## Deployment
 
 ### Building & Pushing Images
