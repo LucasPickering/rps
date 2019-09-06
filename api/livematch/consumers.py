@@ -4,7 +4,7 @@ from channels.generic.websocket import JsonWebsocketConsumer
 from django.conf import settings
 from django.db import transaction
 
-from core.util import Move, is_livematch_id
+from core.util import is_livematch_id
 
 from .models import LiveMatch
 from .serializers import (
@@ -159,22 +159,19 @@ class MatchConsumer(JsonWebsocketConsumer):
 
     def process_msg(self, msg):
         msg_type = msg["type"]
-        if msg_type == ClientMessageType.HEARTBEAT.value:
-            with transaction.atomic():
-                live_match = self.get_match()
-                live_match.heartbeat(self.player)
-
-        elif msg_type == ClientMessageType.READY.value:
-            with transaction.atomic():
-                live_match = self.get_match()
-                live_match.ready_up(self.player)
-
-        elif msg_type == ClientMessageType.MOVE.value:
+        valid_msg_types = set(cmt.value for cmt in ClientMessageType)
+        if msg_type in valid_msg_types:
             with transaction.atomic():
                 # If live_match doesn't exist, tenemos problemos
                 live_match = self.get_match()
-                live_match.apply_move(self.player, msg["move"])
-                live_match.save()
+                if msg_type == ClientMessageType.HEARTBEAT.value:
+                    live_match.heartbeat(self.player)
+                elif msg_type == ClientMessageType.READY.value:
+                    live_match.ready_up(self.player)
+                elif msg_type == ClientMessageType.MOVE.value:
+                    live_match.apply_move(self.player, msg["move"])
+                elif msg_type == ClientMessageType.REMATCH.value:
+                    live_match.make_rematch()
         else:
             raise ClientError(
                 ClientErrorType.MALFORMED_MESSAGE,

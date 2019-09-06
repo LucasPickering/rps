@@ -17,6 +17,7 @@ class ClientMessageType(Enum):
     HEARTBEAT = "heartbeat"
     READY = "ready"
     MOVE = "move"
+    REMATCH = "rematch"
 
 
 def register_msg(*names):
@@ -85,6 +86,7 @@ class LiveMatchPlayerStateSerializer(serializers.Serializer):
     selected_move = serializers.SerializerMethodField()
     games = serializers.SerializerMethodField()
     match_outcome = serializers.SerializerMethodField()
+    rematch = serializers.SerializerMethodField()
 
     def __init__(self, live_match, *args, **kwargs):
         try:
@@ -128,6 +130,9 @@ class LiveMatchPlayerStateSerializer(serializers.Serializer):
             )
         return None
 
+    def get_rematch(self, obj):
+        return obj.rematch_id
+
 
 class LiveMatchSerializer(serializers.ModelSerializer):
     """
@@ -152,7 +157,11 @@ class ClientMessageSerializer(serializers.Serializer):
     type = serializers.CharField()
 
 
-@register_msg(ClientMessageType.HEARTBEAT, ClientMessageType.READY)
+@register_msg(
+    ClientMessageType.HEARTBEAT,
+    ClientMessageType.READY,
+    ClientMessageType.REMATCH,
+)
 class EmptyClientMessageSerializer(ClientMessageSerializer):
     pass
 

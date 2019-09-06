@@ -1,5 +1,5 @@
 from collections import Counter
-from datetime import timedelta
+from datetime import datetime, timedelta
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
@@ -33,8 +33,7 @@ class LivePlayerMatch(models.Model):
 
     def reset(self):
         """
-        Reset's this player's state to for a new game. Does NOT update active
-        timer.
+        Reset's this player's state for a new game. Does NOT update active timer
         """
         self.is_ready = False
         self.move = ""
@@ -70,6 +69,23 @@ class LivePlayerMatch(models.Model):
     def is_active(self):
         return (timezone.now() - self.last_activity) <= self.ACTIVITY_TIMEOUT
 
+    def clone_for_rematch(self):
+        """
+        Clones this object, creating a new one with the same player but
+        other fields initialized to prepare for a rematch. is_ready is set to
+        True and last_activity is initialied to 1970-01-01. This DOES save
+        the row to the DB.
+
+        Returns:
+            LivePlayerMatch -- the created LivePlayerMatch
+        """
+        new_lpm = LivePlayerMatch.objects.create(
+            player=self.player, is_ready=True
+        )
+        new_lpm.last_activity = datetime.fromtimestamp(0)
+        new_lpm.save()
+        return new_lpm
+
     def __str__(self):
         return (
             f"player: {self.player}; last_activity: {self.last_activity};"
@@ -85,6 +101,9 @@ class LiveMatch(models.Model):
     # Null if in progress, populated once the permanent match exists
     permanent_match = models.OneToOneField(
         Match, on_delete=models.CASCADE, blank=True, null=True
+    )
+    rematch = models.OneToOneField(
+        "self", on_delete=models.SET_NULL, null=True, blank=True
     )
     start_time = models.DateTimeField(auto_now_add=True)
     # Null here means no player has joined yet
@@ -343,10 +362,23 @@ class LiveMatch(models.Model):
             winner_id=winner_id,
         )
         self.permanent_match = match  # Connect the permanent match to this one
+        self.save()
         match.players.set([self.player1.player, self.player2.player])
         for game in self.games.all():
             game.save_to_permanent(match)
         return match
+
+    def make_rematch(self):
+        if self.rematch is None:
+            # Create a new LiveMatch with the same config and players
+            rematch = LiveMatch(config=self.config)
+            rematch.player1 = self.player1.clone_for_rematch()
+            rematch.player2 = self.player2.clone_for_rematch()
+            rematch.save()
+
+            self.rematch = rematch
+            self.save()
+        return self.rematch
 
 
 class LiveGame(AbstractGame):
@@ -383,7 +415,10 @@ class LiveGame(AbstractGame):
         return (None, None)
 
     def __str__(self):
-        return f"match: {self.match_id}; game_num: {self.game_num}; winner: {self.winner}"
+        return (
+            f"match: {self.match_id}; game_num: {self.game_num};"
+            + " winner: {self.winner}"
+        )
 
     def save_to_permanent(self, match):
         game = Game.objects.create(
