@@ -40,7 +40,7 @@ const NewLiveMatchView: React.FC = () => {
 
   // Once a response has come in, redirect based on the match ID
   if (data) {
-    return <Redirect to={`/matches/live/${data.id}`} />;
+    return <Redirect to={`/matches/live/${data.id}`} push />;
   }
 
   return (

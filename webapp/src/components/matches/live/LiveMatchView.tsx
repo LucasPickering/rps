@@ -42,6 +42,11 @@ const LiveMatchView: React.FC<{
     error: metadataError,
   } = useFetch<LiveMatchMetadata>(`/api/matches/live/${matchId}/`);
   const [state, dispatch] = useReducer(liveMatchReducer, defaultLiveMatchState);
+  // Reset state when the match ID changes. Prevents weird flickering when
+  // starting a rematch.
+  useEffect(() => () => dispatch({ type: LiveMatchActionType.Reset }), [
+    matchId,
+  ]);
   const { status, send } = useWebSocket(
     `/ws/match/${matchId}`,
     // We need to memoize the callbacks to prevent hook triggers
@@ -61,7 +66,8 @@ const LiveMatchView: React.FC<{
           });
         }
       }, []),
-    }
+    },
+    [matchId] // Create a new socket when the match ID changes
   );
 
   // Set up an interval to ping the server once per second

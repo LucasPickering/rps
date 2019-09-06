@@ -103,7 +103,11 @@ class LiveMatch(models.Model):
         Match, on_delete=models.CASCADE, blank=True, null=True
     )
     rematch = models.OneToOneField(
-        "self", on_delete=models.SET_NULL, null=True, blank=True
+        "self",
+        on_delete=models.SET_NULL,
+        related_name="parent",
+        null=True,
+        blank=True,
     )
     start_time = models.DateTimeField(auto_now_add=True)
     # Null here means no player has joined yet

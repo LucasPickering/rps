@@ -32,6 +32,7 @@ export interface LiveMatchData {
   selectedMove?: Move; // undef if no move selected yet
   games: LiveGame[];
   matchOutcome?: MatchOutcome; // undef if match in progress
+  rematch?: string;
 }
 
 export enum LiveMatchErrorType {
@@ -67,6 +68,7 @@ export const defaultLiveMatchState = {
 export enum LiveMatchActionType {
   MatchUpdate,
   Error,
+  Reset,
 }
 
 export type LiveMatchAction =
@@ -77,7 +79,8 @@ export type LiveMatchAction =
   | {
       type: LiveMatchActionType.Error;
       error: LiveMatchError;
-    };
+    }
+  | { type: LiveMatchActionType.Reset };
 
 // This reducer should only ever be triggered by a server message
 export const liveMatchReducer: React.Reducer<
@@ -89,6 +92,8 @@ export const liveMatchReducer: React.Reducer<
       return { ...state, data: action.data };
     case LiveMatchActionType.Error:
       return { ...state, errors: [...state.errors, action.error] };
+    case LiveMatchActionType.Reset:
+      return defaultLiveMatchState;
     default:
       return state;
   }
@@ -98,11 +103,17 @@ export enum ClientMessageType {
   Heartbeat = 'heartbeat',
   Ready = 'ready',
   Move = 'move',
+  Rematch = 'rematch',
 }
 
 // More types will be added here
 export type ClientMessage =
-  | { type: ClientMessageType.Heartbeat | ClientMessageType.Ready }
+  | {
+      type:
+        | ClientMessageType.Heartbeat
+        | ClientMessageType.Ready
+        | ClientMessageType.Rematch;
+    }
   | {
       type: ClientMessageType.Move;
       move: Move;

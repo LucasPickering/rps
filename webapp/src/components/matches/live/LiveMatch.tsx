@@ -1,7 +1,7 @@
 import { Typography, Button, Grid } from '@material-ui/core';
 import useSplashMessage, { matchOutcomeSplasher } from 'hooks/useSplashMessage';
 import { last } from 'lodash';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ClientMessageType, LiveMatchContext } from 'state/livematch';
 import { formatGameOutcome, formatMatchOutcome } from 'util/format';
 import GameLog from './GameLog';
@@ -12,6 +12,7 @@ import useStyles from 'hooks/useStyles';
 import useNotifications from 'hooks/useNotifications';
 import MoveIconCircle from './MoveIconCircle';
 import useScreenSize, { ScreenSize } from 'hooks/useScreenSize';
+import { Redirect } from 'react-router';
 
 /**
  * Helper component for the current match status
@@ -71,7 +72,7 @@ const Actions: React.FC = () => {
   const classes = useStyles();
   const {
     state: {
-      data: { isReady, selectedMove, opponent, matchOutcome, games },
+      data: { isReady, selectedMove, opponent, matchOutcome, games, rematch },
     },
     sendMessage,
   } = useContext(LiveMatchContext);
@@ -79,6 +80,11 @@ const Actions: React.FC = () => {
     matchOutcomeSplasher,
     matchOutcome
   );
+  const [acceptedRematch, setAcceptedRematch] = useState(false);
+
+  if (acceptedRematch && rematch) {
+    return <Redirect to={`/matches/live/${rematch}`} />;
+  }
 
   // Match is over
   if (matchOutcome) {
@@ -91,6 +97,18 @@ const Actions: React.FC = () => {
         <Typography className={classes.minorMessage}>
           {matchOutcomeSplash}
         </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            if (!rematch) {
+              sendMessage({ type: ClientMessageType.Rematch });
+            }
+            setAcceptedRematch(true);
+          }}
+        >
+          Rematch
+        </Button>
       </>
     );
   }

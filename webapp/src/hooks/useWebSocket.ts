@@ -28,7 +28,8 @@ export enum ConnectionStatus {
  */
 const useWebSocket = (
   addr: string,
-  callbacks: WebSocketCallbacks
+  callbacks: WebSocketCallbacks,
+  dependencies: readonly unknown[] = []
 ): { status: ConnectionStatus; send: Send } => {
   const [status, setStatus] = useState<ConnectionStatus>(
     ConnectionStatus.Connecting
@@ -102,7 +103,7 @@ const useWebSocket = (
     return () => {
       ws.close();
     };
-  }, [addr, onOpen, onMessage, onError, onClose, isMounted]);
+  }, [addr, onOpen, onMessage, onError, onClose, isMounted, ...dependencies]);
 
   return { status, send };
 };

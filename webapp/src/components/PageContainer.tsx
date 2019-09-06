@@ -6,8 +6,8 @@ import useUser from 'hooks/useUser';
 
 const useLocalStyles = makeStyles(({ spacing }) => ({
   root: {
-    minWidth: 360,
-    minHeight: 640,
+    // minWidth: 360,
+    // minHeight: 640,
     height: '100%',
   },
   body: {

@@ -16,7 +16,11 @@ const useLocalStyles = makeStyles(({ spacing, palette }) => ({
 const ErrorSnackbar: React.FC<{ message: string }> = ({ message }) => {
   const localClasses = useLocalStyles();
   return (
-    <Snackbar open anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+    <Snackbar
+      open
+      autoHideDuration={3000}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+    >
       <SnackbarContent
         className={localClasses.snackbarContent}
         message={
