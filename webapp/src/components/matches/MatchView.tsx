@@ -4,7 +4,7 @@ import {
   Grid,
   CircularProgress,
   Typography,
-  // makeStyles,
+  makeStyles,
 } from '@material-ui/core';
 import useFetch from 'hooks/useFetch';
 import { Match } from 'state/match';
@@ -15,27 +15,27 @@ import moment from 'moment';
 import ApiErrorDisplay from 'components/common/ApiErrorDisplay';
 import PageLayout from 'components/common/PageLayout';
 
-// const useLocalStyles = makeStyles(() => ({
-//   matchPanel: {
-//     display: 'grid',
-//     gridTemplateColumns: '70% 20% 10%',
-//     gridTemplateRows: 'repeat(3, 1fr)',
-//   },
-//   matchStartTime: {
-//     gridRow: 3,
-//     gridColumn: 1,
-//   },
-//   matchScore: {
-//     gridRow: 2,
-//     gridColumn: 2,
-//     ...typography.h5,
-//   },
-//   matchOutcome: {
-//     gridRow: 2,
-//     gridColumn: 3,
-//     ...typography.h5,
-//   },
-// }));
+const useLocalStyles = makeStyles(({ typography }) => ({
+  matchPanel: {
+    display: 'grid',
+    gridTemplateColumns: '70% 20% 10%',
+    gridTemplateRows: 'repeat(3, 1fr)',
+  },
+  matchStartTime: {
+    gridRow: 3,
+    gridColumn: 1,
+  },
+  matchScore: {
+    gridRow: 2,
+    gridColumn: 2,
+    ...typography.h5,
+  },
+  matchOutcome: {
+    gridRow: 2,
+    gridColumn: 3,
+    ...typography.h5,
+  },
+}));
 
 const MatchDataView: React.FC<{ match: Match }> = ({ match }) => {
   const [player1, player2] = match.players;
