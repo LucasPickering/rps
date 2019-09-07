@@ -43,7 +43,7 @@ const Header: React.FC = () => {
 
   // Responsive design!
   return screenSize === ScreenSize.Large ? (
-    <Grid item container justify="space-between">
+    <Grid container justify="space-between">
       {selfScoreEl}
       {selfMoveEl}
       <GameLog />
@@ -187,7 +187,7 @@ const LiveMatch: React.FC = () => {
   return (
     <>
       <Header />
-      <Grid item container direction="column" alignItems="center">
+      <Grid container direction="column" alignItems="center">
         <Actions />
       </Grid>
       <LiveMatchErrorDisplay errors={errors} />

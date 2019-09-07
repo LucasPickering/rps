@@ -8,6 +8,7 @@ import LoadingButton from 'components/common/LoadingButton';
 import queryString from 'query-string';
 import Form from 'components/common/Form';
 import useStyles from 'hooks/useStyles';
+import PageLayout from 'components/common/PageLayout';
 
 interface LoginFormData {
   username: string;
@@ -36,45 +37,47 @@ const LoginView: React.FC<RouteComponentProps> = ({ location }) => {
   }
 
   return (
-    <Form
-      // Send the login request. Once it comes back, fetch user data from
-      // the API
-      onSubmit={() =>
-        request({ data: { username, password } }).then(() => requestUser())
-      }
-    >
-      <TextField
-        id="username"
-        label="Username"
-        value={username}
-        onChange={e => setUsername(e.currentTarget.value)}
-      />
-      <TextField
-        id="password"
-        label="Password"
-        type="password"
-        value={password}
-        onChange={e => {
-          setPassword(e.currentTarget.value);
-        }}
-      />
-      <LoadingButton
-        type="submit"
-        variant="contained"
-        color="primary"
-        loading={loading || userLoading}
-        disabled={!username || !password}
+    <PageLayout maxWidth="xs">
+      <Form
+        // Send the login request. Once it comes back, fetch user data from
+        // the API
+        onSubmit={() =>
+          request({ data: { username, password } }).then(() => requestUser())
+        }
       >
-        Log In
-      </LoadingButton>
-      {error && (
-        <Typography className={classes.errorMessage}>
-          {error.status === 400
-            ? 'Incorrect username or password'
-            : "Unknown error. Looks like you're really up shit creek."}
-        </Typography>
-      )}
-    </Form>
+        <TextField
+          id="username"
+          label="Username"
+          value={username}
+          onChange={e => setUsername(e.currentTarget.value)}
+        />
+        <TextField
+          id="password"
+          label="Password"
+          type="password"
+          value={password}
+          onChange={e => {
+            setPassword(e.currentTarget.value);
+          }}
+        />
+        <LoadingButton
+          type="submit"
+          variant="contained"
+          color="primary"
+          loading={loading || userLoading}
+          disabled={!username || !password}
+        >
+          Log In
+        </LoadingButton>
+        {error && (
+          <Typography className={classes.errorMessage}>
+            {error.status === 400
+              ? 'Incorrect username or password'
+              : "Unknown error. Looks like you're really up shit creek."}
+          </Typography>
+        )}
+      </Form>
+    </PageLayout>
   );
 };
 

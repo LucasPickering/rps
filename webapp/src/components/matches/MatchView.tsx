@@ -3,13 +3,19 @@ import withRouteParams from 'hoc/withRouteParams';
 import {
   Grid,
   CircularProgress,
+  Typography,
   // makeStyles,
 } from '@material-ui/core';
 import useFetch from 'hooks/useFetch';
-import ErrorSnackbar from 'components/common/ErrorSnackbar';
 import { Match } from 'state/match';
+import PlayerLink from 'components/players/PlayerLink';
+import Paper from 'components/common/Paper';
+import { formatDateTime } from 'util/format';
+import moment from 'moment';
+import ApiErrorDisplay from 'components/common/ApiErrorDisplay';
+import PageLayout from 'components/common/PageLayout';
 
-// const useLocalStyles = makeStyles(({ typography }) => ({
+// const useLocalStyles = makeStyles(() => ({
 //   matchPanel: {
 //     display: 'grid',
 //     gridTemplateColumns: '70% 20% 10%',
@@ -31,21 +37,50 @@ import { Match } from 'state/match';
 //   },
 // }));
 
+const MatchDataView: React.FC<{ match: Match }> = ({ match }) => {
+  const [player1, player2] = match.players;
+  return (
+    <Paper>
+      <Grid container>
+        <Grid item container justify="space-between">
+          <Typography>
+            <PlayerLink username={player1}>
+              <strong>{player1}</strong>
+            </PlayerLink>
+          </Typography>
+          <Typography>vs</Typography>
+          <Typography>
+            <PlayerLink username={player2}>
+              <strong>{player2}</strong>
+            </PlayerLink>
+          </Typography>
+        </Grid>
+      </Grid>
+      <Grid item>
+        <Typography>
+          {formatDateTime(moment(match.startTime))} ({match.duration}s)
+          <br />
+          Best of {match.config.bestOf}
+          <br />
+          Lizard/Spock: {match.config.extendedMode ? 'Enabled' : 'Disabled'}
+        </Typography>
+      </Grid>
+    </Paper>
+  );
+};
+
 const MatchView: React.FC<{
   matchId: number;
 }> = ({ matchId }) => {
+  // const localClasses = useLocalStyles();
   const { loading, data, error } = useFetch<Match>(`/api/matches/${matchId}/`);
 
   return (
-    <Grid item container direction="column" spacing={2} xs={4} sm={6}>
-      {loading && (
-        <Grid item>
-          <CircularProgress />
-        </Grid>
-      )}
-      {data && <Grid item>{data.startTime}</Grid>}
-      {error && <ErrorSnackbar message="An error occurred" />}
-    </Grid>
+    <PageLayout>
+      {loading && <CircularProgress />}
+      {data && <MatchDataView match={data} />}
+      <ApiErrorDisplay error={error} resourceName="match" />
+    </PageLayout>
   );
 };
 

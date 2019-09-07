@@ -1,4 +1,4 @@
-import { makeStyles, Container, Grid } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import React, { useEffect } from 'react';
 import RootRoutes from './routes/RootRoutes';
 import HeaderBar from './HeaderBar';
@@ -18,7 +18,7 @@ const useLocalStyles = makeStyles(({ spacing }) => ({
 }));
 
 /**
- * Container for all content below the header.
+ * Container for all content on the page.
  */
 const PageContainer: React.FC = () => {
   const localClasses = useLocalStyles();
@@ -31,11 +31,7 @@ const PageContainer: React.FC = () => {
   return (
     <div className={localClasses.root}>
       <HeaderBar />
-      <Container className={localClasses.body}>
-        <Grid container direction="column" alignItems="center" spacing={2}>
-          <RootRoutes />
-        </Grid>
-      </Container>
+      <RootRoutes />
     </div>
   );
 };

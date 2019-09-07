@@ -16,19 +16,17 @@ const useLocalStyles = makeStyles(({ spacing }) => ({
 }));
 
 interface Props {
-  size: 'small' | 'medium';
   onSubmit: () => void;
 }
 
 const Form = ({
-  size,
   onSubmit,
   children,
 }: PropsWithChildren<Props>): React.ReactElement => {
   const localClasses = useLocalStyles();
 
   return (
-    <Paper className={localClasses[size]}>
+    <Paper>
       <form
         onSubmit={
           onSubmit &&

@@ -9,13 +9,14 @@ import {
 import useFetch from 'hooks/useFetch';
 import { PlayerHistory, getPlayerMatch } from 'state/player';
 import Paper from 'components/common/Paper';
-import ErrorSnackbar from 'components/common/ErrorSnackbar';
 import useStyles from 'hooks/useStyles';
 import { Match } from 'state/match';
 import { formatMatchOutcome, formatDateTime } from 'util/format';
 import moment from 'moment';
 import PlayerLink from './PlayerLink';
 import MatchLink from 'components/matches/MatchLink';
+import ApiErrorDisplay from 'components/common/ApiErrorDisplay';
+import PageLayout from 'components/common/PageLayout';
 
 const useLocalStyles = makeStyles(({ typography }) => ({
   matchPanel: {
@@ -73,23 +74,20 @@ const PlayerView: React.FC<{
   );
 
   return (
-    <Grid item container direction="column" spacing={2} sm={6}>
-      <Grid item>
-        <Typography className={classes.normalMessage}>{username}</Typography>
-      </Grid>
-      {loading && (
-        <Grid item>
-          <CircularProgress />
+    <PageLayout>
+      <Typography className={classes.normalMessage}>{username}</Typography>
+      {loading && <CircularProgress />}
+      {data && (
+        <Grid container direction="column" spacing={2}>
+          {data.matches.map(match => (
+            <Grid key={match.id} item>
+              <MatchPanel username={username} match={match} />
+            </Grid>
+          ))}
         </Grid>
       )}
-      {data &&
-        data.matches.map(match => (
-          <Grid key={match.id} item>
-            <MatchPanel username={username} match={match} />
-          </Grid>
-        ))}
-      {error && <ErrorSnackbar message="An error occurred" />}
-    </Grid>
+      <ApiErrorDisplay error={error} resourceName="player" />
+    </PageLayout>
   );
 };
 

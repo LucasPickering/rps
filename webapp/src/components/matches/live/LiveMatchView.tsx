@@ -18,6 +18,7 @@ import useWebSocket from 'hooks/useWebSocket';
 import { ConnectionStatus } from 'hooks/useSafeCallbacks';
 import LiveMatch from './LiveMatch';
 import ConnectionIndicator from './ConnectionIndicator';
+import PageLayout from 'components/common/PageLayout';
 
 const useLocalStyles = makeStyles(() => ({
   loading: {
@@ -121,10 +122,10 @@ const LiveMatchView: React.FC<{
   };
 
   return (
-    <>
+    <PageLayout maxWidth="lg">
       {getContent()}
       <ConnectionIndicator connectionStatus={status} />
-    </>
+    </PageLayout>
   );
 };
 
