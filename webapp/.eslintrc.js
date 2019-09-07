@@ -27,11 +27,12 @@ module.exports = {
   },
   rules: {
     'no-console': 'warn',
-    'no-unused-vars': 'error',
+    'no-unused-vars': 'off',
     'react/prop-types': 'off',
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'error',
     'react/display-name': 'off',
+    '@typescript-eslint/no-unused-vars': 'error',
     '@typescript-eslint/no-explicit-any': ['error', { fixToUnknown: true }],
     '@typescript-eslint/explicit-function-return-type': [
       'error',

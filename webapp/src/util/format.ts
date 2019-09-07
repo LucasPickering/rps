@@ -1,6 +1,6 @@
 import { GameOutcome, MatchOutcome } from 'state/match';
 import { capitalize } from 'lodash';
-import { Moment } from 'moment';
+import { Moment, Duration } from 'moment';
 
 export type OutcomeFormat = 'noun' | 'past' | 'abbreviation';
 
@@ -44,4 +44,16 @@ export const formatDateTime = (
   format: string = 'MMM D YYYY, h:mm a'
 ): string => {
   return date.format(format);
+};
+
+/**
+ * Formats a duration to be human-friendly, e.g. "1h 12m 19s"
+ */
+export const formatDuration = (duration: Duration): string => {
+  const durationHrs = duration.hours();
+  const durationMin = duration.minutes();
+  const durationHrsFmt = durationHrs ? `${durationHrs}h ` : '';
+  const durationMinFmt = durationHrs || durationMin ? `${durationMin}m ` : '';
+  const durationSecFmt = `${duration.seconds()}s`;
+  return `${durationHrsFmt}${durationMinFmt}${durationSecFmt}`;
 };
