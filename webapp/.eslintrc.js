@@ -39,4 +39,13 @@ module.exports = {
     '@typescript-eslint/no-object-literal-type-assertion': 'off',
     // '@typescript-eslint/camelcase': 'off',
   },
+  overrides: [
+    {
+      files: ['*.test.ts'],
+      plugins: ['jest'],
+      env: {
+        jest: true,
+      },
+    },
+  ],
 };

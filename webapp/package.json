@@ -27,6 +27,7 @@
     "eslint-config-prettier": "^6.0.0",
     "eslint-config-react": "^1.1.7",
     "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jest": "^22.17.0",
     "eslint-plugin-prettier": "^3.1.0",
     "eslint-plugin-react": "^7.14.3",
     "eslint-plugin-react-hooks": "^1.7.0",
@@ -50,7 +51,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint 'src/**/*.{ts,tsx}'",
-    "check": "CI=true npm run test -- --passWithNoTests && npm run lint",
+    "check": "CI=true npm run test && npm run lint",
     "analyze": "source-map-explorer 'build/static/js/*.js' --html public/sme.html"
   },
   "eslintConfig": {
