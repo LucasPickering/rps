@@ -1,79 +1,100 @@
-import { Typography, makeStyles } from '@material-ui/core';
-import React, { useContext } from 'react';
-import { LiveMatchContext, LiveGame } from 'state/livematch';
-import { GameOutcome } from 'state/match';
-import { countGameOutcomes } from 'util/funcs';
-import FlexBox from 'components/common/FlexBox';
-import { range } from 'lodash';
+import { makeStyles } from '@material-ui/core';
+import React from 'react';
+import { SpectatorLiveGame } from 'state/livematch';
 import MoveIcon from 'components/MoveIcon';
 import {
   ChevronLeft as IconChevronLeft,
   ChevronRight as IconChevronRight,
-  Remove as IconRemove,
 } from '@material-ui/icons';
+import clsx from 'clsx';
 
-const useLocalStyles = makeStyles(() => ({
-  games: {
+const useLocalStyles = makeStyles(({ palette, spacing }) => ({
+  game: {
     display: 'grid',
-    gridTemplateColumns: '24px 14px 24px 14px 24px',
     alignItems: 'center',
   },
-  selfWin: {
+  small: {
+    fontSize: 14,
+    gridTemplateColumns: '24px 14px 32px 14px 24px',
+  },
+  large: {
+    fontSize: 24,
+    gridTemplateColumns: '1fr 1fr 3fr 1fr 1fr',
+    gridRowGap: spacing(0.5),
+    gridColumnGap: spacing(1),
+  },
+  tie: {
+    opacity: 0.6,
+  },
+  win: {
+    color: 'green',
+  },
+  loss: {
+    color: palette.error.main,
+  },
+  player1Win: {
     gridColumn: 1,
   },
-  selfMoveIcon: {
+  player1MoveIcon: {
     gridColumn: 2,
   },
   centerIcon: {
     gridColumn: 3,
+    textAlign: 'center',
   },
 }));
 
-const Game: React.FC<{ game?: LiveGame }> = ({ game }) => {
+interface Props {
+  size: 'small' | 'large';
+  highlight: boolean;
+  player1: string;
+  player2: string;
+  games: SpectatorLiveGame[];
+}
+
+const GameLog = ({
+  size,
+  highlight,
+  player1,
+  player2,
+  games,
+}: Props): React.ReactElement => {
   const localClasses = useLocalStyles();
-  return game ? (
-    <>
-      {game.outcome === GameOutcome.Win && (
-        <IconChevronLeft className={localClasses.selfWin} />
-      )}
-      <MoveIcon className={localClasses.selfMoveIcon} move={game.selfMove} />
-      <IconRemove className={localClasses.centerIcon} />
-      <MoveIcon move={game.opponentMove} />
-      {game.outcome === GameOutcome.Loss && <IconChevronRight />}
-    </>
-  ) : (
-    <IconRemove className={localClasses.centerIcon} />
+
+  return (
+    <div>
+      {games.map((game, i) => {
+        const player1Win = game.winner === player1;
+        const player2Win = game.winner === player2;
+        return (
+          <div
+            key={i}
+            className={clsx(localClasses.game, localClasses[size], {
+              [localClasses.tie]: !game.winner,
+              [localClasses.win]: highlight && player1Win,
+              [localClasses.loss]: highlight && player2Win,
+            })}
+          >
+            {player1Win && (
+              <IconChevronLeft className={localClasses.player1Win} />
+            )}
+            <MoveIcon
+              className={localClasses.player1MoveIcon}
+              move={game.player1Move}
+            />
+            <span className={localClasses.centerIcon}>{i + 1}</span>
+            <MoveIcon move={game.player2Move} />
+            {player2Win && <IconChevronRight />}
+          </div>
+        );
+      })}
+    </div>
   );
 };
 
-// We have to leave the React.FC tag off to get default props to work
-const GameLog: React.FC = () => {
-  const localClasses = useLocalStyles();
-  const {
-    metadata: {
-      config: { bestOf },
-    },
-    state: {
-      data: { games, matchOutcome },
-    },
-  } = useContext(LiveMatchContext);
-
-  const nonTies = games.length - countGameOutcomes(games, GameOutcome.Tie);
-  const maxRemainingGames = matchOutcome ? 0 : bestOf - nonTies;
-
-  return (
-    <FlexBox flexDirection="column" justifyContent="start">
-      <Typography variant="h5">Best of {bestOf}</Typography>
-      <div className={localClasses.games}>
-        {games.map((game, i) => (
-          <Game key={i} game={game} />
-        ))}
-        {range(maxRemainingGames).map(i => (
-          <Game key={i} />
-        ))}
-      </div>
-    </FlexBox>
-  );
+GameLog.defaultProps = {
+  size: 'small',
+  highlight: false,
 };
 
 export default GameLog;

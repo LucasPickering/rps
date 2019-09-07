@@ -7,62 +7,61 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import useFetch from 'hooks/useFetch';
-import { Match } from 'state/match';
+import { Match, getPlayerMove } from 'state/match';
 import PlayerLink from 'components/players/PlayerLink';
 import Paper from 'components/common/Paper';
-import { formatDateTime } from 'util/format';
+import { formatDateTime, formatDuration } from 'util/format';
 import moment from 'moment';
 import ApiErrorDisplay from 'components/common/ApiErrorDisplay';
 import PageLayout from 'components/common/PageLayout';
 import useStyles from 'hooks/useStyles';
+import GameLog from './live/GameLog';
+import clsx from 'clsx';
 
 const useLocalStyles = makeStyles(({ typography }) => ({
-  matchPanel: {
-    display: 'grid',
-    gridTemplateColumns: '70% 20% 10%',
-    gridTemplateRows: 'repeat(3, 1fr)',
+  configText: {
+    '& > .MuiTypography-root': {
+      ...typography.body2,
+    },
   },
-  matchStartTime: {
-    gridRow: 3,
-    gridColumn: 1,
-  },
-  matchScore: {
-    gridRow: 2,
-    gridColumn: 2,
-    ...typography.h5,
-  },
-  matchOutcome: {
-    gridRow: 2,
-    gridColumn: 3,
-    ...typography.h5,
+  player2Name: {
+    textAlign: 'right',
   },
 }));
 
-const PlayerName: React.FC<{ username: string }> = ({ username }) => {
+const PlayerName: React.FC<{ className?: string; username: string }> = ({
+  className,
+  username,
+}) => {
   const classes = useStyles();
   return (
-    <Typography className={classes.normalMessage}>
-      <PlayerLink username={username}>
-        <strong>{username}</strong>
-      </PlayerLink>
-    </Typography>
+    <Grid item xs={4}>
+      <Typography className={clsx(classes.normalMessage, className)}>
+        <PlayerLink username={username}>
+          <strong>{username}</strong>
+        </PlayerLink>
+      </Typography>
+    </Grid>
   );
 };
 
 const MatchDataView: React.FC<{ match: Match }> = ({ match }) => {
+  const localClasses = useLocalStyles();
   const [player1, player2] = match.players;
+
   return (
     <Paper>
       <Grid container spacing={1}>
         <Grid item container justify="space-between">
           <PlayerName username={player1} />
           <Typography>vs</Typography>
-          <PlayerName username={player2} />
+          <PlayerName className={localClasses.player2Name} username={player2} />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid className={localClasses.configText} item xs={12}>
           <Typography>
-            {formatDateTime(moment(match.startTime))} ({match.duration}s)
+            {formatDateTime(moment(match.startTime))} (
+            {formatDuration(moment.duration(match.duration, 'seconds'))})
           </Typography>
           <Typography>Best of {match.config.bestOf}</Typography>
           <Typography>
@@ -70,11 +69,20 @@ const MatchDataView: React.FC<{ match: Match }> = ({ match }) => {
           </Typography>
         </Grid>
 
-        {match.games.map((game, i) => (
-          <Grid key={i} item>
-            <p>{game.winner}</p>
-          </Grid>
-        ))}
+        <Grid item xs={12} container justify="center">
+          <GameLog
+            size="large"
+            player1={player1}
+            player2={player2}
+            games={match.games.map(game => {
+              return {
+                winner: game.winner,
+                player1Move: getPlayerMove(game.players, player1),
+                player2Move: getPlayerMove(game.players, player2),
+              };
+            })}
+          />
+        </Grid>
       </Grid>
     </Paper>
   );
@@ -83,7 +91,6 @@ const MatchDataView: React.FC<{ match: Match }> = ({ match }) => {
 const MatchView: React.FC<{
   matchId: number;
 }> = ({ matchId }) => {
-  // const localClasses = useLocalStyles();
   const { loading, data, error } = useFetch<Match>(`/api/matches/${matchId}/`);
 
   return (

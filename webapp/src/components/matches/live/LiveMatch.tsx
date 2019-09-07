@@ -19,8 +19,11 @@ import { Redirect } from 'react-router';
  */
 const Header: React.FC = () => {
   const {
+    metadata: {
+      config: { bestOf },
+    },
     state: {
-      data: { isReady, selectedMove, games },
+      data: { opponent, isReady, selectedMove, games },
     },
   } = useContext(LiveMatchContext);
   const screenSize = useScreenSize();
@@ -31,6 +34,10 @@ const Header: React.FC = () => {
     <MoveIconCircle
       move={isReady ? selectedMove : lastGame && lastGame.selfMove}
     />
+  );
+  const bestOfEl = <Typography variant="h5">Best of {bestOf}</Typography>;
+  const gameLogEl = opponent && (
+    <GameLog player1="" player2={opponent.username} games={[]} />
   );
   const opponentMoveEl = (
     <MoveIconCircle
@@ -46,7 +53,8 @@ const Header: React.FC = () => {
     <Grid container justify="space-between">
       {selfScoreEl}
       {selfMoveEl}
-      <GameLog />
+      {bestOfEl}
+      {gameLogEl}
       {opponentMoveEl}
       {opponentScoreEl}
     </Grid>
@@ -58,7 +66,8 @@ const Header: React.FC = () => {
       </Grid>
       <Grid item container justify="space-between">
         {selfMoveEl}
-        <GameLog />
+        {bestOfEl}
+        {gameLogEl}
         {opponentMoveEl}
       </Grid>
     </>

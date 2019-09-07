@@ -1,6 +1,12 @@
 import React from 'react';
 import { GameOutcome, MatchOutcome, Move, MatchConfig } from './match';
 
+export interface SpectatorLiveGame {
+  player1Move: Move;
+  player2Move: Move;
+  winner?: string;
+}
+
 export interface LiveGame {
   selfMove: Move;
   opponentMove: Move;
