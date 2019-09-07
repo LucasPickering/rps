@@ -13,6 +13,7 @@ import Form from 'components/common/Form';
 import useStyles from 'hooks/useStyles';
 import LoadingButton from 'components/common/LoadingButton';
 import SelectControl from 'components/common/SelectControl';
+import PageLayout from 'components/common/PageLayout';
 
 const bestOfOptions = range(1, 23, 2);
 
@@ -44,51 +45,52 @@ const NewLiveMatchView: React.FC = () => {
   }
 
   return (
-    <Form
-      size="small"
-      onSubmit={() =>
-        request({
-          data: { config: { bestOf, extendedMode } },
-        }).then(data => setData(data))
-      }
-    >
-      <SelectControl
-        id="bestOf-select"
-        label="Best Of"
-        value={bestOf}
-        onChange={e => setBestOf(e.target.value as number)}
-      >
-        {bestOfOptions.map(option => (
-          <MenuItem key={option} value={option}>
-            {option}
-          </MenuItem>
-        ))}
-      </SelectControl>
-      <FormControlLabel
-        control={
-          <Switch
-            checked={extendedMode}
-            onChange={() => setExtendedMode(oldValue => !oldValue)}
-          />
+    <PageLayout maxWidth="xs">
+      <Form
+        onSubmit={() =>
+          request({
+            data: { config: { bestOf, extendedMode } },
+          }).then(data => setData(data))
         }
-        label="Lizard Spock"
-      />
-      <LoadingButton
-        type="submit"
-        variant="contained"
-        color="primary"
-        loading={loading}
       >
-        Create Match
-      </LoadingButton>
-      {error && (
-        <Typography className={classes.errorMessage}>
-          {error.status === 400
-            ? 'Incorrect username or password'
-            : "Unknown error. Looks like you're really up shit creek."}
-        </Typography>
-      )}
-    </Form>
+        <SelectControl
+          id="bestOf-select"
+          label="Best Of"
+          value={bestOf}
+          onChange={e => setBestOf(e.target.value as number)}
+        >
+          {bestOfOptions.map(option => (
+            <MenuItem key={option} value={option}>
+              {option}
+            </MenuItem>
+          ))}
+        </SelectControl>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={extendedMode}
+              onChange={() => setExtendedMode(oldValue => !oldValue)}
+            />
+          }
+          label="Lizard Spock"
+        />
+        <LoadingButton
+          type="submit"
+          variant="contained"
+          color="primary"
+          loading={loading}
+        >
+          Create Match
+        </LoadingButton>
+        {error && (
+          <Typography className={classes.errorMessage}>
+            {error.status === 400
+              ? 'Incorrect username or password'
+              : "Unknown error. Looks like you're really up shit creek."}
+          </Typography>
+        )}
+      </Form>
+    </PageLayout>
   );
 };
 
