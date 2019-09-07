@@ -14,6 +14,7 @@ import { formatDateTime } from 'util/format';
 import moment from 'moment';
 import ApiErrorDisplay from 'components/common/ApiErrorDisplay';
 import PageLayout from 'components/common/PageLayout';
+import useStyles from 'hooks/useStyles';
 
 const useLocalStyles = makeStyles(({ typography }) => ({
   matchPanel: {
@@ -37,33 +38,43 @@ const useLocalStyles = makeStyles(({ typography }) => ({
   },
 }));
 
+const PlayerName: React.FC<{ username: string }> = ({ username }) => {
+  const classes = useStyles();
+  return (
+    <Typography className={classes.normalMessage}>
+      <PlayerLink username={username}>
+        <strong>{username}</strong>
+      </PlayerLink>
+    </Typography>
+  );
+};
+
 const MatchDataView: React.FC<{ match: Match }> = ({ match }) => {
   const [player1, player2] = match.players;
   return (
     <Paper>
-      <Grid container>
+      <Grid container spacing={1}>
         <Grid item container justify="space-between">
-          <Typography>
-            <PlayerLink username={player1}>
-              <strong>{player1}</strong>
-            </PlayerLink>
-          </Typography>
+          <PlayerName username={player1} />
           <Typography>vs</Typography>
+          <PlayerName username={player2} />
+        </Grid>
+
+        <Grid item xs={12}>
           <Typography>
-            <PlayerLink username={player2}>
-              <strong>{player2}</strong>
-            </PlayerLink>
+            {formatDateTime(moment(match.startTime))} ({match.duration}s)
+          </Typography>
+          <Typography>Best of {match.config.bestOf}</Typography>
+          <Typography>
+            Lizard/Spock: {match.config.extendedMode ? 'Enabled' : 'Disabled'}
           </Typography>
         </Grid>
-      </Grid>
-      <Grid item>
-        <Typography>
-          {formatDateTime(moment(match.startTime))} ({match.duration}s)
-          <br />
-          Best of {match.config.bestOf}
-          <br />
-          Lizard/Spock: {match.config.extendedMode ? 'Enabled' : 'Disabled'}
-        </Typography>
+
+        {match.games.map((game, i) => (
+          <Grid key={i} item>
+            <p>{game.winner}</p>
+          </Grid>
+        ))}
       </Grid>
     </Paper>
   );
