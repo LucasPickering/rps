@@ -75,7 +75,7 @@ const LiveMatchView: React.FC<{
     if (status === ConnectionStatus.Connected) {
       const intervalId = setInterval(
         () => send({ type: ClientMessageType.Heartbeat }),
-        1000
+        3000
       );
       return () => clearInterval(intervalId);
     }

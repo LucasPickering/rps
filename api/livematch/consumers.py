@@ -62,11 +62,12 @@ class MatchConsumer(JsonWebsocketConsumer):
 
     def match_update(self, event):
         """
-        Listener for match updates from other consumers on this match.
+        Listener for match updates from other consumers on this match. Should
+        only be called by Django Channels. Triggered indirectly via
+        trigger_client_update
 
         Arguments:
-            event {dict} -- The event received from the sender. Should contain
-            the current match state, which will be sent to the client.
+            event {dict} -- The event received from the sender
         """
         # No need to lock for read-only operation
         live_match = self.get_match(lock=False)
@@ -196,7 +197,8 @@ class MatchConsumer(JsonWebsocketConsumer):
 
     def disconnect_json(self, close_code):
         logger.info(
-            f"Player {self.player} disconnecting from match {self.match_id}; code={close_code}"
+            f"Player {self.player} disconnecting from match {self.match_id};"
+            + " code={close_code}"
         )
         try:
             self.disconnect_player()
