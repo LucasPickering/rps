@@ -6,9 +6,10 @@ import Leaderboard from './players/Leaderboard';
 import RecentMatches from './matches/RecentMatches';
 import PageLayout from './common/PageLayout';
 
-const useLocalStyles = makeStyles(() => ({
+const useLocalStyles = makeStyles(({ spacing }) => ({
   titleBox: {
     alignSelf: 'center',
+    paddingBottom: spacing(2),
   },
 }));
 
@@ -26,17 +27,10 @@ const Home: React.FC = () => {
         <Typography className={classes.minorMessage}>{welcome}</Typography>
       </div>
       <Grid container justify="center" spacing={2}>
-        <Grid
-          item
-          xs={12}
-          container
-          direction="column"
-          alignItems="center"
-        ></Grid>
-        <Grid item>
+        <Grid item xs={12} sm={6}>
           <RecentMatches />
         </Grid>
-        <Grid item>
+        <Grid item xs={12} sm={6}>
           <Leaderboard />
         </Grid>
       </Grid>
