@@ -8,7 +8,7 @@ import clsx from 'clsx';
  */
 export const useLinkStyles = makeStyles(({ palette }) => ({
   link: {
-    color: palette.text.primary,
+    color: palette.primary.main,
     textDecoration: 'none',
     '&:hover': {
       textDecoration: 'underline',
