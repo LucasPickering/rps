@@ -13,6 +13,8 @@ import useNotifications from 'hooks/useNotifications';
 import MoveIconCircle from './MoveIconCircle';
 import useScreenSize, { ScreenSize } from 'hooks/useScreenSize';
 import { Redirect } from 'react-router';
+import { GameOutcome } from 'state/match';
+import FlexBox from 'components/common/FlexBox';
 
 /**
  * Helper component for the current match status
@@ -37,7 +39,21 @@ const Header: React.FC = () => {
   );
   const bestOfEl = <Typography variant="h5">Best of {bestOf}</Typography>;
   const gameLogEl = opponent && (
-    <GameLog player1="" player2={opponent.username} games={[]} />
+    <GameLog
+      player1="<self>"
+      player2={opponent.username}
+      games={games.map(game => ({
+        player1Move: game.selfMove,
+        player2Move: game.opponentMove,
+        // dw this is going to die soon
+        winner:
+          game.outcome === GameOutcome.Win
+            ? '<self>'
+            : game.outcome === GameOutcome.Loss
+            ? opponent.username
+            : undefined,
+      }))}
+    />
   );
   const opponentMoveEl = (
     <MoveIconCircle
@@ -53,8 +69,10 @@ const Header: React.FC = () => {
     <Grid container justify="space-between">
       {selfScoreEl}
       {selfMoveEl}
-      {bestOfEl}
-      {gameLogEl}
+      <FlexBox flexDirection="column" alignItems="center">
+        {bestOfEl}
+        {gameLogEl}
+      </FlexBox>
       {opponentMoveEl}
       {opponentScoreEl}
     </Grid>
