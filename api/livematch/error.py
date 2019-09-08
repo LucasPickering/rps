@@ -2,9 +2,7 @@ from enum import Enum
 
 
 class ClientErrorType(Enum):
-    INVALID_MATCH_ID = "invalid_match_id"
-    NOT_LOGGED_IN = "not_logged_in"
-    GAME_FULL = "game_full"
+    UNKNOWN_MATCH_ID = "unknown_match_id"
     MALFORMED_MESSAGE = "malformed_message"
     NOT_IN_MATCH = "not_in_match"
     INVALID_MOVE = "invalid_move"

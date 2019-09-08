@@ -18,11 +18,6 @@ class GameOutcome(Enum):
     TIE = "tie"
 
 
-class MatchOutcome(Enum):
-    WIN = "win"
-    LOSS = "loss"
-
-
 class Move(DbEnum):
     ROCK = "rock"
     PAPER = "paper"
@@ -83,10 +78,6 @@ def get_win_target(best_of):
 
 def get_livematch_id():
     return uuid.uuid4().hex[:LIVEMATCH_ID_LENGTH]
-
-
-def is_livematch_id(s):
-    return bool(LIVEMATCH_ID_RGX.match(s))
 
 
 def register(registry, *names):

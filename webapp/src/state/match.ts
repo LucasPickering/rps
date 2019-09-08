@@ -1,5 +1,3 @@
-import { find } from 'lodash';
-
 export enum Move {
   Rock = 'rock',
   Paper = 'paper',
@@ -29,36 +27,18 @@ export interface PlayerGame {
   move: Move;
 }
 
+export interface Game {
+  gameNum: number;
+  players: [PlayerGame, PlayerGame];
+  winner?: string;
+}
+
 export interface Match {
   id: number;
   startTime: string;
   duration: number;
   config: MatchConfig;
-  games: {
-    winner?: string;
-    players: {
-      username: string;
-      move: Move;
-    }[];
-  }[];
-  players: string[];
+  games: Game[];
+  players: [string, string];
   winner: string;
 }
-
-/**
- * Utility function to extract a single player's move from the array of players
- * in a game.
- */
-export const getPlayerMove = (
-  players: PlayerGame[],
-  username: string
-): Move => {
-  const pm = find(players, player => player.username === username);
-  if (pm) {
-    return pm.move;
-  }
-  // Fall back for invalid state condition - this indicates a bug in the API
-  // eslint-disable-next-line no-console
-  console.error(`Player ${username} not found in game ${players}`);
-  return Move.Rock;
-};

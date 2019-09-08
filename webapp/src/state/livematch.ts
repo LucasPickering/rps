@@ -1,23 +1,5 @@
 import React from 'react';
-import { GameOutcome, MatchOutcome, Move, MatchConfig } from './match';
-
-export interface SpectatorLiveGame {
-  player1Move: Move;
-  player2Move: Move;
-  winner?: string;
-}
-
-export interface LiveGame {
-  selfMove: Move;
-  opponentMove: Move;
-  outcome: GameOutcome;
-}
-
-export interface LiveMatchOpponent {
-  username: string;
-  isActive: boolean;
-  isReady: boolean;
-}
+import { Move, MatchConfig, Game } from './match';
 
 /**
  * Static data for a live match. This data is provided by an endpoint on first
@@ -28,23 +10,30 @@ export interface LiveMatchMetadata {
   config: MatchConfig;
 }
 
+export interface LivePlayerMatch {
+  username: string;
+  // undef if not chosen yet, or if this player is someone else and the game is
+  // still in progress
+  move?: Move;
+  isActive: boolean;
+  isReady: boolean;
+}
+
 /**
  * Dynamic data for a live match. Provided via websocket, and changes
  * throughout a match.
  */
 export interface LiveMatchData {
-  opponent?: LiveMatchOpponent; // undef if waiting on opponent
-  isReady: boolean;
-  selectedMove?: Move; // undef if no move selected yet
-  games: LiveGame[];
-  matchOutcome?: MatchOutcome; // undef if match in progress
-  rematch?: string;
+  player1?: LivePlayerMatch;
+  player2?: LivePlayerMatch;
+  games: Game[];
+  winner?: string; // undef if match in progress
+  rematch?: string; // ID for the rematch
+  isParticipant: boolean; // true if playing in the game, false if spectating
 }
 
 export enum LiveMatchErrorType {
-  InvalidMatchId = 'invalid_match_id',
-  NotLoggedIn = 'not_logged_in',
-  GameFull = 'game_full',
+  UnknownMatchId = 'unknown_match_id',
   MalformedMessage = 'malformed_message',
   NotInMatch = 'not_in_match',
   InvalidMove = 'invalid_move',
@@ -59,15 +48,11 @@ export interface LiveMatchError {
  * All the dynamic content that can come the live match websocket.
  */
 export interface LiveMatchState {
-  data: LiveMatchData;
+  data?: LiveMatchData;
   errors: LiveMatchError[];
 }
 
-export const defaultLiveMatchState = {
-  data: {
-    isReady: false,
-    games: [],
-  },
+export const defaultLiveMatchState: LiveMatchState = {
   errors: [],
 };
 
@@ -128,7 +113,7 @@ export type ClientMessage =
 export interface LiveMatchContextType {
   sendMessage: (msg: ClientMessage) => void;
   metadata: LiveMatchMetadata;
-  state: LiveMatchState;
+  data: LiveMatchData;
 }
 
 export const LiveMatchContext = React.createContext<LiveMatchContextType>(
