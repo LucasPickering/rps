@@ -19,6 +19,7 @@ import { ConnectionStatus } from 'hooks/useSafeCallbacks';
 import LiveMatch from './LiveMatch';
 import ConnectionIndicator from './ConnectionIndicator';
 import PageLayout from 'components/common/PageLayout';
+import LiveMatchErrorDisplay from './LiveMatchErrorDisplay';
 
 const useLocalStyles = makeStyles(() => ({
   loading: {
@@ -72,15 +73,16 @@ const LiveMatchView: React.FC<{
   );
 
   // Set up an interval to ping the server once per second
+  const isParticipant = Boolean(state.data && state.data.isParticipant);
   useEffect(() => {
-    if (status === ConnectionStatus.Connected) {
+    if (status === ConnectionStatus.Connected && isParticipant) {
       const intervalId = setInterval(
         () => send({ type: ClientMessageType.Heartbeat }),
         3000
       );
       return () => clearInterval(intervalId);
     }
-  }, [status, send]);
+  }, [status, send, isParticipant]);
 
   const getContent = (): React.ReactElement => {
     if (metadataLoading || status === ConnectionStatus.Connecting) {
@@ -104,13 +106,13 @@ const LiveMatchView: React.FC<{
       );
     }
 
-    if (metadata) {
+    if (metadata && state.data) {
       return (
         <LiveMatchContext.Provider
           value={{
             sendMessage: send,
             metadata,
-            state,
+            data: state.data,
           }}
         >
           <LiveMatch />
@@ -125,6 +127,7 @@ const LiveMatchView: React.FC<{
     <PageLayout maxWidth="lg">
       {getContent()}
       <ConnectionIndicator connectionStatus={status} />
+      <LiveMatchErrorDisplay errors={state.errors} />
     </PageLayout>
   );
 };

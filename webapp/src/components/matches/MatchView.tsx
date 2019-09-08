@@ -7,7 +7,7 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import useFetch from 'hooks/useFetch';
-import { Match, getPlayerMove } from 'state/match';
+import { Match } from 'state/match';
 import PlayerLink from 'components/players/PlayerLink';
 import Paper from 'components/common/Paper';
 import { formatDateTime, formatDuration } from 'util/format';
@@ -74,13 +74,7 @@ const MatchDataView: React.FC<{ match: Match }> = ({ match }) => {
             size="large"
             player1={player1}
             player2={player2}
-            games={match.games.map(game => {
-              return {
-                winner: game.winner,
-                player1Move: getPlayerMove(game.players, player1),
-                player2Move: getPlayerMove(game.players, player2),
-              };
-            })}
+            games={match.games}
           />
         </Grid>
       </Grid>

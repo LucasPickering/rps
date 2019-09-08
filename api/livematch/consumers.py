@@ -4,14 +4,12 @@ from channels.generic.websocket import JsonWebsocketConsumer
 from django.conf import settings
 from django.db import transaction
 
-from core.util import is_livematch_id
-
 from .models import LiveMatch
 from .serializers import (
     get_client_msg_serializer,
     ErrorSerializer,
     ClientMessageType,
-    LiveMatchPlayerStateSerializer,
+    LiveMatchStateSerializer,
 )
 from .error import ClientError, ClientErrorType
 
@@ -72,7 +70,7 @@ class MatchConsumer(JsonWebsocketConsumer):
         # No need to lock for read-only operation
         live_match = self.get_match(lock=False)
         self.send_json(
-            LiveMatchPlayerStateSerializer(
+            LiveMatchStateSerializer(
                 live_match, context={"player": self.player}
             ).data
         )
@@ -86,20 +84,6 @@ class MatchConsumer(JsonWebsocketConsumer):
             error {ClientError} -- The error
         """
         self.send_json(ErrorSerializer(error.to_dict()).data)
-
-    def validate_match_id(self):
-        """
-        Checks if the match ID from the URL is valid.
-
-        Raises:
-            ClientError: If the match ID is invalid
-        """
-        if not is_livematch_id(self.match_id):
-            raise ClientError(ClientErrorType.INVALID_MATCH_ID)
-
-    def validate_player(self):
-        if not self.player.is_authenticated:
-            raise ClientError(ClientErrorType.NOT_LOGGED_IN)
 
     def get_match(self, lock=True):
         qs = LiveMatch.objects
@@ -118,18 +102,16 @@ class MatchConsumer(JsonWebsocketConsumer):
         # Try to join the game
         with transaction.atomic():
             # Get the row and lock it
-            live_match, _ = LiveMatch.objects.select_for_update().get_or_create(
-                id=self.match_id
-            )
+            try:
+                live_match = self.get_match()
+            except LiveMatch.NotFound:
+                raise ClientError(ClientErrorType.UNKNOWN_MATCH_ID)
 
             # If the player is already in the game, this will mark them as
             # connected (if they were disconnected). If they were already
             # connected, nothing happens here.
-            if not live_match.connect_player(self.player):
-                # Get up on outta here with your game hijacking
-                raise ClientError(ClientErrorType.GAME_FULL)
-            # Player was successfully added - write it to the DB
-            live_match.save()
+            live_match.player_join(self.player)
+
             # Join the channel group for all sockets in this match. Make sure
             # we do this BEFORE releasing the lock, to prevent missing
             # messages
@@ -138,25 +120,6 @@ class MatchConsumer(JsonWebsocketConsumer):
             )
 
         self.trigger_client_update()
-
-    def disconnect_player(self):
-        # Leave the channel group
-        async_to_sync(self.channel_layer.group_discard)(
-            self.channel_group_name, self.channel_name
-        )
-
-        # Tell the DB object we're disconnecting
-        with transaction.atomic():
-            try:
-                live_match = self.get_match()
-            except LiveMatch.DoesNotExist:
-                return
-
-            if live_match.disconnect_player(self.player):
-                if live_match.is_orphaned:
-                    live_match.delete()
-                else:
-                    live_match.save()
 
     def process_msg(self, msg):
         msg_type = msg["type"]
@@ -186,8 +149,6 @@ class MatchConsumer(JsonWebsocketConsumer):
         self.player = self.scope["user"]
         self.accept()
         try:
-            self.validate_player()
-            self.validate_match_id()
             logger.info(
                 f"Player {self.player} connecting to match {self.match_id}"
             )
@@ -200,10 +161,10 @@ class MatchConsumer(JsonWebsocketConsumer):
             f"Player {self.player} disconnecting from match {self.match_id};"
             + " code={close_code}"
         )
-        try:
-            self.disconnect_player()
-        except ClientError as e:
-            self.handle_error(e)
+        # Leave the channel group
+        async_to_sync(self.channel_layer.group_discard)(
+            self.channel_group_name, self.channel_name
+        )
 
     def receive_json(self, content):
         try:

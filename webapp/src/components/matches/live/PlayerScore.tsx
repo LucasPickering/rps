@@ -6,11 +6,11 @@ import {
 } from '@material-ui/core';
 import clsx from 'clsx';
 import React, { useContext } from 'react';
-import { LiveMatchContext, LiveMatchOpponent } from 'state/livematch';
-import { GameOutcome } from 'state/match';
-import { countGameOutcomes } from 'util/funcs';
+import { LiveMatchContext, LivePlayerMatch } from 'state/livematch';
+import { freq } from 'util/funcs';
 import { Check as IconCheck, Clear as IconClear } from '@material-ui/icons';
 import FlexBox from 'components/common/FlexBox';
+import useUser from 'hooks/useUser';
 
 const useLocalStyles = makeStyles(({ spacing }) => ({
   root: {
@@ -26,62 +26,57 @@ const useLocalStyles = makeStyles(({ spacing }) => ({
   },
 }));
 
-const ActivityIcon: React.FC<{ opponent?: LiveMatchOpponent }> = ({
-  opponent,
-}) => {
+const ActivityIcon: React.FC<{ player: LivePlayerMatch }> = ({ player }) => {
   const localClasses = useLocalStyles();
-  if (opponent) {
-    const [icon, text] = opponent.isActive
-      ? [<IconCheck />, 'active'] // eslint-disable-line react/jsx-key
-      : [<IconClear />, 'inactive']; // eslint-disable-line react/jsx-key
-    return (
-      <Tooltip
-        className={localClasses.statusIcon}
-        title={`${opponent.username} is ${text}`}
-      >
-        {icon}
-      </Tooltip>
-    );
-  }
-  return null;
+
+  const [icon, text] = player.isActive
+    ? [<IconCheck />, 'active'] // eslint-disable-line react/jsx-key
+    : [<IconClear />, 'inactive']; // eslint-disable-line react/jsx-key
+  return (
+    <Tooltip
+      className={localClasses.statusIcon}
+      title={`${player.username} is ${text}`}
+    >
+      {icon}
+    </Tooltip>
+  );
 };
 
 interface Props {
   className?: string;
-  isSelf: boolean;
+  player?: LivePlayerMatch;
+  rightSide: boolean;
 }
 
 // We have to leave the React.FC tag off to get default props to work
-const PlayerScore: React.FC<Props> & { defaultProps: Partial<Props> } = ({
+const PlayerScore = ({
   className,
-  isSelf,
-}) => {
+  player,
+  rightSide,
+}: Props): React.ReactElement => {
   const localClasses = useLocalStyles();
   const {
-    state: {
-      data: { games, opponent },
-    },
+    data: { games },
   } = useContext(LiveMatchContext);
+  const { user } = useUser();
+  const isSelf = user && player && user.username === player.username;
 
   return (
     <div
       className={clsx(localClasses.root, className, {
-        [localClasses.rtl]: !isSelf,
+        [localClasses.rtl]: rightSide,
       })}
     >
-      {isSelf || opponent ? (
+      {player ? (
         <>
           <FlexBox flexDirection="row">
             <Typography variant="h5" noWrap>
-              {isSelf ? 'You' : opponent ? opponent.username : 'No Opponent'}
+              {isSelf ? 'You' : player.username}
             </Typography>
-            {!isSelf && <ActivityIcon opponent={opponent} />}
+            {!isSelf && <ActivityIcon player={player} />}
           </FlexBox>
           <Typography variant="h4">
-            {countGameOutcomes(
-              games,
-              isSelf ? GameOutcome.Win : GameOutcome.Loss
-            )}
+            {freq(games.map(game => game.winner), player.username)}
           </Typography>
         </>
       ) : (
@@ -92,7 +87,7 @@ const PlayerScore: React.FC<Props> & { defaultProps: Partial<Props> } = ({
 };
 
 PlayerScore.defaultProps = {
-  isSelf: false,
+  rightSide: false,
 };
 
 export default PlayerScore;

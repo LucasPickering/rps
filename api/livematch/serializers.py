@@ -1,7 +1,7 @@
 from enum import Enum
 from rest_framework import serializers
 
-from core.util import MatchOutcome, Move, register
+from core.util import Move, register
 from core.serializers import MatchConfigSerializer
 from core.models import MatchConfig
 from . import models
@@ -28,110 +28,109 @@ def get_client_msg_serializer(serializer_type):
     return _CLIENT_MSG_SERIALIZERS[serializer_type]
 
 
+class ClientMessageSerializer(serializers.Serializer):
+    type = serializers.CharField()
+
+
+@register_msg(
+    ClientMessageType.HEARTBEAT,
+    ClientMessageType.READY,
+    ClientMessageType.REMATCH,
+)
+class EmptyClientMessageSerializer(ClientMessageSerializer):
+    pass
+
+
+@register_msg(ClientMessageType.MOVE)
+class ClientMessageMoveSerializer(ClientMessageSerializer):
+    move = serializers.CharField()
+
+
 class ErrorSerializer(serializers.Serializer):
     error = serializers.CharField()
     detail = serializers.CharField()
 
 
-class OpponentSerializer(serializers.ModelSerializer):
+class LivePlayerGameSerializer(serializers.ModelSerializer):
+    username = serializers.SlugRelatedField(
+        source="player", slug_field="username", read_only=True
+    )
+
+    class Meta:
+        model = models.LivePlayerGame
+        fields = ("username", "move")
+
+
+class LiveGameSerializer(serializers.ModelSerializer):
+    winner = serializers.SlugRelatedField(slug_field="username", read_only=True)
+    players = LivePlayerGameSerializer(source="liveplayergame_set", many=True)
+
+    class Meta:
+        model = models.LiveGame
+        exclude = ("id", "match")
+
+
+class LivePlayerMatchSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source="player.username")
+    move = serializers.SerializerMethodField()
     is_active = serializers.BooleanField()
     is_ready = serializers.BooleanField()
 
     class Meta:
         model = models.LivePlayerMatch
-        fields = ("username", "is_active", "is_ready")
+        fields = ("username", "is_active", "is_ready", "move")
+
+    def __init__(self, *args, **kwargs):
+        self.player = kwargs["context"]["player"]
+        self.live_match = kwargs["context"]["live_match"]
+        super().__init__(*args, **kwargs)
+
+    def get_move(self, obj):
+        can_show = (
+            obj.player_id == self.player.id or self.live_match.is_game_complete
+        )
+        return obj.move if can_show else None
 
 
-class LiveGameSummarySerializer(serializers.Serializer):
-    self_move = serializers.SerializerMethodField()
-    opponent_move = serializers.SerializerMethodField()
-    outcome = serializers.SerializerMethodField()
+class LiveMatchStateSerializer(serializers.ModelSerializer):
+    player1 = serializers.SerializerMethodField()
+    player2 = serializers.SerializerMethodField()
+    games = LiveGameSerializer(many=True)
+    winner = serializers.SerializerMethodField()
+    rematch = serializers.PrimaryKeyRelatedField(read_only=True)
+    is_participant = serializers.SerializerMethodField()
 
-    def __init__(self, live_game, *args, **kwargs):
-        try:
-            player = kwargs["context"]["player"]
-        except KeyError:
-            raise RuntimeError("Expected a context with a 'player' field")
-
-        # Get the player and opponent objects
-        self.self_obj, self.opponent_obj = live_game.get_player_games(player)
-        if not self.self_obj:
-            raise RuntimeError(
-                "Cannot get state for player that is not in game"
-            )
-        super().__init__(live_game, *args, **kwargs)
-
-    def get_self_move(self, obj):
-        return self.self_obj.move
-
-    def get_opponent_move(self, obj):
-        return self.opponent_obj.move
-
-    def get_outcome(self, obj):
-        return Move.get_outcome(
-            self.self_obj.move, self.opponent_obj.move
-        ).value
-
-
-class LiveMatchPlayerStateSerializer(serializers.Serializer):
-    """
-    Serializes a LiveMatch into a current state summary FOR A SINGLE PLAYER.
-    This expects two arguments: a LiveMatch, and a Player. Creates a dict
-    representing the current match state to be sent to that player.
-    """
-
-    opponent = serializers.SerializerMethodField()
-    is_ready = serializers.SerializerMethodField()
-    selected_move = serializers.SerializerMethodField()
-    games = serializers.SerializerMethodField()
-    match_outcome = serializers.SerializerMethodField()
-    rematch = serializers.SerializerMethodField()
-
-    def __init__(self, live_match, *args, **kwargs):
-        try:
-            player = kwargs["context"]["player"]
-        except KeyError:
-            raise RuntimeError("Expected a context with a 'player' field")
-
-        # Get the player and opponent objects
-        self.self_obj, self.opponent_obj = live_match.get_player_matches(player)
-        if not self.self_obj:
-            raise RuntimeError(
-                "Cannot get state for player that is not in match"
-            )
-        super().__init__(live_match, *args, **kwargs)
-
-    def get_opponent(self, obj):
-        return (
-            OpponentSerializer(self.opponent_obj).data
-            if self.opponent_obj
-            else None
+    class Meta:
+        model = models.LiveMatch
+        fields = (
+            "player1",
+            "player2",
+            "games",
+            "winner",
+            "rematch",
+            "is_participant",
         )
 
-    def get_is_ready(self, obj):
-        return self.self_obj.is_ready
+    def __init__(self, live_match, *args, **kwargs):
+        self.player = kwargs["context"]["player"]
+        self.player_match = live_match.get_self_player_match(self.player)
+        super().__init__(live_match, *args, **kwargs)
 
-    def get_selected_move(self, obj):
-        return self.self_obj.move
+    def get_player1(self, obj):
+        return LivePlayerMatchSerializer(
+            obj.player1, context={"player": self.player, "live_match": obj}
+        ).data
 
-    def get_games(self, obj):
-        return [
-            LiveGameSummarySerializer(game, context=self.context).data
-            for game in obj.games.all()
-        ]
+    def get_player2(self, obj):
+        return LivePlayerMatchSerializer(
+            obj.player2, context={"player": self.player, "live_match": obj}
+        ).data
 
-    def get_match_outcome(self, obj):
-        if obj.is_match_complete:
-            return (
-                MatchOutcome.WIN.value
-                if obj.permanent_match.winner == self.self_obj.player
-                else MatchOutcome.LOSS.value
-            )
-        return None
+    def get_winner(self, obj):
+        return obj.permanent_match and obj.permanent_match.winner.username
 
-    def get_rematch(self, obj):
-        return obj.rematch_id
+    def get_is_participant(self, obj):
+        return bool(self.player_match)
 
 
 class LiveMatchSerializer(serializers.ModelSerializer):
@@ -150,21 +149,3 @@ class LiveMatchSerializer(serializers.ModelSerializer):
         config_data = validated_data.pop("config")
         config = MatchConfig.objects.create(**config_data)
         return models.LiveMatch.objects.create(config=config)
-
-
-class ClientMessageSerializer(serializers.Serializer):
-    type = serializers.CharField()
-
-
-@register_msg(
-    ClientMessageType.HEARTBEAT,
-    ClientMessageType.READY,
-    ClientMessageType.REMATCH,
-)
-class EmptyClientMessageSerializer(ClientMessageSerializer):
-    pass
-
-
-@register_msg(ClientMessageType.MOVE)
-class ClientMessageMoveSerializer(ClientMessageSerializer):
-    move = serializers.CharField()

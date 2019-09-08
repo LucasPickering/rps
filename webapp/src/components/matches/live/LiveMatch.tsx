@@ -1,223 +1,43 @@
-import { Typography, Button, Grid } from '@material-ui/core';
-import useSplashMessage, { matchOutcomeSplasher } from 'hooks/useSplashMessage';
-import { last } from 'lodash';
-import React, { useContext, useEffect, useState } from 'react';
-import { ClientMessageType, LiveMatchContext } from 'state/livematch';
-import { formatGameOutcome, formatMatchOutcome } from 'util/format';
-import GameLog from './GameLog';
-import MoveButtons from './MoveButtons';
-import PlayerScore from './PlayerScore';
-import LiveMatchErrorDisplay from './LiveMatchErrorDisplay';
-import useStyles from 'hooks/useStyles';
-import useNotifications from 'hooks/useNotifications';
-import MoveIconCircle from './MoveIconCircle';
-import useScreenSize, { ScreenSize } from 'hooks/useScreenSize';
-import { Redirect } from 'react-router';
-import { GameOutcome } from 'state/match';
-import FlexBox from 'components/common/FlexBox';
+import { Grid, makeStyles } from '@material-ui/core';
+import React, { useContext } from 'react';
+import { LiveMatchContext } from 'state/livematch';
+import useUser from 'hooks/useUser';
+import LiveMatchHeader from './LiveMatchHeader';
+import ParticipantActions from './ParticipantActions';
+import SpectatorActions from './SpectatorActions';
+
+const useLocalStyles = makeStyles(({ spacing }) => ({
+  bottomSection: { paddingTop: spacing(1) },
+}));
 
 /**
- * Helper component for the current match status
- */
-const Header: React.FC = () => {
-  const {
-    metadata: {
-      config: { bestOf },
-    },
-    state: {
-      data: { opponent, isReady, selectedMove, games },
-    },
-  } = useContext(LiveMatchContext);
-  const screenSize = useScreenSize();
-
-  const lastGame = last(games);
-  const selfScoreEl = <PlayerScore isSelf />;
-  const selfMoveEl = (
-    <MoveIconCircle
-      move={isReady ? selectedMove : lastGame && lastGame.selfMove}
-    />
-  );
-  const bestOfEl = <Typography variant="h5">Best of {bestOf}</Typography>;
-  const gameLogEl = opponent && (
-    <GameLog
-      player1="<self>"
-      player2={opponent.username}
-      games={games.map(game => ({
-        player1Move: game.selfMove,
-        player2Move: game.opponentMove,
-        // dw this is going to die soon
-        winner:
-          game.outcome === GameOutcome.Win
-            ? '<self>'
-            : game.outcome === GameOutcome.Loss
-            ? opponent.username
-            : undefined,
-      }))}
-    />
-  );
-  const opponentMoveEl = (
-    <MoveIconCircle
-      //  Only show loading icon for opponent if user has already picked a move
-      loading={Boolean(selectedMove)}
-      move={!isReady && lastGame ? lastGame.opponentMove : undefined}
-    />
-  );
-  const opponentScoreEl = <PlayerScore />;
-
-  // Responsive design!
-  return screenSize === ScreenSize.Large ? (
-    <Grid container justify="space-between">
-      {selfScoreEl}
-      {selfMoveEl}
-      <FlexBox flexDirection="column" alignItems="center">
-        {bestOfEl}
-        {gameLogEl}
-      </FlexBox>
-      {opponentMoveEl}
-      {opponentScoreEl}
-    </Grid>
-  ) : (
-    <>
-      <Grid item container justify="space-between">
-        {selfScoreEl}
-        {opponentScoreEl}
-      </Grid>
-      <Grid item container justify="space-between">
-        {selfMoveEl}
-        {bestOfEl}
-        {gameLogEl}
-        {opponentMoveEl}
-      </Grid>
-    </>
-  );
-};
-
-/**
- * Helper component to render the actions available to the player
- */
-const Actions: React.FC = () => {
-  const classes = useStyles();
-  const {
-    state: {
-      data: { isReady, selectedMove, opponent, matchOutcome, games, rematch },
-    },
-    sendMessage,
-  } = useContext(LiveMatchContext);
-  const matchOutcomeSplash = useSplashMessage(
-    matchOutcomeSplasher,
-    matchOutcome
-  );
-  const [acceptedRematch, setAcceptedRematch] = useState(false);
-
-  if (acceptedRematch && rematch) {
-    return <Redirect to={`/matches/live/${rematch}`} />;
-  }
-
-  // Match is over
-  if (matchOutcome) {
-    return (
-      <>
-        <Typography className={classes.normalMessage}>Match Over</Typography>
-        <Typography className={classes.majorMessage}>
-          You {formatMatchOutcome(matchOutcome, 'past')}!
-        </Typography>
-        <Typography className={classes.minorMessage}>
-          {matchOutcomeSplash}
-        </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => {
-            if (!rematch) {
-              sendMessage({ type: ClientMessageType.Rematch });
-            }
-            setAcceptedRematch(true);
-          }}
-        >
-          Rematch
-        </Button>
-      </>
-    );
-  }
-
-  // Match is running
-  if (isReady && !selectedMove) {
-    // Player is ready, show moves
-    return (
-      <MoveButtons
-        disabled={!opponent}
-        onClick={move => {
-          sendMessage({ type: ClientMessageType.Move, move });
-        }}
-      />
-    );
-  }
-
-  // Not ready yet, show a ready button
-  if (!isReady) {
-    const lastGame = last(games);
-    return (
-      <>
-        {lastGame && (
-          <Grid item>
-            <Typography className={classes.normalMessage}>
-              {formatGameOutcome(lastGame.outcome)}
-            </Typography>
-          </Grid>
-        )}
-        <Grid item>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => sendMessage({ type: ClientMessageType.Ready })}
-          >
-            Ready
-          </Button>
-        </Grid>
-      </>
-    );
-  }
-
-  return null;
-};
-
-/**
- * The main component of the live match screen. As long as the socket is open,
- * this should be rendered. This also includes error cases, e.g. not being
- * logged in.
+ * Display and actions for an in-progress match. This is used for participants
+ * and spectators.
  */
 const LiveMatch: React.FC = () => {
-  const notify = useNotifications();
+  const localClasses = useLocalStyles();
   const {
-    state: {
-      data: { games, opponent },
-      errors,
-    },
+    data: { player1, isParticipant },
   } = useContext(LiveMatchContext);
-
-  // Notification for when opponent first connects
-  const opponentName = opponent && opponent.username;
-  useEffect(() => {
-    if (opponentName) {
-      notify(`${opponentName} connected`);
-    }
-  }, [notify, opponentName]);
-
-  // Notitication for end of game
-  useEffect(() => {
-    const lastGame = last(games);
-    if (lastGame) {
-      notify(`Game over - ${formatGameOutcome(lastGame.outcome, 'noun')}`);
-    }
-  }, [notify, games.length]); // eslint-disable-line react-hooks/exhaustive-deps
+  const { user } = useUser();
 
   return (
     <>
-      <Header />
-      <Grid container direction="column" alignItems="center">
-        <Actions />
+      <LiveMatchHeader />
+      <Grid
+        className={localClasses.bottomSection}
+        container
+        direction="column"
+        alignItems="center"
+      >
+        {/* If participating, user/player1 should ALWAYS be defined */}
+        {isParticipant ? (
+          user &&
+          player1 && <ParticipantActions user={user} player1={player1} />
+        ) : (
+          <SpectatorActions />
+        )}
       </Grid>
-      <LiveMatchErrorDisplay errors={errors} />
     </>
   );
 };

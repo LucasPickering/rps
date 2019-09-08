@@ -31,13 +31,6 @@ class LivePlayerMatch(models.Model):
     is_ready = models.BooleanField(default=False)
     move = models.CharField(choices=Move.choices(), max_length=20, blank=True)
 
-    def reset(self):
-        """
-        Reset's this player's state for a new game. Does NOT update active timer
-        """
-        self.is_ready = False
-        self.move = ""
-
     def ready_up(self):
         """
         Sets the ready state to True (even if it is already True). Updates
@@ -66,6 +59,7 @@ class LivePlayerMatch(models.Model):
     def update_last_activity(self):
         self.last_activity = timezone.now()
 
+    @property
     def is_active(self):
         return (timezone.now() - self.last_activity) <= self.ACTIVITY_TIMEOUT
 
@@ -94,6 +88,14 @@ class LivePlayerMatch(models.Model):
 
 
 class LiveMatch(models.Model):
+    """
+    Yeet
+
+    `move` unpopulated for 0/1 players => game is in progress
+    `move` populated for both players => game is complete
+    `is_ready == True` for both players => start new game
+    """
+
     id = models.CharField(
         primary_key=True, max_length=32, default=get_livematch_id
     )
@@ -161,22 +163,6 @@ class LiveMatch(models.Model):
         # Check the FK directly to avoid a query
         return self.permanent_match_id is not None
 
-    @property
-    def is_orphaned(self):
-        """
-        Is this match an orphan? . An orphan has been abandoned by its
-        ~parents~ players and there is no longer any value is holding onto it.
-
-        Returns:
-            bool -- True if this is an orphan, False if not
-        """
-        return (
-            # Unstarted matches that have no connected players
-            not self.is_match_started
-            and not (self.player1 and self.player1.is_active)
-            and not (self.player2 and self.player2.is_active)
-        )
-
     def get_player_matches(self, player):
         """
         Gets the LivePlayerMatch object for the "self" player and the opponent
@@ -208,30 +194,47 @@ class LiveMatch(models.Model):
         self_obj, _ = self.get_player_matches(player)
         return self_obj
 
-    def connect_player(self, player):
+    def is_participant(self, player):
+        return bool(self.get_self_player_match(player))
+
+    def start_new_game(self):
+        """
+        Initiates a new game by resetting is_ready and move for each player.
+        """
+        # Clear moves
+        self.player1.move = ""
+        self.player1.save()
+        self.player2.move = ""
+        self.player2.save()
+
+    def player_join(self, player):
         """
         Adds the given player to this match, if there is a slot open. If the
         player is already in the match, updates their activity field. If the
-        match already has two other players, nothing happens.
+        match already has two other players, or if this player is not
+        authenticated, nothing happens (in this case, the player should become
+        a spectator).
 
         Arguments:
             player {Player} -- The player (user) to connect
 
         Returns:
             bool -- True if the player is now connected, False if the game is
-            already full
+            already full or the player is not logged in
         """
+        # If the player isn't logged in or the game is full, they can't join
+        if not player.is_authenticated or (
+            self.player1_id is not None and self.player2_id is not None
+        ):
+            return False
+        # We now know the game has an open slot
+
         player_obj = self.get_self_player_match(player)
 
         # If the player isn't in the game, try to add them
-        is_player_new = False
-        if not player_obj:
-            if self.player1 is None or self.player2 is None:
-                player_obj = LivePlayerMatch(player=player, is_ready=True)
-                is_player_new = True
-            else:
-                # Game is full already
-                return False
+        is_player_new = not player_obj
+        if is_player_new:
+            player_obj = LivePlayerMatch(player=player, is_ready=True)
 
         player_obj.update_last_activity()
         player_obj.save()
@@ -243,6 +246,11 @@ class LiveMatch(models.Model):
                 self.player1 = player_obj
             elif self.player2 is None:
                 self.player2 = player_obj
+            else:
+                raise RuntimeError(
+                    f"Cannot add player {player_obj} to match: no open slots"
+                )
+            self.save()
         return True
 
     def heartbeat(self, player):
@@ -274,10 +282,12 @@ class LiveMatch(models.Model):
         Raises:
             ClientError: If the player is not in this match
         """
-        player_obj = self.get_self_player_match(player)
-        if player_obj:
-            player_obj.ready_up()
-            player_obj.save()
+        self_pm, opponent_pm = self.get_player_matches(player)
+        if self_pm:
+            self_pm.ready_up()
+            self_pm.save()
+            if self_pm.is_ready and opponent_pm and opponent_pm.is_ready:
+                self.start_new_game()
         else:
             raise ClientError(
                 ClientErrorType.NOT_IN_MATCH, "Player is not in match"
@@ -338,10 +348,9 @@ class LiveMatch(models.Model):
         LivePlayerGame.from_player_match(self.player1, game).save()
         LivePlayerGame.from_player_match(self.player2, game).save()
 
-        # Clear moves
-        self.player1.reset()
+        self.player1.is_ready = False
         self.player1.save()
-        self.player2.reset()
+        self.player2.is_ready = False
         self.player2.save()
 
         # Check if the match is over now
