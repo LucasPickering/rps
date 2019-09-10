@@ -12,7 +12,7 @@ def new_match(request, *args, **kwargs):
     Return a slack message with a link to a new match
     """
     # Could potentially add arguments to allow game configuration here
-    serializer = LiveMatchSerializer(data={})
+    serializer = LiveMatchSerializer(data={"config": {}})
     serializer.is_valid(raise_exception=True)
     live_match = serializer.save()
 

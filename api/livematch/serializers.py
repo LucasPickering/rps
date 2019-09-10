@@ -148,7 +148,6 @@ class LiveMatchSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         config_data = validated_data.pop("config")
-        print(config_data)
         config = MatchConfig.objects.create(**config_data)
         return models.LiveMatch.objects.create(config=config)
 
