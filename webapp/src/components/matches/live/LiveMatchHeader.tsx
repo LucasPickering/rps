@@ -4,7 +4,7 @@ import { LiveMatchContext } from 'state/livematch';
 import GameLog from './GameLog';
 import PlayerScore from './PlayerScore';
 import MoveIconCircle from './MoveIconCircle';
-import useScreenSize, { ScreenSize } from 'hooks/useScreenSize';
+import useScreenSize from 'hooks/useScreenSize';
 import FlexBox from 'components/common/FlexBox';
 
 /**
@@ -43,7 +43,7 @@ const LiveMatchHeader: React.FC = () => {
   const rightScoreEl = <PlayerScore rightSide player={player2} />;
 
   // Responsive design!
-  return screenSize === ScreenSize.Large ? (
+  return screenSize === 'large' ? (
     <Grid container justify="space-between">
       {leftScoreEl}
       {leftMoveEl}
