@@ -10,6 +10,7 @@ import useSplashMessage, {
 } from 'hooks/useSplashMessage';
 import { ConnectionStatus } from 'hooks/useWebSocket';
 import React, { useState } from 'react';
+import useScreenSize from 'hooks/useScreenSize';
 
 const statusLabels = {
   connecting: 'Connecting',
@@ -38,6 +39,13 @@ const useLocalStyles = makeStyles(({ palette, spacing }) => ({
   popoverPaper: {
     padding: spacing(1),
   },
+  small: {
+    '& > .MuiChip-label': {
+      visibility: 'hidden',
+      width: 0,
+      paddingRight: 0,
+    },
+  },
 }));
 
 const StatusIcon: React.FC<{ status: ConnectionStatus }> = ({
@@ -60,15 +68,16 @@ const StatusIcon: React.FC<{ status: ConnectionStatus }> = ({
 const ConnectionIndicator: React.FC<{ connectionStatus: ConnectionStatus }> = ({
   connectionStatus,
 }) => {
+  const localClasses = useLocalStyles();
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<
     HTMLElement | undefined
   >(undefined);
-  const localClasses = useLocalStyles();
-
+  const screenSize = useScreenSize();
   const splashMessage = useSplashMessage(
     connectionStatusSplasher,
     connectionStatus
   );
+
   const popoverOpen = Boolean(popoverAnchorEl && splashMessage);
 
   return (
@@ -77,6 +86,7 @@ const ConnectionIndicator: React.FC<{ connectionStatus: ConnectionStatus }> = ({
         className={clsx(localClasses.root, {
           [localClasses.success]: connectionStatus === 'connected',
           [localClasses.error]: connectionStatus === 'closedError',
+          [localClasses.small]: screenSize === 'small',
         })}
         icon={<StatusIcon status={connectionStatus} />}
         label={statusLabels[connectionStatus]}
