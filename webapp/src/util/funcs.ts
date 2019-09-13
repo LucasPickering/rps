@@ -62,7 +62,7 @@ export const getMatchOutcome = (
   selfName: string,
   winner: string
 ): MatchOutcome => {
-  return winner === selfName ? MatchOutcome.Win : MatchOutcome.Loss;
+  return winner === selfName ? 'win' : 'loss';
 };
 
 /**

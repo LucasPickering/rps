@@ -15,7 +15,6 @@ import {
 } from 'state/livematch';
 import useStyles from 'hooks/useStyles';
 import useWebSocket from 'hooks/useWebSocket';
-import { ConnectionStatus } from 'hooks/useSafeCallbacks';
 import LiveMatch from './LiveMatch';
 import ConnectionIndicator from './ConnectionIndicator';
 import PageLayout from 'components/common/PageLayout';
@@ -75,7 +74,7 @@ const LiveMatchView: React.FC<{
   // Set up an interval to ping the server once per second
   const isParticipant = Boolean(state.data && state.data.isParticipant);
   useEffect(() => {
-    if (status === ConnectionStatus.Connected && isParticipant) {
+    if (status === 'connected' && isParticipant) {
       const intervalId = setInterval(
         () => send({ type: ClientMessageType.Heartbeat }),
         3000
@@ -85,7 +84,7 @@ const LiveMatchView: React.FC<{
   }, [status, send, isParticipant]);
 
   const getContent = (): React.ReactElement => {
-    if (metadataLoading || status === ConnectionStatus.Connecting) {
+    if (metadataLoading || status === 'connecting') {
       return (
         <>
           <Typography className={classes.normalMessage}>

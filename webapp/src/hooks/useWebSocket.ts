@@ -16,12 +16,11 @@ interface WebSocketCallbacks {
   onClose?: EventConsumer<CloseEvent>;
 }
 
-export enum ConnectionStatus {
-  Connecting,
-  Connected,
-  ClosedError,
-  ClosedNormal,
-}
+export type ConnectionStatus =
+  | 'connecting'
+  | 'connected'
+  | 'closedError'
+  | 'closedNormal';
 
 /**
  * Hook for managing a websocket.
@@ -31,9 +30,7 @@ const useWebSocket = (
   callbacks: WebSocketCallbacks,
   dependencies: readonly unknown[] = []
 ): { status: ConnectionStatus; send: Send } => {
-  const [status, setStatus] = useState<ConnectionStatus>(
-    ConnectionStatus.Connecting
-  );
+  const [status, setStatus] = useState<ConnectionStatus>('connecting');
   const wsRef = useRef<WebSocket | undefined>(undefined);
 
   // Memoized send function
@@ -62,7 +59,7 @@ const useWebSocket = (
 
     wsRef.current.onopen = event => {
       if (isMounted.current) {
-        setStatus(ConnectionStatus.Connected);
+        setStatus('connected');
         if (onOpen) {
           onOpen(event);
         }
@@ -89,9 +86,7 @@ const useWebSocket = (
       if (isMounted.current) {
         setStatus(
           // code === 1000 indicates normal closure
-          event.code === 1000
-            ? ConnectionStatus.ClosedNormal
-            : ConnectionStatus.ClosedError
+          event.code === 1000 ? 'closedNormal' : 'closedError'
         );
         if (onClose) {
           onClose(event);

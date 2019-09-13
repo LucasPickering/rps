@@ -1,4 +1,4 @@
-import { Match, MatchOutcome, GameOutcome } from './match';
+import { Match, MatchOutcome } from './match';
 import { freq } from 'util/funcs';
 import { first } from 'lodash';
 
@@ -45,19 +45,19 @@ export const getPlayerMatch = (username: string, match: Match): PlayerMatch => {
 
   const gameOutcomes = match.games.map(game => {
     if (game.winner === username) {
-      return GameOutcome.Win;
+      return 'win';
     }
     if (!game.winner) {
-      return GameOutcome.Tie;
+      return 'tie';
     }
-    return GameOutcome.Loss;
+    return 'loss';
   });
 
   return {
     opponentName,
-    wins: freq(gameOutcomes, GameOutcome.Win),
-    losses: freq(gameOutcomes, GameOutcome.Loss),
-    ties: freq(gameOutcomes, GameOutcome.Tie),
-    outcome: username === match.winner ? MatchOutcome.Win : MatchOutcome.Loss,
+    wins: freq(gameOutcomes, 'win'),
+    losses: freq(gameOutcomes, 'loss'),
+    ties: freq(gameOutcomes, 'tie'),
+    outcome: username === match.winner ? 'win' : 'loss',
   };
 };

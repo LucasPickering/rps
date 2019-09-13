@@ -12,10 +12,10 @@ import { ConnectionStatus } from 'hooks/useWebSocket';
 import React, { useState } from 'react';
 
 const statusLabels = {
-  [ConnectionStatus.Connecting]: 'Connecting',
-  [ConnectionStatus.Connected]: 'Connected',
-  [ConnectionStatus.ClosedNormal]: 'Closed',
-  [ConnectionStatus.ClosedError]: 'Error',
+  connecting: 'Connecting',
+  connected: 'Connected',
+  closedNormal: 'Closed',
+  closedError: 'Error',
 };
 
 const useLocalStyles = makeStyles(({ palette, spacing }) => ({
@@ -45,14 +45,14 @@ const StatusIcon: React.FC<{ status: ConnectionStatus }> = ({
   ...rest
 }) => {
   switch (status) {
-    case ConnectionStatus.Connecting:
+    case 'connecting':
       // TODO fix sizing here
       return <CircularProgress size={16} color="secondary" {...rest} />;
-    case ConnectionStatus.Connected:
+    case 'connected':
       return <IconCheckCircle {...rest} />;
-    case ConnectionStatus.ClosedNormal:
+    case 'closedNormal':
       return <IconCancel {...rest} />;
-    case ConnectionStatus.ClosedError:
+    case 'closedError':
       return <IconError {...rest} />;
   }
 };
@@ -75,10 +75,8 @@ const ConnectionIndicator: React.FC<{ connectionStatus: ConnectionStatus }> = ({
     <div>
       <Chip
         className={clsx(localClasses.root, {
-          [localClasses.success]:
-            connectionStatus === ConnectionStatus.Connected,
-          [localClasses.error]:
-            connectionStatus === ConnectionStatus.ClosedError,
+          [localClasses.success]: connectionStatus === 'connected',
+          [localClasses.error]: connectionStatus === 'closedError',
         })}
         icon={<StatusIcon status={connectionStatus} />}
         label={statusLabels[connectionStatus]}
