@@ -84,3 +84,7 @@ class Game(AbstractGame):
 
 class PlayerGame(AbstractPlayerGame):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
+
+    class Meta:
+        # Make sure player1 comes first
+        ordering = ("id",)

@@ -31,6 +31,10 @@ class LivePlayerMatch(models.Model):
     is_ready = models.BooleanField(default=False)
     move = models.CharField(choices=Move.choices(), max_length=20, blank=True)
 
+    class Meta:
+        # Make sure player1 comes first
+        ordering = ("id",)
+
     def ready_up(self):
         """
         Sets the ready state to True (even if it is already True). Updates
