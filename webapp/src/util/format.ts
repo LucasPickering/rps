@@ -13,9 +13,9 @@ export const formatGameOutcome = (
       return capitalize(outcome);
     case 'past':
       return {
-        [GameOutcome.Win]: 'won',
-        [GameOutcome.Loss]: 'lost',
-        [GameOutcome.Tie]: 'tied',
+        win: 'won',
+        loss: 'lost',
+        tie: 'tied',
       }[outcome];
     case 'abbreviation':
       return outcome.toString()[0].toUpperCase();
@@ -31,8 +31,8 @@ export const formatMatchOutcome = (
       return capitalize(outcome);
     case 'past':
       return {
-        [MatchOutcome.Win]: 'won',
-        [MatchOutcome.Loss]: 'lost',
+        win: 'won',
+        loss: 'lost',
       }[outcome];
     case 'abbreviation':
       return outcome.toString()[0].toUpperCase();

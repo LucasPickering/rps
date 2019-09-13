@@ -13,7 +13,7 @@ import useStyles from 'hooks/useStyles';
 import useNotifications from 'hooks/useNotifications';
 import { Redirect } from 'react-router';
 import { getSelfAndOpponent } from 'util/funcs';
-import { MatchOutcome, GameOutcome, Game } from 'state/match';
+import { GameOutcome, Game } from 'state/match';
 import { User } from 'state/user';
 
 /**
@@ -33,20 +33,19 @@ const ParticipantActions: React.FC<{
   } = useContext(LiveMatchContext);
 
   const [self, opponent] = getSelfAndOpponent(user, player1, player2);
-  const matchOutcome =
-    winner === self.username ? MatchOutcome.Win : MatchOutcome.Loss;
+  const matchOutcome = winner === self.username ? 'win' : 'loss';
 
   /**
    * Gets the outcome of the given game, as win/loss/tie
    */
   const getGameOutcome = (game: Game): GameOutcome => {
     if (game.winner === self.username) {
-      return GameOutcome.Win;
+      return 'win';
     }
     if (!game.winner) {
-      return GameOutcome.Tie;
+      return 'tie';
     }
-    return GameOutcome.Loss;
+    return 'loss';
   };
 
   const matchOutcomeSplash = useSplashMessage(

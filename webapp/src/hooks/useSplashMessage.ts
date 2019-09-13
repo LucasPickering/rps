@@ -2,13 +2,12 @@ import { ConnectionStatus } from 'hooks/useWebSocket';
 import { sample } from 'lodash';
 import { useEffect, useState } from 'react';
 import { MatchOutcome } from 'state/match';
-import useUser from './useUser';
 
 // TODO clean this up
 
 type Key = string | number | symbol;
 type Splashes<T extends Key = string> = Record<T, string[]>;
-type Splasher<T = string> = (key: T, isAlt: boolean) => string;
+type Splasher<T = string> = (key: T) => string;
 
 const welcomeSplashes: Splashes = {
   '': [
@@ -18,6 +17,7 @@ const welcomeSplashes: Splashes = {
     'Wilkommen!',
     'пожалуйста',
     '欢迎',
+    'RPS is certified Dank®',
   ],
 };
 
@@ -26,19 +26,19 @@ const notFoundSplashes: Splashes = {
 };
 
 const connectionStatusSplashes: Splashes<ConnectionStatus> = {
-  [ConnectionStatus.Connecting]: [`Oooooh, he's trying!`],
-  [ConnectionStatus.Connected]: [
+  connecting: [`Oooooh, he's trying!`],
+  connected: [
     'You are Online™',
     'Welcome to the THUNDERDOME',
     'Now with 20% less trans fat!',
   ],
-  [ConnectionStatus.ClosedError]: [':sad_parrot:', "It's a feature"],
-  [ConnectionStatus.ClosedNormal]: ['Head aega!', 'Nägemist!', 'Nägemiseni!'],
+  closedError: [':sad_parrot:', "It's a feature"],
+  closedNormal: ['Head aega!', 'Nägemist!', 'Nägemiseni!'],
 };
 
 const matchOutcomeSplashes: Splashes<MatchOutcome> = {
-  [MatchOutcome.Win]: ['gg ez', 'gg no re', 'ez game ez life'],
-  [MatchOutcome.Loss]: [
+  win: ['gg ez', 'gg no re', 'ez game ez life'],
+  loss: [
     'Damn, you just got dumpstered',
     'Absolutely eviscerated',
     'Embarrassing',
@@ -49,13 +49,9 @@ const matchOutcomeSplashes: Splashes<MatchOutcome> = {
   ],
 };
 
-const makeSplasher = <T extends Key>(
-  splashes: Splashes<T>,
-  altSplashes?: Splashes<T>
-): Splasher<T> => {
-  return (key, isAlt) => {
-    const toSample = isAlt && altSplashes ? altSplashes : splashes;
-    return sample(toSample[key]) || '';
+const makeSplasher = <T extends Key>(splashes: Splashes<T>): Splasher<T> => {
+  return key => {
+    return sample(splashes[key]) || '';
   };
 };
 
@@ -78,14 +74,10 @@ const useSplashMessage = <T extends Key>(
   splasher: Splasher<T>,
   key?: T
 ): string => {
-  const { user } = useUser();
-  const isAlt = Boolean(user && user.username.toLowerCase() === 'nick'); // lol
-
   const [splash, setSplash] = useState('');
-  useEffect(() => setSplash(key !== undefined ? splasher(key, isAlt) : ''), [
+  useEffect(() => setSplash(key !== undefined ? splasher(key) : ''), [
     splasher,
     key,
-    isAlt,
   ]);
   return splash;
 };

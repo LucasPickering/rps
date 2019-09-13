@@ -6,16 +6,9 @@ export enum Move {
   Spock = 'spock',
 }
 
-export enum GameOutcome {
-  Win = 'win',
-  Loss = 'loss',
-  Tie = 'tie',
-}
+export type GameOutcome = 'win' | 'loss' | 'tie';
 
-export enum MatchOutcome {
-  Win = 'win',
-  Loss = 'loss',
-}
+export type MatchOutcome = 'win' | 'loss';
 
 export interface MatchConfig {
   bestOf: number;
