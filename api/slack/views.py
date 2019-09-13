@@ -1,3 +1,4 @@
+import random
 from prettytable import PrettyTable
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -5,6 +6,9 @@ from rest_framework.response import Response
 from core.models import Player
 from core.serializers import PlayerSummarySerializer
 from livematch.serializers import LiveMatchSerializer
+
+
+NEW_MATCH_MESSAGES = ["Let the battle begin", "Fight me cowards"]
 
 
 def new_match(request, *args, **kwargs):
@@ -22,7 +26,7 @@ def new_match(request, *args, **kwargs):
             "text": request.build_absolute_uri(
                 "/matches/live/{}".format(live_match.id)
             ),
-            "attachments": [{"text": "Let the battle begin!"}],
+            "attachments": [{"text": random.choice(NEW_MATCH_MESSAGES)}],
         }
     )
 
