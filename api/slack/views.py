@@ -48,7 +48,7 @@ def leaderboard(request, *args, **kwargs):
     table.align["Win%"] = "r"
     for player_data in PlayerSummarySerializer(
         Player.objects.annotate_match_outcomes().order_by(
-            "-match_win_pct", "match_count"
+            "-match_win_pct", "-match_count"
         ),
         many=True,
     ).data:
