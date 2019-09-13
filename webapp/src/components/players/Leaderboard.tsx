@@ -56,7 +56,7 @@ const Leaderboard: React.FC = () => {
           request({
             params: {
               ...tableToApiQuery(query),
-              ordering: '-match_win_pct,match_count',
+              ordering: '-match_win_pct,-match_count',
             },
           })
             .then(response =>
