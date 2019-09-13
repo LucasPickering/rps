@@ -6,7 +6,7 @@ import PageLayout from './common/PageLayout';
 
 const NotFoundView: React.FC = () => {
   const classes = useStyles();
-  const message = useSplashMessage(notFoundSplasher, '');
+  const message = useSplashMessage(notFoundSplasher);
   return (
     <PageLayout>
       <Typography className={classes.majorMessage}>Not Found</Typography>

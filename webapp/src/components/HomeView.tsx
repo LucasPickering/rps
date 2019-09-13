@@ -16,7 +16,7 @@ const useLocalStyles = makeStyles(({ spacing }) => ({
 const Home: React.FC = () => {
   const classes = useStyles();
   const localClasses = useLocalStyles();
-  const welcome = useSplashMessage(welcomeSplasher, '');
+  const welcome = useSplashMessage(welcomeSplasher);
 
   return (
     <PageLayout maxWidth="md">
