@@ -3,6 +3,8 @@ import useSafeCallbacks from './useSafeCallbacks';
 import useIsMounted from './useIsMounted';
 import camelcaseKeys from 'camelcase-keys';
 
+const RECONNECT_TIMEOUT = 5000;
+
 export type Send = (data: unknown) => void;
 type EventConsumer<T = Event> = (event: T) => void;
 interface MessageData {
@@ -50,13 +52,15 @@ const useWebSocket = (
     WebSocketCallbacks
   >(callbacks);
 
-  useEffect(() => {
+  /**
+   * A function to establish a WS connection
+   */
+  const connect: React.EffectCallback = () => {
     const protocol = window.location.protocol === 'http:' ? 'ws' : 'wss';
-    wsRef.current = new WebSocket(
-      `${protocol}://${window.location.host}${addr}`
-    );
-    const { current: ws } = wsRef;
+    const fullAddr = `${protocol}://${window.location.host}${addr}`;
+    wsRef.current = new WebSocket(fullAddr);
 
+    const { current: ws } = wsRef;
     wsRef.current.onopen = event => {
       if (isMounted.current) {
         setStatus('connected');
@@ -91,6 +95,10 @@ const useWebSocket = (
         if (onClose) {
           onClose(event);
         }
+        // Reconnect after a certain amount of time
+        setTimeout(() => {
+          connect();
+        }, RECONNECT_TIMEOUT);
       }
     };
 
@@ -98,8 +106,17 @@ const useWebSocket = (
     return () => {
       ws.close();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [addr, onOpen, onMessage, onError, onClose, isMounted, ...dependencies]);
+  };
+
+  useEffect(connect, [
+    addr,
+    onOpen,
+    onMessage,
+    onError,
+    onClose,
+    isMounted,
+    ...dependencies, // eslint-disable-line react-hooks/exhaustive-deps
+  ]);
 
   return { status, send };
 };
