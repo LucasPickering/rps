@@ -66,9 +66,8 @@ class Match(models.Model):
     config = models.ForeignKey(MatchConfig, on_delete=models.PROTECT)
     # Always len=2
     players = models.ManyToManyField(Player, related_name="matches")
-    # Null for unfinished matches, i.e. when Nick rage quits
     winner = models.ForeignKey(
-        Player, related_name="match_wins", null=True, on_delete=models.PROTECT
+        Player, related_name="match_wins", on_delete=models.PROTECT
     )
 
     class Meta:
