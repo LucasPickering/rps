@@ -113,7 +113,6 @@ class LiveMatchStateSerializer(serializers.ModelSerializer):
 
     def __init__(self, live_match, *args, **kwargs):
         self.player = kwargs["context"]["player"]
-        self.player_match = live_match.get_self_player_match(self.player)
         super().__init__(live_match, *args, **kwargs)
 
     def get_player1(self, obj):
@@ -130,7 +129,7 @@ class LiveMatchStateSerializer(serializers.ModelSerializer):
         return obj.permanent_match and obj.permanent_match.winner.username
 
     def get_is_participant(self, obj):
-        return bool(self.player_match)
+        return obj.is_participant(self.player)
 
 
 class LiveMatchSerializer(serializers.ModelSerializer):

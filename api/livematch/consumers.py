@@ -123,24 +123,33 @@ class MatchConsumer(JsonWebsocketConsumer):
 
     def process_msg(self, msg):
         msg_type = msg["type"]
+
         valid_msg_types = set(cmt.value for cmt in ClientMessageType)
-        if msg_type in valid_msg_types:
-            with transaction.atomic():
-                # If live_match doesn't exist, tenemos problemos
-                live_match = self.get_match()
-                if msg_type == ClientMessageType.HEARTBEAT.value:
-                    live_match.heartbeat(self.player)
-                elif msg_type == ClientMessageType.READY.value:
-                    live_match.ready_up(self.player)
-                elif msg_type == ClientMessageType.MOVE.value:
-                    live_match.apply_move(self.player, msg["move"])
-                elif msg_type == ClientMessageType.REMATCH.value:
-                    live_match.make_rematch()
-        else:
+        if msg_type not in valid_msg_types:
             raise ClientError(
                 ClientErrorType.MALFORMED_MESSAGE,
                 f"Unknown message type: {msg_type}",
             )
+
+        with transaction.atomic():
+            # If live_match doesn't exist, tenemos problemos
+            live_match = self.get_match()
+
+            # Make sure this player is allowed to be doing things
+            if not live_match.is_participant(self.player):
+                raise ClientError(
+                    ClientErrorType.NOT_IN_MATCH,
+                    "You are not participating in this match",
+                )
+
+            if msg_type == ClientMessageType.HEARTBEAT.value:
+                live_match.heartbeat(self.player)
+            elif msg_type == ClientMessageType.READY.value:
+                live_match.ready_up(self.player)
+            elif msg_type == ClientMessageType.MOVE.value:
+                live_match.apply_move(self.player, msg["move"])
+            elif msg_type == ClientMessageType.REMATCH.value:
+                live_match.make_rematch()
 
         self.trigger_client_update()
 
