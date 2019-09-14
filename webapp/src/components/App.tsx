@@ -8,13 +8,14 @@ import {
   userReducer,
   UserStateContext,
 } from 'state/user';
-import { lightBlue } from '@material-ui/core/colors';
+import { lightBlue, lightGreen } from '@material-ui/core/colors';
 import PageContainer from './PageContainer';
 
 const theme = createMuiTheme({
   palette: {
-    primary: lightBlue,
     type: 'dark',
+    primary: lightBlue,
+    secondary: lightGreen,
   },
 });
 
