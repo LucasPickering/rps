@@ -12,7 +12,7 @@ import { Check as IconCheck, Clear as IconClear } from '@material-ui/icons';
 import FlexBox from 'components/common/FlexBox';
 import useUser from 'hooks/useUser';
 
-const useLocalStyles = makeStyles(({ spacing }) => ({
+const useLocalStyles = makeStyles(({ palette, spacing }) => ({
   root: {
     // Use a fixed width here so that the game log will be exactly centered
     width: 120,
@@ -23,6 +23,9 @@ const useLocalStyles = makeStyles(({ spacing }) => ({
   },
   statusIcon: {
     margin: `0 ${spacing(0.5)}px`,
+  },
+  self: {
+    color: palette.secondary.main,
   },
 }));
 
@@ -64,6 +67,7 @@ const PlayerScore = ({
   return (
     <div
       className={clsx(localClasses.root, className, {
+        [localClasses.self]: isSelf,
         [localClasses.rtl]: rightSide,
       })}
     >
