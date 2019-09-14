@@ -1,13 +1,10 @@
 from enum import Enum
 from rest_framework import serializers
 
-from core.util import Move, register
+from core.util import register
 from core.serializers import MatchConfigSerializer
 from core.models import MatchConfig
 from . import models
-
-
-# This file is pretty jank. Sorry.
 
 
 _CLIENT_MSG_SERIALIZERS = {}
@@ -116,14 +113,20 @@ class LiveMatchStateSerializer(serializers.ModelSerializer):
         super().__init__(live_match, *args, **kwargs)
 
     def get_player1(self, obj):
-        return LivePlayerMatchSerializer(
-            obj.player1, context={"player": self.player, "live_match": obj}
-        ).data
+        return (
+            obj.player1
+            and LivePlayerMatchSerializer(
+                obj.player1, context={"player": self.player, "live_match": obj}
+            ).data
+        )
 
     def get_player2(self, obj):
-        return LivePlayerMatchSerializer(
-            obj.player2, context={"player": self.player, "live_match": obj}
-        ).data
+        return (
+            obj.player2
+            and LivePlayerMatchSerializer(
+                obj.player2, context={"player": self.player, "live_match": obj}
+            ).data
+        )
 
     def get_winner(self, obj):
         return obj.permanent_match and obj.permanent_match.winner.username
