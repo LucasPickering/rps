@@ -23,10 +23,10 @@ const LiveMatchHeader: React.FC = () => {
   const [leftPlayer, rightPlayer] = [player1, player2];
 
   const leftScoreEl = <PlayerScore player={player1} />;
-  const leftMoveEl = leftPlayer && (
+  const leftMoveEl = (
     <MoveIconCircle
-      loading={!isParticipant && !leftPlayer.move}
-      move={leftPlayer.move}
+      loading={!isParticipant && leftPlayer && !leftPlayer.move}
+      move={leftPlayer && leftPlayer.move}
     />
   );
   const bestOfEl = <Typography variant="h5">Best of {bestOf}</Typography>;
@@ -37,8 +37,11 @@ const LiveMatchHeader: React.FC = () => {
       games={games}
     />
   );
-  const rightMoveEl = rightPlayer && (
-    <MoveIconCircle loading={!rightPlayer.move} move={rightPlayer.move} />
+  const rightMoveEl = (
+    <MoveIconCircle
+      loading={rightPlayer && !rightPlayer.move}
+      move={rightPlayer && rightPlayer.move}
+    />
   );
   const rightScoreEl = <PlayerScore rightSide player={player2} />;
 
