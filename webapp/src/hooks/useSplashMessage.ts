@@ -16,7 +16,6 @@ const welcomeSplashes: Splashes = {
     'Wilkommen!',
     'пожалуйста',
     '欢迎',
-    'RPS is certified Dank®',
   ],
 };
 

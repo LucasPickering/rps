@@ -33,12 +33,14 @@ const useWebSocket = (
   dependencies: readonly unknown[] = []
 ): { status: ConnectionStatus; send: Send } => {
   const [status, setStatus] = useState<ConnectionStatus>('connecting');
-  const wsRef = useRef<WebSocket | undefined>(undefined);
+  const wsRef = useRef<WebSocket | undefined>();
+  const reconnectTimeoutIdRef = useRef<number | undefined>();
 
   // Memoized send function
   const send = useCallback<Send>((data: unknown) => {
     const { current: ws } = wsRef;
     if (ws) {
+      console.log('sending', data);
       ws.send(JSON.stringify(data));
     } else {
       throw new Error('send called while websocket is closed');
@@ -88,22 +90,26 @@ const useWebSocket = (
 
     ws.onclose = event => {
       if (isMounted.current) {
-        setStatus(
-          // code === 1000 indicates normal closure
-          event.code === 1000 ? 'closedNormal' : 'closedError'
-        );
+        // code === 1000 indicates normal closure
+        if (event.code === 1000) {
+          setStatus('closedNormal');
+        } else {
+          setStatus('closedError');
+          // Reconnect after a certain amount of time
+          reconnectTimeoutIdRef.current = window.setTimeout(() => {
+            connect();
+          }, RECONNECT_TIMEOUT);
+        }
+
         if (onClose) {
           onClose(event);
         }
-        // Reconnect after a certain amount of time
-        setTimeout(() => {
-          connect();
-        }, RECONNECT_TIMEOUT);
       }
     };
 
     // Close the socket on unmount
     return () => {
+      window.clearTimeout(reconnectTimeoutIdRef.current);
       ws.close();
     };
   };
