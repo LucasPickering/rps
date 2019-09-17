@@ -32,10 +32,11 @@ class GameSerializer(serializers.ModelSerializer):
 class MatchConfigSerializer(serializers.ModelSerializer):
     best_of = serializers.IntegerField(default=5)
     extended_mode = serializers.BooleanField(default=False)
+    public = serializers.BooleanField(default=False)
 
     class Meta:
         model = models.MatchConfig
-        fields = ("best_of", "extended_mode")
+        exclude = ("id",)
 
     def validate_best_of(self, best_of):
         if best_of <= 0 or best_of % 2 == 0:
