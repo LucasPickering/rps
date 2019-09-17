@@ -168,7 +168,7 @@ class MatchConsumer(JsonWebsocketConsumer):
     def disconnect_json(self, close_code):
         logger.info(
             f"Player {self.player} disconnecting from match {self.match_id};"
-            + " code={close_code}"
+            + f" code={close_code}"
         )
         # Leave the channel group
         async_to_sync(self.channel_layer.group_discard)(

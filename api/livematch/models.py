@@ -434,7 +434,7 @@ class LiveGame(AbstractGame):
     def __str__(self):
         return (
             f"match: {self.match_id}; game_num: {self.game_num};"
-            + " winner: {self.winner}"
+            + f" winner: {self.winner}"
         )
 
     def save_to_permanent(self, match):
