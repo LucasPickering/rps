@@ -17,6 +17,16 @@ class Player(User):
         proxy = True
 
 
+class AbstractPlayerMatch(models.Model):
+    player = models.ForeignKey(Player, on_delete=models.PROTECT)
+    player_num = models.IntegerField()
+
+    class Meta:
+        abstract = True
+        ordering = ("player_num",)
+        unique_together = (("player", "match"), ("player_num", "match"))
+
+
 class AbstractGame(models.Model):
     # zero-indexed
     game_num = models.PositiveSmallIntegerField()
@@ -32,6 +42,7 @@ class AbstractGame(models.Model):
     class Meta:
         abstract = True
         ordering = ("match_id", "game_num")
+        unique_together = ("game_num", "match")
 
     def save(self, *args, **kwargs):
         self.full_clean()
@@ -39,11 +50,14 @@ class AbstractGame(models.Model):
 
 
 class AbstractPlayerGame(models.Model):
+    player_num = models.IntegerField()
     player = models.ForeignKey(Player, on_delete=models.PROTECT)
     move = models.CharField(choices=Move.choices(), max_length=20)
 
     class Meta:
         abstract = True
+        ordering = ("player_num",)
+        unique_together = (("player", "game"), ("player_num", "game"))
 
     def save(self, *args, **kwargs):
         self.full_clean()
@@ -58,20 +72,34 @@ class MatchConfig(models.Model):
 
     best_of = models.PositiveSmallIntegerField()
     extended_mode = models.BooleanField()
+    public = models.BooleanField()
 
 
 class Match(models.Model):
     start_time = models.DateTimeField()
     duration = models.PositiveIntegerField()  # Seconds
     config = models.ForeignKey(MatchConfig, on_delete=models.PROTECT)
+    rematch = models.OneToOneField(
+        "self",
+        on_delete=models.SET_NULL,
+        related_name="parent",
+        null=True,
+        blank=True,
+    )
     # Always len=2
-    players = models.ManyToManyField(Player, related_name="matches")
+    players = models.ManyToManyField(
+        Player, through="PlayerMatch", related_name="matches"
+    )
     winner = models.ForeignKey(
         Player, related_name="match_wins", on_delete=models.PROTECT
     )
 
     class Meta:
         ordering = ("-start_time",)
+
+
+class PlayerMatch(AbstractPlayerMatch):
+    match = models.ForeignKey(Match, on_delete=models.CASCADE)
 
 
 class Game(AbstractGame):
@@ -84,7 +112,3 @@ class Game(AbstractGame):
 
 class PlayerGame(AbstractPlayerGame):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
-
-    class Meta:
-        # Make sure player1 comes first
-        ordering = ("id",)
