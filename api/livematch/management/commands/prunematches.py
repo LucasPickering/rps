@@ -19,7 +19,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--ttl",
             type=int,
-            default=60 * 60 * 6,  # 6h
+            default=60 * 60 * 24,  # 24h
             help="How long since a match was active (in seconds) to prune it",
         )
 
