@@ -1,6 +1,6 @@
 import { Grid, makeStyles } from '@material-ui/core';
 import React, { useContext } from 'react';
-import { LiveMatchContext } from 'state/livematch';
+import { LiveMatchDataContext } from 'state/livematch';
 import useUser from 'hooks/useUser';
 import LiveMatchHeader from './LiveMatchHeader';
 import ParticipantActions from './ParticipantActions';
@@ -16,9 +16,7 @@ const useLocalStyles = makeStyles(({ spacing }) => ({
  */
 const LiveMatch: React.FC = () => {
   const localClasses = useLocalStyles();
-  const {
-    data: { isParticipant },
-  } = useContext(LiveMatchContext);
+  const { isParticipant } = useContext(LiveMatchDataContext);
   const { user } = useUser();
 
   return (

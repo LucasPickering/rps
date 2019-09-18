@@ -2,7 +2,11 @@ import { Typography, Button, Grid, CircularProgress } from '@material-ui/core';
 import useSplashMessage, { matchOutcomeSplasher } from 'hooks/useSplashMessage';
 import { last } from 'lodash';
 import React, { useContext, useEffect, useState } from 'react';
-import { ClientMessageType, LiveMatchContext } from 'state/livematch';
+import {
+  ClientMessageType,
+  LiveMatchDataContext,
+  LiveMatchSendMessageContext,
+} from 'state/livematch';
 import { formatGameOutcome, formatMatchOutcome } from 'util/format';
 import MoveButtons from './MoveButtons';
 import useStyles from 'hooks/useStyles';
@@ -21,10 +25,8 @@ const ParticipantActions: React.FC<{
   user: User;
 }> = ({ user }) => {
   const classes = useStyles();
-  const {
-    data: { players, games, winner, rematch },
-    sendMessage,
-  } = useContext(LiveMatchContext);
+  const { players, games, winner, rematch } = useContext(LiveMatchDataContext);
+  const sendMessage = useContext(LiveMatchSendMessageContext);
 
   const self = players.find(player => player.username === user.username);
   const opponent = players.find(player => player.username !== user.username);
@@ -116,14 +118,7 @@ const ParticipantActions: React.FC<{
   // Match is running
   if (!self.move) {
     // Player is ready, show moves
-    return (
-      <MoveButtons
-        disabled={!opponent}
-        onClick={move => {
-          sendMessage({ type: ClientMessageType.Move, move });
-        }}
-      />
-    );
+    return <MoveButtons disabled={!opponent} />;
   }
 
   // Not ready yet, show a ready button

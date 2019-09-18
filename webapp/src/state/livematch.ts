@@ -1,5 +1,6 @@
 import React from 'react';
 import { Move, MatchConfig, Game } from './match';
+import { noop } from 'lodash';
 
 /**
  * Static data for a live match. This data is provided by an endpoint on first
@@ -109,12 +110,14 @@ export type ClientMessage =
       move: Move;
     };
 
-export interface LiveMatchContextType {
-  sendMessage: (msg: ClientMessage) => void;
-  metadata: LiveMatchMetadata;
-  data: LiveMatchData;
-}
-
-export const LiveMatchContext = React.createContext<LiveMatchContextType>(
-  {} as LiveMatchContextType // ...sigh - we shouldn't have to do this, but alas
+export const LiveMatchMetadataContext = React.createContext<LiveMatchMetadata>(
+  {} as LiveMatchMetadata // ...sigh - we shouldn't have to do this, but alas
 );
+
+export const LiveMatchDataContext = React.createContext<LiveMatchData>(
+  {} as LiveMatchData
+);
+
+export const LiveMatchSendMessageContext = React.createContext<
+  (msg: ClientMessage) => void
+>(noop);

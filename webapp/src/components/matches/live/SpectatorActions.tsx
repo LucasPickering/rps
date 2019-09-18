@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { LiveMatchContext } from 'state/livematch';
+import { LiveMatchDataContext } from 'state/livematch';
 import useStyles from 'hooks/useStyles';
 import ButtonLink from 'components/common/ButtonLink';
 import { Typography } from '@material-ui/core';
@@ -9,9 +9,7 @@ import { Typography } from '@material-ui/core';
  */
 const SpectatorActions: React.FC = () => {
   const classes = useStyles();
-  const {
-    data: { winner, rematch },
-  } = useContext(LiveMatchContext);
+  const { winner, rematch } = useContext(LiveMatchDataContext);
 
   // Match is over
 

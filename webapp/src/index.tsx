@@ -20,6 +20,11 @@ axios.defaults.xsrfHeaderName = 'X-CSRFTOKEN';
 
 library.add(faHandRock, faHandPaper, faHandScissors, faHandLizard, faHandSpock);
 
+if (process.env.NODE_ENV !== 'production') {
+  const whyDidYouRender = require('@welldone-software/why-did-you-render');
+  whyDidYouRender(React);
+}
+
 ReactDOM.render(<App />, document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change

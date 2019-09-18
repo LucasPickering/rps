@@ -15,7 +15,7 @@ import moment from 'moment';
 import ApiErrorDisplay from 'components/common/ApiErrorDisplay';
 import PageLayout from 'components/common/PageLayout';
 import useStyles from 'hooks/useStyles';
-import GameLog from './live/GameLog';
+import GameLog from './GameLog';
 import clsx from 'clsx';
 
 const useLocalStyles = makeStyles(({ typography }) => ({

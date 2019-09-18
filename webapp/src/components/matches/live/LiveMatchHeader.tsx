@@ -1,7 +1,10 @@
 import { Typography, Grid } from '@material-ui/core';
 import React, { useContext } from 'react';
-import { LiveMatchContext } from 'state/livematch';
-import GameLog from './GameLog';
+import {
+  LiveMatchDataContext,
+  LiveMatchMetadataContext,
+} from 'state/livematch';
+import GameLog from '../GameLog';
 import PlayerScore from './PlayerScore';
 import MoveIconCircle from './MoveIconCircle';
 import useScreenSize from 'hooks/useScreenSize';
@@ -13,11 +16,9 @@ import FlexBox from 'components/common/FlexBox';
  */
 const LiveMatchHeader: React.FC = () => {
   const {
-    metadata: {
-      config: { bestOf },
-    },
-    data: { players, games, isParticipant },
-  } = useContext(LiveMatchContext);
+    config: { bestOf },
+  } = useContext(LiveMatchMetadataContext);
+  const { players, games, isParticipant } = useContext(LiveMatchDataContext);
   const screenSize = useScreenSize();
 
   const [player1, player2] = players;
