@@ -11,7 +11,9 @@ import {
   LiveMatchError,
   LiveMatchData,
   ClientMessageType,
-  LiveMatchContext,
+  LiveMatchMetadataContext,
+  LiveMatchDataContext,
+  LiveMatchSendMessageContext,
 } from 'state/livematch';
 import useStyles from 'hooks/useStyles';
 import useWebSocket from 'hooks/useWebSocket';
@@ -19,6 +21,7 @@ import LiveMatch from './LiveMatch';
 import ConnectionIndicator from './ConnectionIndicator';
 import PageLayout from 'components/common/PageLayout';
 import LiveMatchErrorDisplay from './LiveMatchErrorDisplay';
+import ApiErrorDisplay from 'components/common/ApiErrorDisplay';
 
 const useLocalStyles = makeStyles(() => ({
   loading: {
@@ -77,7 +80,7 @@ const LiveMatchView: React.FC<{
     if (status === 'connected' && isParticipant) {
       const intervalId = setInterval(
         () => send({ type: ClientMessageType.Heartbeat }),
-        3000
+        5000
       );
       return () => clearInterval(intervalId);
     }
@@ -96,26 +99,19 @@ const LiveMatchView: React.FC<{
     }
 
     if (metadataError) {
-      return (
-        <Typography>
-          {metadataError.status === 404
-            ? 'Match not found'
-            : 'An error occurred'}
-        </Typography>
-      );
+      return <ApiErrorDisplay resourceName="match" error={metadataError} />;
     }
 
     if (metadata && state.data) {
       return (
-        <LiveMatchContext.Provider
-          value={{
-            sendMessage: send,
-            metadata,
-            data: state.data,
-          }}
-        >
-          <LiveMatch />
-        </LiveMatchContext.Provider>
+        // This is broken into 3 contexts to compartmentalize re-renders
+        <LiveMatchMetadataContext.Provider value={metadata}>
+          <LiveMatchDataContext.Provider value={state.data}>
+            <LiveMatchSendMessageContext.Provider value={send}>
+              <LiveMatch />
+            </LiveMatchSendMessageContext.Provider>
+          </LiveMatchDataContext.Provider>
+        </LiveMatchMetadataContext.Provider>
       );
     }
 

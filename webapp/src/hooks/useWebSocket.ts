@@ -40,7 +40,6 @@ const useWebSocket = (
   const send = useCallback<Send>((data: unknown) => {
     const { current: ws } = wsRef;
     if (ws) {
-      console.log('sending', data);
       ws.send(JSON.stringify(data));
     } else {
       throw new Error('send called while websocket is closed');

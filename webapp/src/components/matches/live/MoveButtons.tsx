@@ -2,7 +2,11 @@ import { makeStyles, Grid, IconButton } from '@material-ui/core';
 import React, { useContext } from 'react';
 import { Move } from 'state/match';
 import MoveIconCircle from './MoveIconCircle';
-import { LiveMatchContext } from 'state/livematch';
+import {
+  LiveMatchMetadataContext,
+  LiveMatchSendMessageContext,
+  ClientMessageType,
+} from 'state/livematch';
 
 const useLocalStyles = makeStyles(({ spacing }) => ({
   button: {
@@ -15,22 +19,22 @@ const extendedMoves = [Move.Lizard, Move.Spock];
 
 interface Props {
   disabled: boolean;
-  onClick: (move: Move) => void;
 }
 
-const MoveButtons = ({ disabled, onClick }: Props): React.ReactElement => {
+const MoveButtons = ({ disabled }: Props): React.ReactElement => {
   const localClasses = useLocalStyles();
   const {
-    metadata: {
-      config: { extendedMode },
-    },
-  } = useContext(LiveMatchContext);
+    config: { extendedMode },
+  } = useContext(LiveMatchMetadataContext);
+  const sendMessage = useContext(LiveMatchSendMessageContext);
 
   const MoveButton: React.FC<{ move: Move }> = ({ move }) => (
     <IconButton
       className={localClasses.button}
       disabled={disabled}
-      onClick={() => onClick(move)}
+      onClick={() => {
+        sendMessage({ type: ClientMessageType.Move, move });
+      }}
     >
       <MoveIconCircle move={move} />
     </IconButton>
@@ -59,4 +63,4 @@ MoveButtons.defaultProps = {
   disabled: false,
 };
 
-export default MoveButtons;
+export default React.memo(MoveButtons);

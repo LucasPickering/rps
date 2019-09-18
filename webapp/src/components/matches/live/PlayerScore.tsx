@@ -6,7 +6,7 @@ import {
 } from '@material-ui/core';
 import clsx from 'clsx';
 import React, { useContext } from 'react';
-import { LiveMatchContext, LivePlayerMatch } from 'state/livematch';
+import { LiveMatchDataContext, LivePlayerMatch } from 'state/livematch';
 import { freq } from 'util/funcs';
 import { Check as IconCheck, Clear as IconClear } from '@material-ui/icons';
 import FlexBox from 'components/common/FlexBox';
@@ -58,9 +58,7 @@ const PlayerScore = ({
   rightSide,
 }: Props): React.ReactElement => {
   const localClasses = useLocalStyles();
-  const {
-    data: { games },
-  } = useContext(LiveMatchContext);
+  const { games } = useContext(LiveMatchDataContext);
   const { user } = useUser();
   const isSelf = user && player && user.username === player.username;
 
