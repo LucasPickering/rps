@@ -2,8 +2,6 @@ import React from 'react';
 import { GameOutcome, MatchOutcome } from 'state/match';
 import { BaseRequestParams } from 'state/api';
 import { Query } from 'material-table';
-import { LivePlayerMatch } from 'state/livematch';
-import { User } from 'state/user';
 
 /**
  * Wraps the given HoC in logic that will add a better name to all
@@ -42,21 +40,6 @@ export const countGameOutcomes = (
   games: { outcome: GameOutcome }[],
   outcome: GameOutcome
 ): number => freq(games.map(game => game.outcome), outcome);
-
-export const getSelfAndOpponent = (
-  user: User,
-  player1: LivePlayerMatch,
-  player2?: LivePlayerMatch
-): [LivePlayerMatch, LivePlayerMatch | undefined] => {
-  if (user.username === player1.username) {
-    return [player1, player2];
-  }
-  if (player2 && user.username === player2.username) {
-    return [player2, player2];
-  }
-
-  throw new Error(`User ${user.username} not in [${player1}, ${player2}]`);
-};
 
 export const getMatchOutcome = (
   selfName: string,

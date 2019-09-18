@@ -16,17 +16,17 @@ const LiveMatchHeader: React.FC = () => {
     metadata: {
       config: { bestOf },
     },
-    data: { player1, player2, games, isParticipant },
+    data: { players, games, isParticipant },
   } = useContext(LiveMatchContext);
   const screenSize = useScreenSize();
 
-  const [leftPlayer, rightPlayer] = [player1, player2];
+  const [player1, player2] = players;
 
   const leftScoreEl = <PlayerScore player={player1} />;
   const leftMoveEl = (
     <MoveIconCircle
-      loading={!isParticipant && leftPlayer && !leftPlayer.move}
-      move={leftPlayer && leftPlayer.move}
+      loading={!isParticipant && player1 && !player1.move}
+      move={player1 && player1.move}
     />
   );
   const bestOfEl = <Typography variant="h5">Best of {bestOf}</Typography>;
@@ -39,8 +39,8 @@ const LiveMatchHeader: React.FC = () => {
   );
   const rightMoveEl = (
     <MoveIconCircle
-      loading={rightPlayer && !rightPlayer.move}
-      move={rightPlayer && rightPlayer.move}
+      loading={player2 && !player2.move}
+      move={player2 && player2.move}
     />
   );
   const rightScoreEl = <PlayerScore rightSide player={player2} />;
