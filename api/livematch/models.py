@@ -215,7 +215,7 @@ class LiveMatch(models.Model):
         self.games.add(game, bulk=False)
 
         # Create a player-game for each player in the game
-        LiveGame.objects.bulk_create(
+        LivePlayerGame.objects.bulk_create(
             [
                 LivePlayerGame.from_player_match(pm, game)
                 for pm in player_matches
@@ -223,7 +223,7 @@ class LiveMatch(models.Model):
         )
 
         # reset is_ready for all players
-        self.update(is_ready=False)
+        self.liveplayermatch_set.update(is_ready=False)
 
         # Check if the match is over now
         # Build a dict of Player.id:wins
@@ -250,10 +250,7 @@ class LiveMatch(models.Model):
         self.save()
 
         PlayerMatch.objects.bulk_create(
-            [
-                pm.create_permanent(match)
-                for pm in self.liveplayermatch_set.all()
-            ]
+            [pm.to_permanent(match) for pm in self.liveplayermatch_set.all()]
         )
         for game in self.games.all():
             game.save_to_permanent(match)
@@ -330,13 +327,16 @@ class LivePlayerMatch(AbstractPlayerMatch):
             LivePlayerMatch -- the created LivePlayerMatch
         """
         new_lpm = LivePlayerMatch.objects.create(
-            match=rematch, player=self.player, is_ready=True
+            match=rematch,
+            player=self.player,
+            player_num=self.player_num,
+            is_ready=True,
         )
         new_lpm.last_activity = datetime.fromtimestamp(0)
         new_lpm.save()
         return new_lpm
 
-    def create_permanent(self, match):
+    def to_permanent(self, match):
         return PlayerMatch(
             player_id=self.player_id, match=match, player_num=self.player_num
         )
@@ -366,7 +366,7 @@ class LiveGame(AbstractGame):
             game_num=self.game_num, winner=self.winner, match=match
         )
         PlayerGame.objects.bulk_create(
-            pg.create_permanent(game) for pg in self.liveplayergame_set.all()
+            pg.to_permanent(game) for pg in self.liveplayergame_set.all()
         )
         game.save()
 
@@ -377,8 +377,16 @@ class LivePlayerGame(AbstractPlayerGame):
     @classmethod
     def from_player_match(cls, player_match, game):
         return cls(
-            player=player_match.player, move=player_match.move, game=game
+            player=player_match.player,
+            move=player_match.move,
+            player_num=player_match.player_num,
+            game=game,
         )
 
-    def create_permanent(self, game):
-        return PlayerGame(player_id=self.player_id, move=self.move, game=game)
+    def to_permanent(self, game):
+        return PlayerGame(
+            player_id=self.player_id,
+            player_num=self.player_num,
+            move=self.move,
+            game=game,
+        )

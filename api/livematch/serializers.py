@@ -89,11 +89,6 @@ class LivePlayerMatchSerializer(serializers.ModelSerializer):
 
 
 class LiveMatchStateSerializer(serializers.ModelSerializer):
-    # players = serializers.ListField(
-    #     source="liveplayermatch_set",
-    #     child=LivePlayerMatchSerializer(),
-    #     read_only=True,
-    # )
     players = serializers.SerializerMethodField()
     games = LiveGameSerializer(many=True)
     winner = serializers.SerializerMethodField()

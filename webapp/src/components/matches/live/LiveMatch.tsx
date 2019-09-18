@@ -17,7 +17,7 @@ const useLocalStyles = makeStyles(({ spacing }) => ({
 const LiveMatch: React.FC = () => {
   const localClasses = useLocalStyles();
   const {
-    data: { player1, isParticipant },
+    data: { isParticipant },
   } = useContext(LiveMatchContext);
   const { user } = useUser();
 
@@ -30,10 +30,9 @@ const LiveMatch: React.FC = () => {
         direction="column"
         alignItems="center"
       >
-        {/* If participating, user/player1 should ALWAYS be defined */}
+        {/* If participating, user should ALWAYS be defined */}
         {isParticipant ? (
-          user &&
-          player1 && <ParticipantActions user={user} player1={player1} />
+          user && <ParticipantActions user={user} />
         ) : (
           <SpectatorActions />
         )}

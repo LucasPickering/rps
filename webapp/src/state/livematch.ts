@@ -24,8 +24,7 @@ export interface LivePlayerMatch {
  * throughout a match.
  */
 export interface LiveMatchData {
-  player1?: LivePlayerMatch;
-  player2?: LivePlayerMatch;
+  players: LivePlayerMatch[];
   games: Game[];
   winner?: string; // undef if match in progress
   rematch?: string; // ID for the rematch

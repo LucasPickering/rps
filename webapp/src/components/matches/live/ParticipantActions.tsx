@@ -2,17 +2,12 @@ import { Typography, Button, Grid, CircularProgress } from '@material-ui/core';
 import useSplashMessage, { matchOutcomeSplasher } from 'hooks/useSplashMessage';
 import { last } from 'lodash';
 import React, { useContext, useEffect, useState } from 'react';
-import {
-  ClientMessageType,
-  LiveMatchContext,
-  LivePlayerMatch,
-} from 'state/livematch';
+import { ClientMessageType, LiveMatchContext } from 'state/livematch';
 import { formatGameOutcome, formatMatchOutcome } from 'util/format';
 import MoveButtons from './MoveButtons';
 import useStyles from 'hooks/useStyles';
 import useNotifications from 'hooks/useNotifications';
 import { Redirect } from 'react-router';
-import { getSelfAndOpponent } from 'util/funcs';
 import { GameOutcome, Game } from 'state/match';
 import { User } from 'state/user';
 
@@ -24,16 +19,24 @@ import { User } from 'state/user';
  */
 const ParticipantActions: React.FC<{
   user: User;
-  player1: LivePlayerMatch;
-}> = ({ user, player1 }) => {
+}> = ({ user }) => {
   const classes = useStyles();
   const {
-    data: { player2, games, winner, rematch },
+    data: { players, games, winner, rematch },
     sendMessage,
   } = useContext(LiveMatchContext);
 
-  const [self, opponent] = getSelfAndOpponent(user, player1, player2);
-  const matchOutcome = winner === self.username ? 'win' : 'loss';
+  const self = players.find(player => player.username === user.username);
+  const opponent = players.find(player => player.username !== user.username);
+
+  // Makes the rest of the logic easier
+  if (!self) {
+    throw new Error(
+      `Player ${user.username} is not in match, but is marked as participant`
+    );
+  }
+
+  const matchOutcome = winner && winner === self.username ? 'win' : 'loss';
 
   /**
    * Gets the outcome of the given game, as win/loss/tie
@@ -78,7 +81,7 @@ const ParticipantActions: React.FC<{
     return <Redirect to={`/matches/live/${rematch}`} />;
   }
 
-  if (!user || !player1 || !player2) {
+  if (!opponent) {
     // Still waiting on a player, don't show anything yet
     return null;
   }
