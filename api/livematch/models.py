@@ -67,6 +67,20 @@ class LiveMatch(models.Model):
         # Check the FK directly to avoid a query
         return self.permanent_match_id is not None
 
+    @property
+    def player1(self):
+        """
+        Convenience property for testing
+        """
+        return self.liveplayermatch_set.filter(player_num=0).first()
+
+    @property
+    def player2(self):
+        """
+        Convenience property for testing
+        """
+        return self.liveplayermatch_set.filter(player_num=1).first()
+
     def get_player_match(self, player):
         """
         Gets the LivePlayerMatch object for the given Player.

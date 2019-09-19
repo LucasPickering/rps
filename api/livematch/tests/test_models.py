@@ -11,7 +11,9 @@ from ..models import LiveMatch
 class LiveMatchTestCase(RpsTestCase):
     def setUp(self):
         super().setUp()
-        self.config = MatchConfig.objects.create(best_of=3, extended_mode=False)
+        self.config = MatchConfig.objects.create(
+            best_of=3, extended_mode=False, public=False
+        )
         self.live_match = LiveMatch.objects.create(config=self.config)
         self.live_match.player_join(self.player1)
         self.live_match.player_join(self.player2)
