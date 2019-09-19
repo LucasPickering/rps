@@ -13,6 +13,7 @@ export type MatchOutcome = 'win' | 'loss';
 export interface MatchConfig {
   bestOf: number;
   extendedMode: boolean;
+  public: boolean;
 }
 
 export interface PlayerGame {

@@ -4,7 +4,7 @@ from . import models, serializers
 
 
 class LiveMatchesView(generics.ListCreateAPIView):
-    queryset = models.LiveMatch.objects.filters(public=True)
+    queryset = models.LiveMatch.objects.filter(config__public=True)
     serializer_class = serializers.LiveMatchSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 

@@ -25,6 +25,7 @@ const NewLiveMatchView: React.FC = () => {
   const classes = useStyles();
   const [bestOf, setBestOf] = useState(5);
   const [extendedMode, setExtendedMode] = useState(false);
+  const [isPublic, setIsPublic] = useState(true);
   const {
     request,
     state: { loading, error },
@@ -49,7 +50,7 @@ const NewLiveMatchView: React.FC = () => {
       <Form
         onSubmit={() =>
           request({
-            data: { config: { bestOf, extendedMode } },
+            data: { config: { bestOf, extendedMode, public: isPublic } },
           }).then(data => setData(data))
         }
       >
@@ -73,6 +74,15 @@ const NewLiveMatchView: React.FC = () => {
             />
           }
           label="Lizard Spock"
+        />
+        <FormControlLabel
+          control={
+            <Switch
+              checked={isPublic}
+              onChange={() => setIsPublic(oldValue => !oldValue)}
+            />
+          }
+          label="Public"
         />
         <LoadingButton
           type="submit"
