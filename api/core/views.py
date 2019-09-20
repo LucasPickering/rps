@@ -2,9 +2,19 @@ from rest_framework import generics, filters
 
 from . import models, serializers
 
+match_queryset = models.Match.objects.select_related(
+    "config", "winner"
+).prefetch_related(
+    "players",
+    "games",
+    "games__winner",
+    "games__playergame_set",
+    "games__playergame_set__player",
+)
+
 
 class MatchesView(generics.ListAPIView):
-    queryset = models.Match.objects.all()
+    queryset = match_queryset
     serializer_class = serializers.MatchSerializer
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ["start_time", "duration"]
@@ -13,7 +23,7 @@ class MatchesView(generics.ListAPIView):
 
 class MatchView(generics.RetrieveAPIView):
     lookup_field = "id"
-    queryset = models.Match.objects.all()
+    queryset = match_queryset
     serializer_class = serializers.MatchSerializer
 
 
@@ -26,5 +36,14 @@ class PlayersView(generics.ListAPIView):
 
 class PlayerView(generics.RetrieveAPIView):
     lookup_field = "username"
-    queryset = models.Player.objects.prefetch_related("matches").all()
+    queryset = models.Player.objects.prefetch_related(
+        "matches",
+        "matches__config",
+        "matches__winner",
+        "matches__players",
+        "matches__games",
+        "matches__games__winner",
+        "matches__games__playergame_set",
+        "matches__games__playergame_set__player",
+    )
     serializer_class = serializers.PlayerSerializer
