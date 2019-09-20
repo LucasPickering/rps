@@ -4,12 +4,14 @@ from . import models, serializers
 
 
 class LiveMatchesView(generics.ListCreateAPIView):
-    queryset = models.LiveMatch.objects.filter(config__public=True)
+    queryset = models.LiveMatch.objects.select_related("config").filter(
+        config__public=True
+    )
     serializer_class = serializers.LiveMatchSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
 class LiveMatchView(generics.RetrieveAPIView):
     lookup_field = "id"
-    queryset = models.LiveMatch.objects.all()
+    queryset = models.LiveMatch.objects.select_related("config")
     serializer_class = serializers.LiveMatchSerializer
