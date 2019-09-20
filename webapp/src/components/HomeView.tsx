@@ -5,6 +5,7 @@ import useSplashMessage, { welcomeSplasher } from 'hooks/useSplashMessage';
 import Leaderboard from './players/Leaderboard';
 import RecentMatches from './matches/RecentMatches';
 import PageLayout from './common/PageLayout';
+import OngoingMatches from './players/OngoingMatches';
 
 const useLocalStyles = makeStyles(({ spacing }) => ({
   titleBox: {
@@ -32,6 +33,9 @@ const Home: React.FC = () => {
         </Grid>
         <Grid item xs={12} sm={6}>
           <Leaderboard />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <OngoingMatches />
         </Grid>
       </Grid>
     </PageLayout>
