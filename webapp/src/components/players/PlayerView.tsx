@@ -17,13 +17,22 @@ import PlayerLink from './PlayerLink';
 import MatchLink from 'components/matches/MatchLink';
 import ApiErrorDisplay from 'components/common/ApiErrorDisplay';
 import PageLayout from 'components/common/PageLayout';
+import { fade } from '@material-ui/core/styles/colorManipulator';
+import clsx from 'clsx';
 
-const useLocalStyles = makeStyles(({ typography }) => ({
+const useLocalStyles = makeStyles(({ palette, typography }) => ({
   matchPanel: {
     display: 'grid',
     gridTemplateColumns: '4fr 1fr 1fr',
     gridTemplateRows: 'repeat(2, 1fr)',
     alignItems: 'center',
+  },
+  win: {
+    backgroundColor: fade(palette.secondary.main, 0.2),
+  },
+
+  loss: {
+    backgroundColor: fade(palette.error.main, 0.2),
   },
   matchStartTime: {
     gridRow: 2,
@@ -43,7 +52,12 @@ const MatchPanel: React.FC<{ username: string; match: Match }> = ({
   const localClasses = useLocalStyles();
   const playerMatch = getPlayerMatch(username, match);
   return (
-    <Paper className={localClasses.matchPanel}>
+    <Paper
+      className={clsx(
+        localClasses.matchPanel,
+        playerMatch.outcome === 'win' ? localClasses.win : localClasses.loss
+      )}
+    >
       <Typography>
         vs{' '}
         <PlayerLink username={playerMatch.opponentName}>
@@ -77,15 +91,18 @@ const PlayerView: React.FC<{
     <PageLayout>
       <Typography className={classes.normalMessage}>{username}</Typography>
       {loading && <CircularProgress />}
-      {data && (
-        <Grid container direction="column" spacing={2}>
-          {data.matches.map(match => (
-            <Grid key={match.id} item>
-              <MatchPanel username={username} match={match} />
-            </Grid>
-          ))}
-        </Grid>
-      )}
+      {data &&
+        (data.matches.length ? (
+          <Grid container direction="column" spacing={2}>
+            {data.matches.map(match => (
+              <Grid key={match.id} item>
+                <MatchPanel username={username} match={match} />
+              </Grid>
+            ))}
+          </Grid>
+        ) : (
+          <Typography className={classes.normalMessage}>No matches</Typography>
+        ))}
       <ApiErrorDisplay error={error} resourceName="player" />
     </PageLayout>
   );
