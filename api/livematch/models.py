@@ -263,6 +263,14 @@ class LiveMatch(models.Model):
         self.permanent_match = match  # Connect the permanent match to this one
         self.save()
 
+        # If this match is a rematch, link our newly-created Match to the
+        # parent Match
+        try:
+            self.parent.permanent_match.rematch = match
+            self.parent.permanent_match.save()
+        except LiveMatch.DoesNotExist:
+            pass  # No parent match
+
         PlayerMatch.objects.bulk_create(
             [pm.to_permanent(match) for pm in self.liveplayermatch_set.all()]
         )
