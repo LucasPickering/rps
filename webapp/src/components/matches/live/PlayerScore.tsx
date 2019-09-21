@@ -13,13 +13,8 @@ import FlexBox from 'components/common/FlexBox';
 import useUser from 'hooks/useUser';
 
 const useLocalStyles = makeStyles(({ palette, spacing }) => ({
-  root: {
-    // Use a fixed width here so that the game log will be exactly centered
-    width: 120,
-  },
-  rtl: {
-    // Need this so we overflow to the left
-    direction: 'rtl',
+  rightSide: {
+    textAlign: 'right',
   },
   statusIcon: {
     margin: `0 ${spacing(0.5)}px`,
@@ -64,14 +59,14 @@ const PlayerScore = ({
 
   return (
     <div
-      className={clsx(localClasses.root, className, {
+      className={clsx(className, {
         [localClasses.self]: isSelf,
-        [localClasses.rtl]: rightSide,
+        [localClasses.rightSide]: rightSide,
       })}
     >
       {player ? (
         <>
-          <FlexBox flexDirection="row">
+          <FlexBox flexDirection={rightSide ? 'row-reverse' : 'row'}>
             <Typography variant="h5" noWrap>
               {isSelf ? 'You' : player.username}
             </Typography>
