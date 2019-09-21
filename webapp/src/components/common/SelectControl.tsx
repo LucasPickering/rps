@@ -8,10 +8,6 @@ const useLocalStyles = makeStyles(() => ({
   },
 }));
 
-/**
- * Initiates a GET request for a new match ID. When the response comes back,
- * this will redirect to the match page for that new ID.
- */
 const SelectControl: React.FC<
   { id: string; label?: string } & React.ComponentProps<typeof Select>
 > = ({ className, id, label, ...rest }) => {

@@ -3,6 +3,7 @@ import React, { PropsWithChildren } from 'react';
 import FlexBox from 'components/common/FlexBox';
 import Paper from 'components/common/Paper';
 import { noop } from 'lodash';
+import clsx from 'clsx';
 
 const useLocalStyles = makeStyles(({ spacing }) => ({
   small: { width: 200 },
@@ -16,17 +17,21 @@ const useLocalStyles = makeStyles(({ spacing }) => ({
 }));
 
 interface Props {
+  className: string;
+  size: 'small' | 'medium';
   onSubmit: () => void;
 }
 
 const Form = ({
+  className,
+  size,
   onSubmit,
   children,
 }: PropsWithChildren<Props>): React.ReactElement => {
   const localClasses = useLocalStyles();
 
   return (
-    <Paper>
+    <Paper className={clsx(localClasses[size], className)}>
       <form
         onSubmit={
           onSubmit &&
@@ -36,7 +41,11 @@ const Form = ({
           })
         }
       >
-        <FlexBox className={localClasses.innerBox} flexDirection="column">
+        <FlexBox
+          className={localClasses.innerBox}
+          flexDirection="column"
+          alignItems="left"
+        >
           {children}
         </FlexBox>
       </form>
@@ -45,6 +54,7 @@ const Form = ({
 };
 
 Form.defaultProps = {
+  className: '',
   size: 'medium',
   onSubmit: noop,
 };

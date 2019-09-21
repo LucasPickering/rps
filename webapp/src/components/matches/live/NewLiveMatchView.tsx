@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
-import {
-  Typography,
-  MenuItem,
-  FormControlLabel,
-  Switch,
-} from '@material-ui/core';
+import { Typography, MenuItem, makeStyles } from '@material-ui/core';
 import { range } from 'lodash';
 import useRequest from 'hooks/useRequest';
 import { LiveMatchMetadata } from 'state/livematch';
@@ -14,8 +9,15 @@ import useStyles from 'hooks/useStyles';
 import LoadingButton from 'components/common/LoadingButton';
 import SelectControl from 'components/common/SelectControl';
 import PageLayout from 'components/common/PageLayout';
+import SwitchControl from 'components/common/SwitchControl';
 
 const bestOfOptions = range(1, 23, 2);
+
+const useLocalStyles = makeStyles(() => ({
+  form: {
+    alignSelf: 'center',
+  },
+}));
 
 /**
  * Initiates a GET request for a new match ID. When the response comes back,
@@ -23,6 +25,7 @@ const bestOfOptions = range(1, 23, 2);
  */
 const NewLiveMatchView: React.FC = () => {
   const classes = useStyles();
+  const localClasses = useLocalStyles();
   const [bestOf, setBestOf] = useState(5);
   const [extendedMode, setExtendedMode] = useState(false);
   const [isPublic, setIsPublic] = useState(true);
@@ -48,6 +51,8 @@ const NewLiveMatchView: React.FC = () => {
   return (
     <PageLayout maxWidth="xs">
       <Form
+        className={localClasses.form}
+        size="small"
         onSubmit={() =>
           request({
             data: { config: { bestOf, extendedMode, public: isPublic } },
@@ -66,23 +71,15 @@ const NewLiveMatchView: React.FC = () => {
             </MenuItem>
           ))}
         </SelectControl>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={extendedMode}
-              onChange={() => setExtendedMode(oldValue => !oldValue)}
-            />
-          }
+        <SwitchControl
           label="Lizard Spock"
+          checked={extendedMode}
+          onChange={() => setExtendedMode(oldValue => !oldValue)}
         />
-        <FormControlLabel
-          control={
-            <Switch
-              checked={isPublic}
-              onChange={() => setIsPublic(oldValue => !oldValue)}
-            />
-          }
+        <SwitchControl
           label="Public"
+          checked={isPublic}
+          onChange={() => setIsPublic(oldValue => !oldValue)}
         />
         <LoadingButton
           type="submit"
