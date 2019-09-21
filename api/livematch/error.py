@@ -6,6 +6,7 @@ class ClientErrorType(Enum):
     MALFORMED_MESSAGE = "malformed_message"
     NOT_IN_MATCH = "not_in_match"
     INVALID_MOVE = "invalid_move"
+    MATCH_NOT_COMPLETE = "match_not_complete"
 
 
 class ClientError(Exception):

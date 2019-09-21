@@ -149,7 +149,7 @@ class MatchConsumer(JsonWebsocketConsumer):
             elif msg_type == ClientMessageType.MOVE.value:
                 live_match.apply_move(self.player, msg["move"])
             elif msg_type == ClientMessageType.REMATCH.value:
-                live_match.make_rematch()
+                live_match.accept_rematch(self.player)
 
         self.trigger_client_update()
 

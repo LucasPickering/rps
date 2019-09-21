@@ -60,7 +60,7 @@ const ParticipantActions: React.FC<{
     matchOutcomeSplasher,
     matchOutcome
   );
-  const [acceptedRematch, setAcceptedRematch] = useState(false);
+  const [goToRematch, setGoToRematch] = useState(false);
 
   // Handle notifications here since we know the player is a participant
   const notify = useNotifications();
@@ -82,7 +82,7 @@ const ParticipantActions: React.FC<{
     }
   }, [notify, games.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (acceptedRematch && rematch) {
+  if (goToRematch && rematch) {
     return <Redirect to={`/matches/live/${rematch}`} />;
   }
 
@@ -91,9 +91,8 @@ const ParticipantActions: React.FC<{
     return null;
   }
 
-  // Match is over
+  // Match is over (these two will always be defined together)
   if (permanentMatch && winner) {
-    // These two will always be defined together
     return (
       <>
         <MatchLink matchId={permanentMatch} title="Permanent match page">
@@ -105,18 +104,51 @@ const ParticipantActions: React.FC<{
         <Typography className={classes.minorMessage}>
           {matchOutcomeSplash}
         </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => {
-            if (!rematch) {
-              sendMessage({ type: ClientMessageType.Rematch });
-            }
-            setAcceptedRematch(true);
-          }}
-        >
-          Rematch
-        </Button>
+        {rematch ? (
+          // Rematch has been created, show a button to go to it
+          <>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                if (!rematch) {
+                  sendMessage({ type: ClientMessageType.Rematch });
+                }
+                setGoToRematch(true);
+              }}
+            >
+              Go to Rematch
+            </Button>
+            <Typography className={classes.minorMessage}>
+              {opponent.username} has accepted a rematch
+            </Typography>
+          </>
+        ) : (
+          // No rematch created yet
+          <>
+            {self.acceptedRematch ? (
+              <>
+                <CircularProgress />
+                <Typography className={classes.minorMessage}>
+                  Waiting for {opponent.username} to accept...
+                </Typography>
+              </>
+            ) : (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => sendMessage({ type: ClientMessageType.Rematch })}
+              >
+                Rematch
+              </Button>
+            )}
+            {opponent.acceptedRematch && (
+              <Typography className={classes.minorMessage}>
+                {opponent.username} wants to rematch
+              </Typography>
+            )}
+          </>
+        )}
       </>
     );
   }

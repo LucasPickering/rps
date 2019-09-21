@@ -213,3 +213,14 @@ class LiveMatchTestCase(RpsTestCase):
         match = lm.permanent_match
         self.assertEqual(match.config, lm.config)
         self.assertEqual(match.winner, self.player2)
+
+        # rematch
+        lm.accept_rematch(self.player1)
+        self.assertTrue(lm.player1.accepted_rematch)
+        self.assertFalse(lm.player2.accepted_rematch)
+        self.assertEqual(lm.rematch, None)
+
+        lm.accept_rematch(self.player2)
+        self.assertTrue(lm.player1.accepted_rematch)
+        self.assertTrue(lm.player2.accepted_rematch)
+        self.assertNotEqual(lm.rematch, None)
