@@ -18,6 +18,7 @@ export interface LivePlayerMatch {
   move?: Move;
   isActive: boolean;
   isReady: boolean;
+  acceptedRematch: boolean;
 }
 
 /**

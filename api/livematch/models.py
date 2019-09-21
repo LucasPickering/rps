@@ -277,8 +277,19 @@ class LiveMatch(models.Model):
         for game in self.games.all():
             game.save_to_permanent(match)
 
-    def make_rematch(self):
-        if self.rematch is None:
+    def accept_rematch(self, player):
+        if not self.is_match_complete:
+            raise ClientError(ClientErrorType.MATCH_NOT_COMPLETE)
+
+        pm = self.get_player_match(player)
+        pm.accepted_rematch = True
+        pm.save()
+
+        # If a rematch hasn't been created but all players have now accepted,
+        # create a rematch now
+        if self.rematch_id is None and all(
+            self.liveplayermatch_set.values_list("accepted_rematch", flat=True)
+        ):
             # Create a new LiveMatch with the same config and players
             rematch = LiveMatch.objects.create(config=self.config)
             rematch.save()
@@ -288,7 +299,6 @@ class LiveMatch(models.Model):
 
             self.rematch = rematch
             self.save()
-        return self.rematch
 
 
 class LivePlayerMatch(AbstractPlayerMatch):
@@ -354,7 +364,7 @@ class LivePlayerMatch(AbstractPlayerMatch):
             player_num=self.player_num,
             is_ready=True,
         )
-        new_lpm.last_activity = datetime.fromtimestamp(0)
+        new_lpm.last_activity = datetime.fromtimestamp(0, tz=timezone.utc)
         new_lpm.save()
         return new_lpm
 

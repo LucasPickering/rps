@@ -77,7 +77,13 @@ class LivePlayerMatchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.LivePlayerMatch
-        fields = ("username", "is_active", "is_ready", "move")
+        fields = (
+            "username",
+            "move",
+            "is_active",
+            "is_ready",
+            "accepted_rematch",
+        )
 
     def get_move(self, obj):
         # Only show the move if it's for this player or the game is over
