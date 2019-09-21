@@ -27,9 +27,10 @@ export interface LivePlayerMatch {
 export interface LiveMatchData {
   players: LivePlayerMatch[];
   games: Game[];
+  permanentMatch?: number; // undef if match in progress
   winner?: string; // undef if match in progress
   rematch?: string; // ID for the rematch
-  isParticipant: boolean; // true if playing in the game, false if spectating
+  isParticipant: boolean; // true if playing in the match, false if spectating
 }
 
 export enum LiveMatchErrorType {

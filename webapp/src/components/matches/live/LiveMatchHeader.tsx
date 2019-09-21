@@ -49,25 +49,35 @@ const LiveMatchHeader: React.FC = () => {
   // Responsive design!
   return screenSize === 'large' ? (
     <Grid container justify="space-between">
-      {leftScoreEl}
+      <Grid item xs={3}>
+        {leftScoreEl}
+      </Grid>
       {leftMoveEl}
       <FlexBox flexDirection="column" alignItems="center">
         {bestOfEl}
         {gameLogEl}
       </FlexBox>
       {rightMoveEl}
-      {rightScoreEl}
+      <Grid item xs={3}>
+        {rightScoreEl}
+      </Grid>
     </Grid>
   ) : (
     <>
-      <Grid item container justify="space-between">
-        {leftScoreEl}
-        {rightScoreEl}
+      <Grid container justify="space-between">
+        <Grid item xs={6}>
+          {leftScoreEl}
+        </Grid>
+        <Grid item xs={6}>
+          {rightScoreEl}
+        </Grid>
       </Grid>
       <Grid item container justify="space-between">
         {leftMoveEl}
-        {bestOfEl}
-        {gameLogEl}
+        <Grid item>
+          {bestOfEl}
+          {gameLogEl}
+        </Grid>
         {rightMoveEl}
       </Grid>
     </>

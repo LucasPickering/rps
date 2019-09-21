@@ -92,12 +92,20 @@ class LiveMatchStateSerializer(serializers.ModelSerializer):
     players = serializers.SerializerMethodField()
     games = LiveGameSerializer(many=True)
     winner = serializers.SerializerMethodField()
+    permanent_match = serializers.PrimaryKeyRelatedField(read_only=True)
     rematch = serializers.PrimaryKeyRelatedField(read_only=True)
     is_participant = serializers.SerializerMethodField()
 
     class Meta:
         model = models.LiveMatch
-        fields = ("players", "games", "winner", "rematch", "is_participant")
+        fields = (
+            "players",
+            "games",
+            "winner",
+            "permanent_match",
+            "rematch",
+            "is_participant",
+        )
 
     def get_players(self, obj):
         # Has to be a method to forward the context

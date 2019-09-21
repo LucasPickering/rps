@@ -1,15 +1,23 @@
 import React, { PropsWithChildren } from 'react';
 import { Container, makeStyles } from '@material-ui/core';
+import useScreenSize from 'hooks/useScreenSize';
+import clsx from 'clsx';
 
 const useLocalStyles = makeStyles(({ spacing }) => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
-    padding: spacing(4),
+
     // Top-level loading icons generally should be centered
     '& > .MuiCircularProgress-root': {
       alignSelf: 'center',
     },
+  },
+  small: {
+    padding: spacing(2),
+  },
+  large: {
+    padding: spacing(4),
   },
 }));
 
@@ -26,8 +34,12 @@ const PageLayout = ({
   children,
 }: PropsWithChildren<Props>): React.ReactElement => {
   const localClasses = useLocalStyles();
+  const screenSize = useScreenSize();
   return (
-    <Container className={localClasses.root} maxWidth={maxWidth}>
+    <Container
+      className={clsx(localClasses.root, localClasses[screenSize])}
+      maxWidth={maxWidth}
+    >
       {children}
     </Container>
   );

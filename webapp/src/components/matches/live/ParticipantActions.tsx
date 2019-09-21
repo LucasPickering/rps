@@ -14,6 +14,7 @@ import useNotifications from 'hooks/useNotifications';
 import { Redirect } from 'react-router';
 import { GameOutcome, Game } from 'state/match';
 import { User } from 'state/user';
+import MatchLink from '../MatchLink';
 
 /**
  * Helper component to render the actions available to the player. This should
@@ -25,7 +26,9 @@ const ParticipantActions: React.FC<{
   user: User;
 }> = ({ user }) => {
   const classes = useStyles();
-  const { players, games, winner, rematch } = useContext(LiveMatchDataContext);
+  const { players, games, permanentMatch, winner, rematch } = useContext(
+    LiveMatchDataContext
+  );
   const sendMessage = useContext(LiveMatchSendMessageContext);
 
   const self = players.find(player => player.username === user.username);
@@ -89,10 +92,13 @@ const ParticipantActions: React.FC<{
   }
 
   // Match is over
-  if (winner) {
+  if (permanentMatch && winner) {
+    // These two will always be defined together
     return (
       <>
-        <Typography className={classes.normalMessage}>Match Over</Typography>
+        <MatchLink matchId={permanentMatch} title="Permanent match page">
+          <Typography className={classes.normalMessage}>Match Over</Typography>
+        </MatchLink>
         <Typography className={classes.majorMessage}>
           You {formatMatchOutcome(matchOutcome, 'past')}!
         </Typography>
