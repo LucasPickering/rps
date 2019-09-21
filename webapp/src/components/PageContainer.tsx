@@ -3,6 +3,8 @@ import React, { useEffect } from 'react';
 import RootRoutes from './routes/RootRoutes';
 import HeaderBar from './HeaderBar';
 import useUser from 'hooks/useUser';
+import PageFooter from './common/PageFooter';
+import FlexBox from './common/FlexBox';
 
 const useLocalStyles = makeStyles(({ spacing }) => ({
   root: {
@@ -29,10 +31,11 @@ const PageContainer: React.FC = () => {
 
   // Only render the page if user data is loaded
   return (
-    <div className={localClasses.root}>
+    <FlexBox className={localClasses.root} flexDirection="column">
       <HeaderBar />
       <RootRoutes />
-    </div>
+      <PageFooter />
+    </FlexBox>
   );
 };
 

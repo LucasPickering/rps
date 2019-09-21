@@ -25,11 +25,24 @@ export const useLinkStyles = makeStyles(({ palette }) => ({
 
 const Link: React.FC<React.ComponentProps<typeof RouterLink>> = ({
   className,
+  to,
   ...rest
 }) => {
   const localClasses = useLinkStyles();
-  return (
-    <RouterLink className={clsx(localClasses.link, className)} {...rest} />
+  return to.toString().match(/^https?:/) ? (
+    <a
+      className={clsx(localClasses.link, className)}
+      href={to.toString()}
+      target="_blank"
+      rel="noopener noreferrer"
+      {...rest}
+    />
+  ) : (
+    <RouterLink
+      className={clsx(localClasses.link, className)}
+      to={to}
+      {...rest}
+    />
   );
 };
 
