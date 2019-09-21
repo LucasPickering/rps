@@ -55,7 +55,7 @@ const StatusIcon: React.FC<{ status: ConnectionStatus }> = ({
   switch (status) {
     case 'connecting':
       // TODO fix sizing here
-      return <CircularProgress size={16} color="secondary" {...rest} />;
+      return <CircularProgress size={16} {...rest} />;
     case 'connected':
       return <IconCheckCircle {...rest} />;
     case 'closedNormal':

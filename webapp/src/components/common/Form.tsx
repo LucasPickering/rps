@@ -17,7 +17,7 @@ const useLocalStyles = makeStyles(({ spacing }) => ({
 }));
 
 interface Props {
-  className: string;
+  className?: string;
   size: 'small' | 'medium';
   onSubmit: () => void;
 }
@@ -54,7 +54,6 @@ const Form = ({
 };
 
 Form.defaultProps = {
-  className: '',
   size: 'medium',
   onSubmit: noop,
 };

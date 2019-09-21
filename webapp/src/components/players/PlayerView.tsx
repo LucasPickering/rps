@@ -30,7 +30,6 @@ const useLocalStyles = makeStyles(({ palette, typography }) => ({
   win: {
     backgroundColor: fade(palette.secondary.main, 0.2),
   },
-
   loss: {
     backgroundColor: fade(palette.error.main, 0.2),
   },

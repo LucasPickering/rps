@@ -59,10 +59,13 @@ const PlayerScore = ({
 
   return (
     <div
-      className={clsx(className, {
-        [localClasses.self]: isSelf,
-        [localClasses.rightSide]: rightSide,
-      })}
+      className={clsx(
+        {
+          [localClasses.self]: isSelf,
+          [localClasses.rightSide]: rightSide,
+        },
+        className
+      )}
     >
       {player ? (
         <>
