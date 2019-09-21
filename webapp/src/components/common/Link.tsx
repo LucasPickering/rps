@@ -8,6 +8,10 @@ import clsx from 'clsx';
  */
 export const useLinkStyles = makeStyles(({ palette }) => ({
   link: {
+    // For links with icons
+    display: 'flex',
+    alignItems: 'center',
+
     color: palette.primary.main,
     textDecoration: 'none',
     '&:hover': {

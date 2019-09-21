@@ -15,8 +15,13 @@ import moment from 'moment';
 import ApiErrorDisplay from 'components/common/ApiErrorDisplay';
 import PageLayout from 'components/common/PageLayout';
 import useStyles from 'hooks/useStyles';
+import MatchLink from './MatchLink';
 import GameLog from './GameLog';
 import clsx from 'clsx';
+import {
+  ChevronLeft as IconChevronLeft,
+  ChevronRight as IconChevronRight,
+} from '@material-ui/icons';
 
 const useLocalStyles = makeStyles(({ typography }) => ({
   configText: {
@@ -24,7 +29,7 @@ const useLocalStyles = makeStyles(({ typography }) => ({
       ...typography.body2,
     },
   },
-  player2Name: {
+  rightText: {
     textAlign: 'right',
   },
 }));
@@ -55,7 +60,7 @@ const MatchDataView: React.FC<{ match: Match }> = ({ match }) => {
         <Grid item container justify="space-between">
           <PlayerName username={player1} />
           <Typography>vs</Typography>
-          <PlayerName className={localClasses.player2Name} username={player2} />
+          <PlayerName className={localClasses.rightText} username={player2} />
         </Grid>
 
         <Grid className={localClasses.configText} item xs={12}>
@@ -67,6 +72,21 @@ const MatchDataView: React.FC<{ match: Match }> = ({ match }) => {
           <Typography>
             Lizard/Spock: {match.config.extendedMode ? 'Enabled' : 'Disabled'}
           </Typography>
+        </Grid>
+        <Grid item xs={6}>
+          {match.parent && (
+            <MatchLink matchId={match.parent}>
+              <IconChevronLeft fontSize="small" />
+              Rematch of
+            </MatchLink>
+          )}
+        </Grid>
+        <Grid item xs={6} container justify="flex-end">
+          {match.rematch && (
+            <MatchLink matchId={match.rematch}>
+              Rematch <IconChevronRight fontSize="small" />
+            </MatchLink>
+          )}
         </Grid>
 
         <Grid item xs={12} container justify="center">
