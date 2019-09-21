@@ -25,6 +25,7 @@ const useLocalStyles = makeStyles(({ palette }) => ({
 }));
 
 interface Props {
+  className?: string;
   move?: Move;
   loading: boolean;
 }
@@ -32,15 +33,18 @@ interface Props {
 /**
  * An icon for a single move. If no move is specified, a loading icon is shown
  */
-const MoveIconCircle: React.FC<Props> & {
-  defaultProps: Partial<Props>;
-} = ({ move, loading }) => {
+const MoveIconCircle = ({
+  className,
+  move,
+  loading,
+}: Props): React.ReactElement => {
   const localClasses = useLocalStyles();
   return (
     <FlexBox
       className={clsx(
         localClasses.root,
-        move ? localClasses.filled : localClasses.empty
+        move ? localClasses.filled : localClasses.empty,
+        className
       )}
       justifyContent="center"
     >

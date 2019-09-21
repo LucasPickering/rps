@@ -1,13 +1,36 @@
-import { Grid, makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import React, { useContext } from 'react';
 import { LiveMatchDataContext } from 'state/livematch';
 import useUser from 'hooks/useUser';
 import LiveMatchHeader from './LiveMatchHeader';
 import ParticipantActions from './ParticipantActions';
 import SpectatorActions from './SpectatorActions';
+import ParticipantMatchStatus from './ParticipantMatchStatus';
+import SpectatorMatchStatus from './SpectatorMatchStatus';
+import clsx from 'clsx';
 
 const useLocalStyles = makeStyles(({ spacing }) => ({
-  bottomSection: { paddingTop: spacing(1) },
+  root: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(6, 1fr)',
+    gridTemplateRows: 'repeat(4, auto)',
+    justifyItems: 'center',
+    alignItems: 'center',
+    gridRowGap: spacing(2),
+  },
+  subBox: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  status: {
+    gridColumn: '1 / 7',
+    gridRow: 3,
+  },
+  actions: {
+    gridColumn: '1 / 7',
+    gridRow: 4,
+  },
 }));
 
 /**
@@ -20,22 +43,27 @@ const LiveMatch: React.FC = () => {
   const { user } = useUser();
 
   return (
-    <>
+    <div className={localClasses.root}>
       <LiveMatchHeader />
-      <Grid
-        className={localClasses.bottomSection}
-        container
-        direction="column"
-        alignItems="center"
-      >
-        {/* If participating, user should ALWAYS be defined */}
-        {isParticipant ? (
-          user && <ParticipantActions user={user} />
-        ) : (
+      {/* If participating, user should ALWAYS be defined */}
+      {isParticipant ? (
+        user && (
+          <>
+            <div className={clsx(localClasses.subBox, localClasses.status)}>
+              <ParticipantMatchStatus user={user} />
+            </div>
+            <div className={clsx(localClasses.subBox, localClasses.actions)}>
+              <ParticipantActions user={user} />
+            </div>
+          </>
+        )
+      ) : (
+        <>
+          <SpectatorMatchStatus />
           <SpectatorActions />
-        )}
-      </Grid>
-    </>
+        </>
+      )}
+    </div>
   );
 };
 

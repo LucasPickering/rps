@@ -39,6 +39,7 @@ const useLocalStyles = makeStyles(({ spacing }) => ({
 }));
 
 interface Props {
+  className?: string;
   size: 'small' | 'large';
   player1: string;
   player2: string;
@@ -46,6 +47,7 @@ interface Props {
 }
 
 const GameLog = ({
+  className,
   size,
   player1,
   player2,
@@ -54,7 +56,7 @@ const GameLog = ({
   const localClasses = useLocalStyles();
 
   return (
-    <div>
+    <div className={className}>
       {games.map(game => {
         const player1Win = game.winner === player1;
         const player2Win = game.winner === player2;
