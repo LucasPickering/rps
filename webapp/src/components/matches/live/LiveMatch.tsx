@@ -8,8 +8,9 @@ import SpectatorActions from './SpectatorActions';
 import ParticipantMatchStatus from './ParticipantMatchStatus';
 import SpectatorMatchStatus from './SpectatorMatchStatus';
 import clsx from 'clsx';
+import { sizeMq } from 'util/styles';
 
-const useLocalStyles = makeStyles(({ spacing }) => ({
+const useLocalStyles = makeStyles(({ breakpoints, spacing }) => ({
   root: {
     display: 'grid',
     gridTemplateColumns: 'repeat(6, 1fr)',

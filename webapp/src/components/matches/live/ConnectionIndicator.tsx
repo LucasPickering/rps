@@ -10,7 +10,7 @@ import useSplashMessage, {
 } from 'hooks/useSplashMessage';
 import { ConnectionStatus } from 'hooks/useWebSocket';
 import React, { useState } from 'react';
-import useScreenSize from 'hooks/useScreenSize';
+import { sizeMq } from 'util/styles';
 
 const statusLabels = {
   connecting: 'Connecting',
@@ -19,11 +19,18 @@ const statusLabels = {
   closedError: 'Error',
 };
 
-const useLocalStyles = makeStyles(({ palette, spacing }) => ({
+const useLocalStyles = makeStyles(({ breakpoints, palette, spacing }) => ({
   root: {
     position: 'absolute',
     bottom: spacing(2),
     left: spacing(2),
+    [sizeMq('small', breakpoints)]: {
+      '& > .MuiChip-label': {
+        visibility: 'hidden',
+        width: 0,
+        paddingRight: 0,
+      },
+    },
   },
   success: {
     backgroundColor: palette.primary.main,
@@ -38,13 +45,6 @@ const useLocalStyles = makeStyles(({ palette, spacing }) => ({
   },
   popoverPaper: {
     padding: spacing(1),
-  },
-  small: {
-    '& > .MuiChip-label': {
-      visibility: 'hidden',
-      width: 0,
-      paddingRight: 0,
-    },
   },
 }));
 
@@ -72,7 +72,6 @@ const ConnectionIndicator: React.FC<{ connectionStatus: ConnectionStatus }> = ({
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<
     HTMLElement | undefined
   >(undefined);
-  const screenSize = useScreenSize();
   const splashMessage = useSplashMessage(
     connectionStatusSplasher,
     connectionStatus
@@ -86,7 +85,6 @@ const ConnectionIndicator: React.FC<{ connectionStatus: ConnectionStatus }> = ({
         className={clsx(localClasses.root, {
           [localClasses.success]: connectionStatus === 'connected',
           [localClasses.error]: connectionStatus === 'closedError',
-          [localClasses.small]: screenSize === 'small',
         })}
         icon={<StatusIcon status={connectionStatus} />}
         label={statusLabels[connectionStatus]}
