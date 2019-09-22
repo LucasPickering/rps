@@ -8,33 +8,73 @@ import GameLog from '../GameLog';
 import PlayerScore from './PlayerScore';
 import MoveIconCircle from './MoveIconCircle';
 import clsx from 'clsx';
+import { sizeMq } from 'util/styles';
 
-const useLocalStyles = makeStyles(() => ({
+// Different classes based on screen size
+const useLocalClasses = makeStyles(({ breakpoints }) => ({
   p1Score: {
     justifySelf: 'start',
-    gridColumn: 1,
-    gridRow: 1,
-  },
-  p1Move: {
-    gridColumn: 2,
-    gridRow: 1,
-  },
-  bestOf: {
-    gridColumn: '3 / 5',
-    gridRow: 1,
-  },
-  gameLog: {
-    gridColumn: '3 / 5',
-    gridRow: 2,
-  },
-  p2Move: {
-    gridColumn: 5,
-    gridRow: 1,
+    [sizeMq('small', breakpoints)]: {
+      gridColumn: '1 / span 3',
+      gridRow: 1,
+    },
+    [sizeMq('large', breakpoints)]: {
+      gridColumn: '1 / span 3',
+      gridRow: 1,
+    },
   },
   p2Score: {
     justifySelf: 'end',
-    gridColumn: 6,
-    gridRow: 1,
+    [sizeMq('small', breakpoints)]: {
+      gridColumn: '4 / span 3',
+      gridRow: 1,
+    },
+    [sizeMq('large', breakpoints)]: {
+      gridColumn: '4 / span 3',
+      gridRow: 1,
+    },
+  },
+  p1Move: {
+    justifySelf: 'start',
+    [sizeMq('small', breakpoints)]: {
+      gridColumn: '1 / span 2',
+      gridRow: '2 / span 2',
+    },
+    [sizeMq('large', breakpoints)]: {
+      gridColumn: '1 / span 2',
+      gridRow: '2 / span 2',
+    },
+  },
+  p2Move: {
+    justifySelf: 'end',
+    [sizeMq('small', breakpoints)]: {
+      gridColumn: '5 / span 2',
+      gridRow: '2 / span 2',
+    },
+    [sizeMq('large', breakpoints)]: {
+      gridColumn: '5 / span 2',
+      gridRow: '2 / span 2',
+    },
+  },
+  bestOf: {
+    [sizeMq('small', breakpoints)]: {
+      gridColumn: '3 / span 2',
+      gridRow: 2,
+    },
+    [sizeMq('large', breakpoints)]: {
+      gridColumn: '3 / span 2',
+      gridRow: 2,
+    },
+  },
+  gameLog: {
+    [sizeMq('small', breakpoints)]: {
+      gridColumn: '3 / span 2',
+      gridRow: 3,
+    },
+    [sizeMq('large', breakpoints)]: {
+      gridColumn: '3 / span 2',
+      gridRow: 3,
+    },
   },
 }));
 
@@ -43,7 +83,7 @@ const useLocalStyles = makeStyles(() => ({
  * spectators.
  */
 const LiveMatchHeader: React.FC = () => {
-  const localClasses = useLocalStyles();
+  const localClasses = useLocalClasses();
   const {
     config: { bestOf },
   } = useContext(LiveMatchMetadataContext);

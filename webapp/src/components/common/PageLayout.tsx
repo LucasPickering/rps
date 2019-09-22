@@ -1,9 +1,8 @@
 import React, { PropsWithChildren } from 'react';
 import { Container, makeStyles } from '@material-ui/core';
-import useScreenSize from 'hooks/useScreenSize';
-import clsx from 'clsx';
+import { sizeMq } from 'util/styles';
 
-const useLocalStyles = makeStyles(({ spacing }) => ({
+const useLocalStyles = makeStyles(({ breakpoints, spacing }) => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
@@ -12,12 +11,12 @@ const useLocalStyles = makeStyles(({ spacing }) => ({
     '& > .MuiCircularProgress-root': {
       alignSelf: 'center',
     },
-  },
-  small: {
-    padding: spacing(2),
-  },
-  large: {
-    padding: spacing(4),
+    [sizeMq('small', breakpoints)]: {
+      padding: spacing(2),
+    },
+    [sizeMq('large', breakpoints)]: {
+      padding: spacing(4),
+    },
   },
 }));
 
@@ -34,12 +33,8 @@ const PageLayout = ({
   children,
 }: PropsWithChildren<Props>): React.ReactElement => {
   const localClasses = useLocalStyles();
-  const screenSize = useScreenSize();
   return (
-    <Container
-      className={clsx(localClasses.root, localClasses[screenSize])}
-      maxWidth={maxWidth}
-    >
+    <Container className={localClasses.root} maxWidth={maxWidth}>
       {children}
     </Container>
   );
