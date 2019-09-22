@@ -8,7 +8,7 @@ import {
 import MoveButtons from './MoveButtons';
 import useStyles from 'hooks/useStyles';
 import { User } from 'state/user';
-import ButtonLink from 'components/common/ButtonLink';
+import { Redirect } from 'react-router';
 
 const WaitingMessage: React.FC<{ message: string }> = ({ message }) => {
   const classes = useStyles();
@@ -51,23 +51,14 @@ const ParticipantActions: React.FC<{
     return null;
   }
 
+  // If self and opponent have been accept a rematch, go to it
+  if (rematch && self.acceptedRematch) {
+    return <Redirect to={`/matches/live/${rematch}`} push />;
+  }
+
   // Match is over (these two will always be defined together)
   if (permanentMatch && winner) {
-    return rematch ? (
-      // Rematch has been created, show a button to go to it
-      <>
-        <ButtonLink
-          to={`/matches/live/${rematch}`}
-          variant="contained"
-          color="primary"
-        >
-          Go to Rematch
-        </ButtonLink>
-        <Typography className={classes.minorMessage}>
-          {opponent.username} has accepted a rematch
-        </Typography>
-      </>
-    ) : (
+    return (
       // No rematch created yet
       <>
         {self.acceptedRematch ? (
@@ -109,10 +100,11 @@ const ParticipantActions: React.FC<{
     );
   }
 
-  if (opponent.move) {
-    return <WaitingMessage message={`${opponent.username} to ready up`} />;
-  }
-  return <WaitingMessage message={`${opponent.username} to go`} />;
+  return (
+    <WaitingMessage
+      message={`${opponent.username} to ${opponent.move ? 'ready up' : 'go'}`}
+    />
+  );
 };
 
 export default ParticipantActions;
