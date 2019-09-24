@@ -12,68 +12,68 @@ import { sizeMq } from 'util/styles';
 
 // Different classes based on screen size
 const useLocalClasses = makeStyles(({ breakpoints }) => ({
+  // Responsive design!
+  score: {
+    [sizeMq('small', breakpoints)]: {
+      gridRow: 1,
+    },
+    [sizeMq('large', breakpoints)]: {
+      gridRow: '1 / span 2',
+    },
+  },
   p1Score: {
     justifySelf: 'start',
     [sizeMq('small', breakpoints)]: {
       gridColumn: '1 / span 3',
-      gridRow: 1,
     },
     [sizeMq('large', breakpoints)]: {
-      gridColumn: '1 / span 3',
-      gridRow: 1,
+      gridColumn: '1 / span 2',
     },
   },
   p2Score: {
     justifySelf: 'end',
     [sizeMq('small', breakpoints)]: {
       gridColumn: '4 / span 3',
-      gridRow: 1,
     },
     [sizeMq('large', breakpoints)]: {
-      gridColumn: '4 / span 3',
-      gridRow: 1,
+      gridColumn: '5 / span 2',
+    },
+  },
+
+  move: {
+    [sizeMq('small', breakpoints)]: {
+      gridRow: '2 / span 2',
+    },
+    [sizeMq('large', breakpoints)]: {
+      gridRow: 3,
     },
   },
   p1Move: {
     justifySelf: 'start',
-    [sizeMq('small', breakpoints)]: {
-      gridColumn: '1 / span 2',
-      gridRow: '2 / span 2',
-    },
-    [sizeMq('large', breakpoints)]: {
-      gridColumn: '1 / span 2',
-      gridRow: '2 / span 2',
-    },
+    gridColumn: 1,
   },
   p2Move: {
     justifySelf: 'end',
-    [sizeMq('small', breakpoints)]: {
-      gridColumn: '5 / span 2',
-      gridRow: '2 / span 2',
-    },
-    [sizeMq('large', breakpoints)]: {
-      gridColumn: '5 / span 2',
-      gridRow: '2 / span 2',
-    },
+    gridColumn: 6,
+  },
+
+  centerColumn: {
+    gridColumn: '3 / span 2',
   },
   bestOf: {
     [sizeMq('small', breakpoints)]: {
-      gridColumn: '3 / span 2',
       gridRow: 2,
     },
     [sizeMq('large', breakpoints)]: {
-      gridColumn: '3 / span 2',
-      gridRow: 2,
+      gridRow: 1,
     },
   },
   gameLog: {
     [sizeMq('small', breakpoints)]: {
-      gridColumn: '3 / span 2',
       gridRow: 3,
     },
     [sizeMq('large', breakpoints)]: {
-      gridColumn: '3 / span 2',
-      gridRow: 3,
+      gridRow: 2,
     },
   },
 }));
@@ -91,31 +91,40 @@ const LiveMatchHeader: React.FC = () => {
 
   const [player1, player2] = players;
 
-  // Responsive design!
   return (
     <>
-      <PlayerScore className={clsx(localClasses.p1Score)} player={player1} />
+      <PlayerScore
+        // className={clsx(localClasses.score, localClasses.leftColumn)}
+        className={clsx(localClasses.score, localClasses.p1Score)}
+        player={player1}
+      />
       <MoveIconCircle
-        className={localClasses.p1Move}
+        // className={clsx(localClasses.move, localClasses.leftColumn)}
+        className={clsx(localClasses.move, localClasses.p1Move)}
         loading={!isParticipant && player1 && !player1.move}
         move={player1 && player1.move}
       />
-      <Typography className={localClasses.bestOf} variant="h5">
+      <Typography
+        className={clsx(localClasses.centerColumn, localClasses.bestOf)}
+        variant="h5"
+      >
         Best of {bestOf}
       </Typography>
       <GameLog
-        className={localClasses.gameLog}
+        className={clsx(localClasses.centerColumn, localClasses.gameLog)}
         player1={player1 && player1.username}
         player2={player2 && player2.username}
         games={games}
       />
       <MoveIconCircle
-        className={localClasses.p2Move}
+        // className={clsx(localClasses.move, localClasses.rightColumn)}
+        className={clsx(localClasses.move, localClasses.p2Move)}
         loading={player2 && !player2.move}
         move={player2 && player2.move}
       />
       <PlayerScore
-        className={localClasses.p2Score}
+        // className={clsx(localClasses.score, localClasses.rightColumn)}
+        className={clsx(localClasses.score, localClasses.p2Score)}
         rightSide
         player={player2}
       />

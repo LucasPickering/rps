@@ -1,4 +1,4 @@
-import { Typography, Grid } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import useSplashMessage, { matchOutcomeSplasher } from 'hooks/useSplashMessage';
 import { last } from 'lodash';
 import React, { useContext, useEffect } from 'react';
@@ -92,11 +92,9 @@ const ParticipantMatchStatus: React.FC<{
   const lastGame = last(games);
   if (!self.isReady && lastGame) {
     return (
-      <Grid item>
-        <Typography className={classes.normalMessage}>
-          {formatGameOutcome(getGameOutcome(lastGame))}
-        </Typography>
-      </Grid>
+      <Typography className={classes.normalMessage}>
+        {formatGameOutcome(getGameOutcome(lastGame))}
+      </Typography>
     );
   }
   return null;
