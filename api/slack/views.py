@@ -1,4 +1,3 @@
-import json
 import random
 import re
 from prettytable import PrettyTable
@@ -14,7 +13,7 @@ from .parser import SlackArgumentParser, ArgumentParserError
 NEW_MATCH_MESSAGES = [
     "Let the battle begin",
     "Fight me cowards",
-    "It's time to d-d-d-d-duel!",
+    "It's time to d-d-d-d-d-duel!",
     "oi m8, u 'avin a giggle?",
 ]
 

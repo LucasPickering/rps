@@ -1,5 +1,5 @@
 import { Typography } from '@material-ui/core';
-import useSplashMessage, { matchOutcomeSplasher } from 'hooks/useSplashMessage';
+import useSplashMessage, { matchOutcomeSplashes } from 'hooks/useSplashMessage';
 import { last } from 'lodash';
 import React, { useContext, useEffect } from 'react';
 import { LiveMatchDataContext } from 'state/livematch';
@@ -47,7 +47,7 @@ const ParticipantMatchStatus: React.FC<{
   };
 
   const matchOutcomeSplash = useSplashMessage(
-    matchOutcomeSplasher,
+    matchOutcomeSplashes,
     matchOutcome
   );
 

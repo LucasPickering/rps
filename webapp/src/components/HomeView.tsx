@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography, Grid, makeStyles } from '@material-ui/core';
 import useStyles from 'hooks/useStyles';
-import useSplashMessage, { welcomeSplasher } from 'hooks/useSplashMessage';
+import useSplashMessage, { welcomeSplashes } from 'hooks/useSplashMessage';
 import Leaderboard from './players/Leaderboard';
 import RecentMatches from './matches/RecentMatches';
 import PageLayout from './common/PageLayout';
@@ -17,7 +17,7 @@ const useLocalStyles = makeStyles(({ spacing }) => ({
 const Home: React.FC = () => {
   const classes = useStyles();
   const localClasses = useLocalStyles();
-  const welcome = useSplashMessage(welcomeSplasher);
+  const welcome = useSplashMessage(welcomeSplashes);
 
   return (
     <PageLayout maxWidth="md">
