@@ -6,6 +6,7 @@ const useLocalStyles = makeStyles(({ breakpoints, spacing }) => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
+    flex: 1,
 
     // Top-level loading icons generally should be centered
     '& > .MuiCircularProgress-root': {

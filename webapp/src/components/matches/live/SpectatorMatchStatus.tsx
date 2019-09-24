@@ -13,22 +13,14 @@ const SpectatorMatchStatus: React.FC = () => {
 
   // Match is over
 
-  return (
+  return permanentMatch && winner ? (
     <>
-      {permanentMatch && winner && (
-        <>
-          <MatchLink matchId={permanentMatch}>
-            <Typography className={classes.normalMessage}>
-              Match Over
-            </Typography>
-          </MatchLink>
-          <Typography className={classes.majorMessage}>
-            {winner} won!
-          </Typography>
-        </>
-      )}
+      <MatchLink matchId={permanentMatch}>
+        <Typography className={classes.normalMessage}>Match Over</Typography>
+      </MatchLink>
+      <Typography className={classes.majorMessage}>{winner} won!</Typography>
     </>
-  );
+  ) : null;
 };
 
 export default SpectatorMatchStatus;

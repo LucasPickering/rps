@@ -12,11 +12,11 @@ import { sizeMq } from 'util/styles';
 
 const useLocalStyles = makeStyles(({ breakpoints, spacing }) => ({
   root: {
+    height: '100%',
     display: 'grid',
-    gridTemplateColumns: 'repeat(6, 1fr)',
-    gridTemplateRows: 'repeat(4, auto)',
     justifyItems: 'center',
-    alignItems: 'center',
+    gridTemplateColumns: 'repeat(6, 1fr)',
+    gridTemplateRows: 'repeat(4, auto) 1fr',
     gridRowGap: spacing(2),
   },
   subBox: {
@@ -25,12 +25,21 @@ const useLocalStyles = makeStyles(({ breakpoints, spacing }) => ({
     alignItems: 'center',
   },
   status: {
-    gridColumn: '1 / 7',
-    gridRow: 3,
+    [sizeMq('small', breakpoints)]: {
+      gridColumn: '1 / span 6',
+      gridRow: 4,
+    },
+    [sizeMq('large', breakpoints)]: {
+      gridColumn: '2 / span 4',
+      gridRow: '3 / span 2',
+    },
   },
   actions: {
-    gridColumn: '1 / 7',
-    gridRow: 4,
+    gridColumn: '1 / span 6',
+    gridRow: 5,
+    [sizeMq('small', breakpoints)]: {
+      alignSelf: 'end',
+    },
   },
 }));
 
@@ -47,23 +56,21 @@ const LiveMatch: React.FC = () => {
     <div className={localClasses.root}>
       <LiveMatchHeader />
       {/* If participating, user should ALWAYS be defined */}
-      {isParticipant ? (
-        user && (
-          <>
-            <div className={clsx(localClasses.subBox, localClasses.status)}>
-              <ParticipantMatchStatus user={user} />
-            </div>
-            <div className={clsx(localClasses.subBox, localClasses.actions)}>
-              <ParticipantActions user={user} />
-            </div>
-          </>
-        )
-      ) : (
-        <>
+
+      <div className={clsx(localClasses.subBox, localClasses.status)}>
+        {isParticipant ? (
+          user && <ParticipantMatchStatus user={user} />
+        ) : (
           <SpectatorMatchStatus />
+        )}
+      </div>
+      <div className={clsx(localClasses.subBox, localClasses.actions)}>
+        {isParticipant ? (
+          user && <ParticipantActions user={user} />
+        ) : (
           <SpectatorActions />
-        </>
-      )}
+        )}
+      </div>
     </div>
   );
 };
