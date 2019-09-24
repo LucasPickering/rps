@@ -1,1 +1,2 @@
-0 * * * * /app/api/manage.py prunematches
+# Match pruning is disabled indefinitely
+# 0 * * * * /app/api/manage.py prunematches
