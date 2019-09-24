@@ -6,7 +6,7 @@ import {
 } from '@material-ui/icons';
 import clsx from 'clsx';
 import useSplashMessage, {
-  connectionStatusSplasher,
+  connectionStatusSplashes,
 } from 'hooks/useSplashMessage';
 import { ConnectionStatus } from 'hooks/useWebSocket';
 import React, { useState } from 'react';
@@ -73,7 +73,7 @@ const ConnectionIndicator: React.FC<{ connectionStatus: ConnectionStatus }> = ({
     HTMLElement | undefined
   >(undefined);
   const splashMessage = useSplashMessage(
-    connectionStatusSplasher,
+    connectionStatusSplashes,
     connectionStatus
   );
 
