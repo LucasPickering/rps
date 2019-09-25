@@ -1,30 +1,29 @@
 import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
-import { Typography, MenuItem, makeStyles } from '@material-ui/core';
+import { MenuItem, makeStyles } from '@material-ui/core';
 import { range } from 'lodash';
 import useRequest from 'hooks/useRequest';
 import { LiveMatchMetadata } from 'state/livematch';
 import Form from 'components/common/Form';
-import useStyles from 'hooks/useStyles';
 import LoadingButton from 'components/common/LoadingButton';
 import SelectControl from 'components/common/SelectControl';
 import PageLayout from 'components/common/PageLayout';
 import SwitchControl from 'components/common/SwitchControl';
+import ApiErrorDisplay from 'components/common/ApiErrorDisplay';
 
 const bestOfOptions = range(1, 23, 2);
 
-const useLocalStyles = makeStyles(() => ({
+const useLocalStyles = makeStyles({
   form: {
     alignSelf: 'center',
   },
-}));
+});
 
 /**
  * Initiates a GET request for a new match ID. When the response comes back,
  * this will redirect to the match page for that new ID.
  */
 const NewLiveMatchView: React.FC = () => {
-  const classes = useStyles();
   const localClasses = useLocalStyles();
   const [bestOf, setBestOf] = useState(5);
   const [extendedMode, setExtendedMode] = useState(false);
@@ -83,19 +82,14 @@ const NewLiveMatchView: React.FC = () => {
         />
         <LoadingButton
           type="submit"
-          variant="outlined"
+          variant="contained"
           color="primary"
           loading={loading}
         >
           Create Match
         </LoadingButton>
-        {error && (
-          <Typography className={classes.errorMessage}>
-            {error.status === 400
-              ? 'Incorrect username or password'
-              : "Unknown error. Looks like you're really up shit creek."}
-          </Typography>
-        )}
+
+        <ApiErrorDisplay error={error} />
       </Form>
     </PageLayout>
   );

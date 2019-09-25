@@ -11,6 +11,7 @@ const LiveMatchErrorDisplay: React.FC<{ errors: LiveMatchError[] }> = ({
         <ErrorSnackbar
           key={error.error}
           message={`${error.error}: ${error.detail}`}
+          autoHideDuration={3000}
         />
       ))}
     </>

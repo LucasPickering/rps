@@ -1,19 +1,13 @@
 import { IconButton, Menu, MenuItem } from '@material-ui/core';
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { AccountCircle as IconAccountCircle } from '@material-ui/icons';
-import useRequest from 'hooks/useRequest';
-import { UserDispatchContext, UserActionType } from 'state/user';
-import { RouteComponentProps, withRouter } from 'react-router';
+import useUser from 'hooks/useUser';
 
-const AccountMenu: React.FC<RouteComponentProps> = ({ history }) => {
-  const userDispatch = useContext(UserDispatchContext);
+const AccountMenu: React.FC = () => {
+  const { logOut } = useUser();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | undefined>(
     undefined
   );
-  const { request: logOutRequest } = useRequest<{}>({
-    url: '/api/auth/logout/',
-    method: 'POST',
-  });
 
   return (
     <>
@@ -32,21 +26,10 @@ const AccountMenu: React.FC<RouteComponentProps> = ({ history }) => {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         onClose={() => setAnchorEl(undefined)}
       >
-        <MenuItem
-          onClick={() => {
-            logOutRequest().then(() => {
-              userDispatch({
-                type: UserActionType.Logout,
-              });
-              history.push('');
-            });
-          }}
-        >
-          Log Out
-        </MenuItem>
+        <MenuItem onClick={logOut}>Log Out</MenuItem>
       </Menu>
     </>
   );
 };
 
-export default withRouter(AccountMenu);
+export default AccountMenu;

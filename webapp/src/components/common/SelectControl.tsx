@@ -2,11 +2,11 @@ import React from 'react';
 import { Select, FormControl, InputLabel, makeStyles } from '@material-ui/core';
 import clsx from 'clsx';
 
-const useLocalStyles = makeStyles(() => ({
+const useLocalStyles = makeStyles({
   root: {
     width: 120,
   },
-}));
+});
 
 const SelectControl: React.FC<
   { id: string; label?: string } & React.ComponentProps<typeof Select>

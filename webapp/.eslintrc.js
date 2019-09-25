@@ -4,9 +4,10 @@ module.exports = {
     es6: true,
   },
   parser: '@typescript-eslint/parser',
-  parserOptions: {
-    project: './tsconfig.json',
-  },
+  // this is busting eslint in vscode on my laptop
+  // parserOptions: {
+  //   project: './tsconfig.json',
+  // },
   plugins: ['@typescript-eslint', 'react', 'react-hooks', 'prettier'],
   extends: [
     'eslint:recommended',
