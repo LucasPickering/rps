@@ -10,6 +10,7 @@ export const useLinkStyles = makeStyles(({ palette }) => ({
   link: {
     // For links with icons
     display: 'inline-flex',
+    justifyContent: 'center',
     alignItems: 'center',
 
     color: palette.primary.main,

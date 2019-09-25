@@ -1,13 +1,12 @@
 import { AppBar, Toolbar, makeStyles } from '@material-ui/core';
 import React from 'react';
-import NavLink from './common/NavLink';
-import ButtonLink from './common/ButtonLink';
-import AccountMenu from './AccountMenu';
+import ButtonLink from '../common/ButtonLink';
+import AccountMenu from '../AccountMenu';
 import useUser from 'hooks/useUser';
 import LogInButton from 'components/account/LogInButton';
+import HeaderLink from './HeaderLink';
 
 const useLocalStyles = makeStyles(({ spacing }) => ({
-  nav: {},
   grow: {
     flexGrow: 1,
   },
@@ -22,12 +21,10 @@ const HeaderBar: React.FC = () => {
 
   return (
     <AppBar position="static" color="default">
-      <Toolbar>
-        <nav className={localClasses.nav}>
-          <NavLink to="/" exact>
-            Home
-          </NavLink>
-        </nav>
+      <Toolbar variant="dense">
+        <HeaderLink to="/" exact>
+          Home
+        </HeaderLink>
         <div className={localClasses.grow} />
         {user && (
           <ButtonLink

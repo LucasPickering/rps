@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core';
 import React, { useEffect } from 'react';
 import RootRoutes from './routes/RootRoutes';
-import HeaderBar from './HeaderBar';
+import HeaderBar from './header/HeaderBar';
 import useUser from 'hooks/useUser';
 import PageFooter from './common/PageFooter';
 import FlexBox from './common/FlexBox';
