@@ -39,6 +39,10 @@ module.exports = {
       { allowExpressions: true, allowTypedFunctionExpressions: true },
     ],
     '@typescript-eslint/no-object-literal-type-assertion': 'off',
+    '@typescript-eslint/no-inferrable-types': [
+      'error',
+      { ignoreParameters: true },
+    ],
     // '@typescript-eslint/camelcase': 'off',
   },
   overrides: [
