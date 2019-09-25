@@ -29,6 +29,17 @@ If you do a migration or want to add more data to the dev DB, you should update 
 ./managepy.sh dumpdata auth core > api/core/fixtures/init.json
 ```
 
+### Setup Google Auth
+
+- `cp .env.example .env`
+- [Go here](https://console.developers.google.com/apis/credentials)
+- Select OAuth client ID
+  - Select Web application
+  - Name: Literally anything
+  - Authorized origins: `https://localhost:3000` (or whatever host you develop on)
+  - Redirect URIs: `https://localhost:3000/account/login/redirect`
+- Copy the client key and secret into `.env`
+
 ## Deployment
 
 ### Building & Pushing Images

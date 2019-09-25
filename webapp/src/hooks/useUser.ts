@@ -1,4 +1,5 @@
 import { useContext, useCallback, useMemo } from 'react';
+import { useHistory } from 'react-router';
 import {
   User,
   UserStateContext,
@@ -10,7 +11,12 @@ import useRequest from './useRequest';
 /**
  * Hook for getting current user data and a function to request new user data.
  */
-const useUser = (): { user: User | undefined; requestUser: () => void } => {
+const useUser = (): {
+  user: User | undefined;
+  requestUser: () => void;
+  logOut: () => void;
+} => {
+  const history = useHistory();
   const { user } = useContext(UserStateContext);
   const userDispatch = useContext(UserDispatchContext);
 
@@ -23,12 +29,27 @@ const useUser = (): { user: User | undefined; requestUser: () => void } => {
     userDispatch({ type: UserActionType.Loading });
   }, [request, userDispatch]);
 
+  // Function to log out
+  const { request: logOutRequest } = useRequest<{}>({
+    url: '/api/auth/logout/',
+    method: 'POST',
+  });
+  const logOut = useCallback(() => {
+    logOutRequest().then(() => {
+      userDispatch({
+        type: UserActionType.Logout,
+      });
+      history.push('');
+    });
+  }, [logOutRequest, userDispatch, history]);
+
   return useMemo(
     () => ({
       user,
       requestUser,
+      logOut,
     }),
-    [user, requestUser]
+    [user, requestUser, logOut]
   );
 };
 

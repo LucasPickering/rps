@@ -1,3 +1,8 @@
 from django.urls import include, path
 
-urlpatterns = [path("", include("rest_auth.urls"))]
+from .views import GoogleLoginView
+
+urlpatterns = [
+    path("", include("rest_auth.urls")),
+    path("google/", GoogleLoginView.as_view()),
+]

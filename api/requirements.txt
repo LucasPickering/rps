@@ -3,6 +3,7 @@ channels
 channels_redis
 daphne
 django
+django-allauth
 django-debug-toolbar
 django-filter
 djangorestframework

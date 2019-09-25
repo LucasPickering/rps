@@ -12,15 +12,23 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 
+# ===== GENERAL =====
+
+APPEND_SLASH = True
+ASGI_APPLICATION = "rps.routing.application"
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
-
-
-# Application definition
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("RPS_DB_NAME", "rps"),
+        "USER": os.getenv("RPS_DB_USER", "rps"),
+        "PASSWORD": os.getenv("RPS_DB_PASSWORD", "rps"),
+        "HOST": os.getenv("RPS_DB_HOST", "db"),
+        "PORT": "",
+    }
+}
 
 INSTALLED_APPS = [
     "core",
@@ -28,8 +36,9 @@ INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
-    "django.contrib.sessions",
     "django.contrib.messages",
+    "django.contrib.sessions",
+    "django.contrib.sites",
     "django.contrib.staticfiles",
     "django_filters",
     "channels",
@@ -37,6 +46,11 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "rest_auth",
     "debug_toolbar",
+    "allauth",
+    "allauth.account",
+    "rest_auth.registration",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
 ]
 
 MIDDLEWARE = [
@@ -51,6 +65,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "rps.urls"
+SITE_ID = 1
+STATIC_ROOT = "./static/"
 
 TEMPLATES = [
     {
@@ -68,39 +84,18 @@ TEMPLATES = [
     }
 ]
 
+
+# ===== DRF =====
+
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 100,
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend"
     ],
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication"
-    ],
 }
 
-REST_AUTH_SERIALIZERS = {
-    "PASSWORD_RESET_SERIALIZER": "auth.serializers.PasswordResetSerializer"
-}
-
-ASGI_APPLICATION = "rps.routing.application"
-
-APPEND_SLASH = False
-
-
-# Database
-# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("RPS_DB_NAME", "rps"),
-        "USER": os.getenv("RPS_DB_USER", "rps"),
-        "PASSWORD": os.getenv("RPS_DB_PASSWORD", "rps"),
-        "HOST": os.getenv("RPS_DB_HOST", "db"),
-        "PORT": "",
-    }
-}
+# ===== CHANNELS =====
 
 CHANNEL_LAYERS = {
     "default": {
@@ -112,9 +107,10 @@ CHANNEL_LAYERS = {
 }
 
 
-# Password validation
-# https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
+# ===== AUTH =====
+# Some of this shit needs to be cleaned up
 
+# Django core
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
@@ -125,28 +121,30 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"
     },
 ]
+AUTHENTICATION_BACKENDS = ("django.contrib.auth.backends.ModelBackend",)
+LOGIN_URL = "/account/login"
+LOGIN_REDIRECT_URL = "/"
+
+# django-allauth
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "SCOPE": ["profile", "email"],
+        "AUTH_PARAMS": {"access_type": "online"},
+    }
+}
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/2.2/topics/i18n/
+# ===== I18N =====
 
 LANGUAGE_CODE = "en-us"
-
 TIME_ZONE = "UTC"
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.2/howto/static-files/
+# ===== LOGGING =====
 
-STATIC_ROOT = "./static/"
-
-# Configure logging
 RPS_LOGGER_NAME = "rps"
 LOGGING = {
     "version": 1,

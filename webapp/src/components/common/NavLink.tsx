@@ -4,11 +4,11 @@ import { makeStyles } from '@material-ui/core';
 import clsx from 'clsx';
 import { useLinkStyles } from './Link';
 
-const useLocalStyles = makeStyles(() => ({
+const useLocalStyles = makeStyles({
   active: {
     textDecoration: 'underline',
   },
-}));
+});
 
 const NavLink: React.FC<React.ComponentProps<typeof RouterNavLink>> = ({
   className,

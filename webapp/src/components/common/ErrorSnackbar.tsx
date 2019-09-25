@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Snackbar, SnackbarContent, makeStyles } from '@material-ui/core';
 import { Error as IconError } from '@material-ui/icons';
 import FlexBox from 'components/common/FlexBox';
@@ -13,13 +13,23 @@ const useLocalStyles = makeStyles(({ spacing, palette }) => ({
   },
 }));
 
-const ErrorSnackbar: React.FC<{ message: string }> = ({ message }) => {
+const ErrorSnackbar = ({
+  message,
+  ...rest
+}: {
+  message: string;
+} & Omit<
+  React.ComponentProps<typeof Snackbar>,
+  'open'
+>): React.ReactElement => {
   const localClasses = useLocalStyles();
+  const [open, setOpen] = useState(true);
   return (
     <Snackbar
-      open
-      autoHideDuration={3000}
+      open={open}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      onClose={() => setOpen(false)}
+      {...rest}
     >
       <SnackbarContent
         className={localClasses.snackbarContent}
