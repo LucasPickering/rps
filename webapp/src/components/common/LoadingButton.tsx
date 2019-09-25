@@ -1,7 +1,7 @@
 import { makeStyles, Button, CircularProgress } from '@material-ui/core';
 import React from 'react';
 
-const useLocalStyles = makeStyles(() => ({
+const useLocalStyles = makeStyles({
   loading: {
     position: 'absolute',
     top: '50%',
@@ -9,7 +9,7 @@ const useLocalStyles = makeStyles(() => ({
     marginTop: -12,
     marginLeft: -12,
   },
-}));
+});
 
 interface Props {
   loading: boolean;

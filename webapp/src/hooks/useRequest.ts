@@ -9,6 +9,7 @@ import { Dictionary } from 'lodash';
 // axios setup to cooperate with Django's CSRF policy
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.xsrfHeaderName = 'X-CSRFTOKEN';
+axios.defaults.headers.common.Accept = 'application/json';
 
 enum ApiActionType {
   Request,

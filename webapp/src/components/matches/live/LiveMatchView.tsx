@@ -34,7 +34,7 @@ interface RouteParams {
   matchId: string;
 }
 
-const useLocalStyles = makeStyles(() => ({
+const useLocalStyles = makeStyles({
   loading: {
     width: '100%',
   },
@@ -44,7 +44,7 @@ const useLocalStyles = makeStyles(() => ({
     left: '50%',
     transform: `translate(-50%, -50%)`,
   },
-}));
+});
 
 /**
  * Handles the /match/live/<matchId> route, NOT including /match/live/new. This

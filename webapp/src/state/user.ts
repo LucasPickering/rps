@@ -2,8 +2,11 @@ import React from 'react';
 import { makeReducerContexts } from 'util/funcs';
 
 export interface User {
+  pk: number;
   username: string;
   email: string;
+  firstName: string;
+  lastName: string;
 }
 
 export interface UserState {

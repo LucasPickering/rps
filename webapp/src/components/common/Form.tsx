@@ -11,9 +11,12 @@ const useLocalStyles = makeStyles(({ spacing }) => ({
   innerBox: {
     '& .MuiFormControl-root': {
       width: '100%',
-      marginBottom: spacing(1),
+      // marginBottom: spacing(1),
     },
     '& .MuiButton-root + .MuiButton-root': {
+      // marginTop: spacing(1),
+    },
+    '& > * + *': {
       marginTop: spacing(1),
     },
   },
