@@ -5,7 +5,7 @@ import NavLink from 'components/common/NavLink';
 
 const useLocalStyles = makeStyles(({ palette, typography }) => ({
   link: {
-    height: '100%',
+    height: 48, // 100% doesn't work on chrome for some reason
     backgroundColor: palette.grey[900],
     color: palette.text.primary,
     width: 80,
