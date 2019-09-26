@@ -25,6 +25,7 @@ const RecentMatches: React.FC = () => {
   return (
     <MaterialTable
       title="Recent Matches"
+      options={tableOptions}
       columns={[
         { field: 'id', hidden: true },
         {
@@ -46,7 +47,6 @@ const RecentMatches: React.FC = () => {
           ),
         },
       ]}
-      options={tableOptions}
       isLoading={loading}
       data={query =>
         new Promise((resolve, reject) =>
