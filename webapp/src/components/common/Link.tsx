@@ -27,6 +27,7 @@ export const useLinkStyles = makeStyles(({ palette }) => ({
 const Link: React.FC<React.ComponentProps<typeof RouterLink>> = ({
   className,
   to,
+  children,
   ...rest
 }) => {
   const localClasses = useLinkStyles();
@@ -37,13 +38,17 @@ const Link: React.FC<React.ComponentProps<typeof RouterLink>> = ({
       target="_blank"
       rel="noopener noreferrer"
       {...rest}
-    />
+    >
+      {children}
+    </a>
   ) : (
     <RouterLink
       className={clsx(localClasses.link, className)}
       to={to}
       {...rest}
-    />
+    >
+      {children}
+    </RouterLink>
   );
 };
 
