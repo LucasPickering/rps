@@ -25,6 +25,7 @@ const HeaderBar: React.FC = () => {
         <HeaderLink to="/" exact>
           Home
         </HeaderLink>
+        <HeaderLink to="/players">Players</HeaderLink>
         <div className={localClasses.grow} />
         {user && (
           <ButtonLink

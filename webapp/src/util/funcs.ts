@@ -65,11 +65,16 @@ export const makeReducerContexts = <State, Action>(): {
   };
 };
 
-export const tableToApiQuery = <T extends object>(
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const tableToApiQuery = <T extends Record<string, any>>(
   query: Query<T>
 ): BaseRequestParams => {
   return {
     limit: query.pageSize,
     offset: query.page * query.pageSize,
+    ordering:
+      query.orderBy &&
+      query.orderBy.field &&
+      (query.orderDirection === 'desc' ? '-' : '') + query.orderBy.field,
   };
 };
