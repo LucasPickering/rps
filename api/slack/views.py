@@ -1,6 +1,6 @@
 import random
 import re
-from prettytable import PrettyTable
+from texttable import Texttable
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -54,29 +54,30 @@ def leaderboard(request, cmd_args):
     blocks = [
         {"type": "section", "text": {"type": "mrkdwn", "text": "*Leaderboard*"}}
     ]
-    table = PrettyTable(["Username", "Wins", "Losses", "Win%"])
-    table.align["Username"] = "l"
-    table.align["Wins"] = "r"
-    table.align["Losses"] = "r"
-    table.align["Win%"] = "r"
-    for player_data in PlayerSummarySerializer(
-        Player.objects.annotate_match_outcomes().order_by(
-            "-match_win_pct", "-match_count"
-        ),
-        many=True,
-    ).data:
-        table.add_row(
+    table = Texttable()
+    table.header(["Username", "Wins", "Losses", "Win%"])
+    table.set_cols_align(["l", "r", "r", "r"])
+    table.add_rows(
+        (
             [
                 player_data["username"],
                 player_data["match_win_count"],
                 player_data["match_loss_count"],
                 "{:.3f}".format(player_data["match_win_pct"]),
             ]
-        )
+            for player_data in PlayerSummarySerializer(
+                Player.objects.annotate_match_outcomes().order_by(
+                    "-match_win_pct", "-match_count"
+                ),
+                many=True,
+            ).data
+        ),
+        header=False,
+    )
     blocks.append(
         {
             "type": "section",
-            "text": {"type": "mrkdwn", "text": "```{}```".format(table)},
+            "text": {"type": "mrkdwn", "text": f"```{table.draw()}```"},
         }
     )
     return {"response_type": "in_channel", "blocks": blocks}
