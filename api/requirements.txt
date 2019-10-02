@@ -6,5 +6,5 @@ django-debug-toolbar
 django-filter
 djangorestframework
 django-rest-auth
-prettytable
 psycopg2-binary
+texttable
