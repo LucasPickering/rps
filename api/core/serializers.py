@@ -30,7 +30,7 @@ class GameSerializer(serializers.ModelSerializer):
 
 
 class MatchConfigSerializer(serializers.ModelSerializer):
-    best_of = serializers.IntegerField(default=5)
+    best_of = serializers.IntegerField(default=5, max_value=21)
     extended_mode = serializers.BooleanField(default=False)
     public = serializers.BooleanField(default=False)
 
