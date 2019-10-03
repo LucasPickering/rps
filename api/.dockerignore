@@ -4,5 +4,3 @@
 static/
 Dockerfile
 .dockerignore
-pylintrc
-pyproject.toml
