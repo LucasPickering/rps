@@ -61,18 +61,11 @@ class MatchSerializer(serializers.ModelSerializer):
 # For /api/players/
 
 
-class PlayerSerializer(serializers.ModelSerializer):
-    matches = MatchSerializer(many=True)
-
-    class Meta:
-        model = models.Player
-        fields = ("username", "matches")
-
-
 class PlayerSummarySerializer(serializers.ModelSerializer):
     match_win_count = serializers.IntegerField()
     match_loss_count = serializers.IntegerField()
     match_win_pct = serializers.FloatField()
+    rpi = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Player
@@ -81,10 +74,16 @@ class PlayerSummarySerializer(serializers.ModelSerializer):
             "match_win_count",
             "match_loss_count",
             "match_win_pct",
+            "rpi",
         )
 
-    def get_match_wins(self, obj):
-        return obj.matches.filter(winner=obj).count()
+    def get_rpi(self, obj):
+        return obj.rpi
 
-    def get_match_losses(self, obj):
-        return obj.matches.exclude(winner=obj).count()
+
+class PlayerSerializer(PlayerSummarySerializer):
+    matches = MatchSerializer(many=True)
+
+    class Meta:
+        model = models.Player
+        fields = PlayerSummarySerializer.Meta.fields + ("matches",)

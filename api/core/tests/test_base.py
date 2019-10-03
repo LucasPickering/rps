@@ -1,13 +1,12 @@
 from django.test import TestCase
 
-from .. import models
+from .factories import UserFactory
 
 
 class RpsTestCase(TestCase):
-    fixtures = ["init"]
-
     def setUp(self):
-        qs = models.Player.objects.annotate_match_outcomes()
-        self.player1 = qs.get(username="user1")
-        self.player2 = qs.get(username="user2")
-        self.player3 = qs.get(username="user3")
+        self.player1 = UserFactory(username="user1")
+        self.player2 = UserFactory(username="user2")
+        self.player3 = UserFactory(username="user3")
+        self.player4 = UserFactory(username="user4")
+        self.player5 = UserFactory(username="user5")

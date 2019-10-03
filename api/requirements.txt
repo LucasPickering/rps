@@ -6,5 +6,6 @@ django-debug-toolbar
 django-filter
 djangorestframework
 django-rest-auth
+factory-boy
 psycopg2-binary
 texttable
