@@ -3,7 +3,7 @@ from django.db.models.functions import Cast
 
 
 class PlayerQuerySet(QuerySet):
-    def annotate_match_outcomes(self):
+    def annotate_stats(self):
         return self.annotate(
             match_count=Count("matches", distinct=True),
             match_win_count=Count("match_wins", distinct=True),

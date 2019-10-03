@@ -94,3 +94,28 @@ def register(registry, *names):
         return cls
 
     return inner
+
+
+def avg(nums, strict=True):
+    """
+    Compute the average of the given list of numbers
+
+    Arguments:
+        nums {int|float} -- numbers
+
+    Keyword Arguments:
+        strict {bool} -- if True, throw an error for empty list,
+        if false return 0 (default: {True})
+
+    Raises:
+        e: ZeroDivisionError if list is empty
+
+    Returns:
+        float -- average of list
+    """
+    try:
+        return sum(nums) / len(nums)
+    except ZeroDivisionError as e:
+        if strict:
+            raise e
+        return 0.0

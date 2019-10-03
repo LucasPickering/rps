@@ -55,8 +55,8 @@ def leaderboard(request, cmd_args):
         {"type": "section", "text": {"type": "mrkdwn", "text": "*Leaderboard*"}}
     ]
     table = Texttable()
-    table.header(["Username", "Wins", "Losses", "Win%"])
-    table.set_cols_align(["l", "r", "r", "r"])
+    table.header(["Username", "Wins", "Losses", "Win%", "RPI"])
+    table.set_cols_align(["l", "r", "r", "r", "r"])
     table.add_rows(
         (
             [
@@ -64,9 +64,10 @@ def leaderboard(request, cmd_args):
                 player_data["match_win_count"],
                 player_data["match_loss_count"],
                 "{:.3f}".format(player_data["match_win_pct"]),
+                "{:.3f}".format(player_data["rpi"]),
             ]
             for player_data in PlayerSummarySerializer(
-                Player.objects.annotate_match_outcomes().order_by(
+                Player.objects.annotate_stats().order_by(
                     "-match_win_pct", "-match_count"
                 ),
                 many=True,
@@ -123,7 +124,7 @@ def run_cmd(request, *args, **kwargs):
     )
     parser_leaderboard.set_defaults(func=leaderboard)
 
-    arg_strs = re.split(r"\s+", request.data.get("text").strip())
+    arg_strs = re.split(r"\s+", request.data.get("text", "").strip())
     try:
         args = parser.parse_args(arg_strs)
     except ArgumentParserError as e:

@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 
 from .query import PlayerQuerySet
-from .util import Move
+from .util import avg, Move
 
 
 class Player(User):
@@ -15,6 +15,58 @@ class Player(User):
 
     class Meta:
         proxy = True
+
+    def get_owp(self):
+        # Collect all opponents this player has ever had
+        opponents = (
+            Player.objects.exclude(id=self.id)
+            .filter(matches__players=self)
+            .distinct()
+        )
+
+        # Calculate each opponent's win% in matches excluding this player
+        opp_win_pcts = []
+        for opp in opponents:
+            try:
+                opp_win_pcts.append(
+                    opp.match_wins.exclude(players=self).count()
+                    / Match.objects.exclude(players=self)
+                    .filter(players=opp)
+                    .count()
+                )
+            except ZeroDivisionError:
+                pass  # Don't include this opponent
+
+        return (
+            opponents,
+            # Take the average of each opponent win%
+            avg(opp_win_pcts, strict=False),
+        )
+
+    @property
+    def rpi(self):
+        """
+        Calculates Rating Percentage Index for this player.
+
+        https://en.wikipedia.org/wiki/Rating_percentage_index#Basketball_formula
+
+        Uses the NCAA Men's D1 Hockey weights (because hockey is best):
+        https://www.uscho.com/rankings/rpi/d-i-men/
+
+        Returns:
+            int -- the RPI for this player
+        """
+        # Right now this requires that annotate_stats has been called
+        # TODO put this on the queryset instead, and do it all on the DB
+
+        # opponent winning percentage
+        opponents, owp = self.get_owp()
+
+        # opponents' opponent winning percentage
+        opp_opp_win_pcts = [opp.get_owp()[1] for opp in opponents]
+        oowp = avg(opp_opp_win_pcts, strict=False)
+
+        return self.match_win_pct * 0.24 + owp * 0.21 + oowp * 0.54
 
 
 class AbstractPlayerMatch(models.Model):
