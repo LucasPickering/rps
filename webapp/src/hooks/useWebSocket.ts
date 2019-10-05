@@ -2,14 +2,14 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import useSafeCallbacks from './useSafeCallbacks';
 import useIsMounted from './useIsMounted';
 import camelcaseKeys from 'camelcase-keys';
+import snakeCaseKeys from 'snakecase-keys';
+import { Dictionary } from 'lodash';
 
 const RECONNECT_TIMEOUT = 5000;
 
 export type Send = (data: unknown) => void;
-type EventConsumer<T = Event> = (event: T) => void;
-interface MessageData {
-  [key: string]: unknown;
-}
+export type EventConsumer<T = Event> = (send: Send, event: T) => void;
+export type MessageData = Dictionary<unknown>;
 
 interface WebSocketCallbacks {
   onOpen?: EventConsumer;
@@ -40,7 +40,8 @@ const useWebSocket = (
   const send = useCallback<Send>((data: unknown) => {
     const { current: ws } = wsRef;
     if (ws) {
-      ws.send(JSON.stringify(data));
+      const snakeData = snakeCaseKeys((data as unknown) as Dictionary<unknown>);
+      ws.send(JSON.stringify(snakeData));
     } else {
       throw new Error('send called while websocket is closed');
     }
@@ -66,7 +67,7 @@ const useWebSocket = (
       if (isMounted.current) {
         setStatus('connected');
         if (onOpen) {
-          onOpen(event);
+          onOpen(send, event);
         }
       }
     };
@@ -76,13 +77,13 @@ const useWebSocket = (
         const camelData = (camelcaseKeys(JSON.parse(event.data), {
           deep: true,
         }) as unknown) as MessageData;
-        onMessage(camelData);
+        onMessage(send, camelData);
       }
     };
     ws.onerror = event => {
       if (isMounted.current) {
         if (onError) {
-          onError(event);
+          onError(send, event);
         }
       }
     };
@@ -101,7 +102,7 @@ const useWebSocket = (
         }
 
         if (onClose) {
-          onClose(event);
+          onClose(send, event);
         }
       }
     };

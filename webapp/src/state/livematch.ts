@@ -93,6 +93,7 @@ export const liveMatchReducer: React.Reducer<
 };
 
 export enum ClientMessageType {
+  Join = 'join',
   Heartbeat = 'heartbeat',
   Ready = 'ready',
   Move = 'move',
@@ -101,6 +102,7 @@ export enum ClientMessageType {
 
 // More types will be added here
 export type ClientMessage =
+  | { type: ClientMessageType.Join; isParticipant: boolean }
   | {
       type:
         | ClientMessageType.Heartbeat

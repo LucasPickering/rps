@@ -16,7 +16,7 @@ import {
   LiveMatchSendMessageContext,
 } from 'state/livematch';
 import useStyles from 'hooks/useStyles';
-import useWebSocket from 'hooks/useWebSocket';
+import useWebSocket, { EventConsumer, MessageData } from 'hooks/useWebSocket';
 import LiveMatch from './LiveMatch';
 import ConnectionIndicator from './ConnectionIndicator';
 import PageLayout from 'components/common/PageLayout';
@@ -56,7 +56,13 @@ const LiveMatchView: React.FC<{
     // We need to memoize the callbacks to prevent hook triggers
     // Ugly solution but it works (sorry Seth!)
     {
-      onMessage: useCallback(data => {
+      onOpen: useCallback<EventConsumer>(send => {
+        send({
+          type: ClientMessageType.Join,
+          isParticipant: true,
+        });
+      }, []),
+      onMessage: useCallback<EventConsumer<MessageData>>((send, data) => {
         if (data.error) {
           dispatch({
             type: LiveMatchActionType.Error,
@@ -74,7 +80,7 @@ const LiveMatchView: React.FC<{
     [matchId] // Create a new socket when the match ID changes
   );
 
-  // Set up an interval to ping the server once per second
+  // Set up an interval to ping the server
   const isParticipant = Boolean(state.data && state.data.isParticipant);
   useEffect(() => {
     if (status === 'connected' && isParticipant) {

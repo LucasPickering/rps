@@ -42,13 +42,13 @@ class LiveMatchTestCase(RpsTestCase):
         self.assertEqual(lm.player2, None)
 
         # Player enters the first slot
-        self.assertEqual(lm.player_join(self.player1), True)
+        lm.player_join(self.player1)
         self.assertEqual(lm.player1.player, self.player1)
         self.assertEqual(lm.player2, None)
         p1_join_time = lm.player1.last_activity
 
         # Joining the same player just updates their last_activity
-        self.assertEqual(lm.player_join(self.player1), True)
+        lm.player_join(self.player1)
         self.assertEqual(lm.player1.player, self.player1)
         self.assertEqual(lm.player2, None)
         self.assertGreater(
@@ -58,12 +58,14 @@ class LiveMatchTestCase(RpsTestCase):
         )
 
         # Adding a second player fills the second slot
-        self.assertEqual(lm.player_join(self.player2), True)
+        lm.player_join(self.player2)
         self.assertEqual(lm.player1.player, self.player1)
         self.assertEqual(lm.player2.player, self.player2)
 
-        # Adding a third player does nothing
-        self.assertEqual(lm.player_join(self.player3), False)
+        # Adding a third player throws an error
+        with self.assertRaises(ClientError) as cm:
+            lm.player_join(self.player3)
+        self.assertEqual(cm.exception._error_type, ClientErrorType.CANNOT_JOIN)
         self.assertEqual(lm.player1.player, self.player1)
         self.assertEqual(lm.player2.player, self.player2)
 
@@ -74,9 +76,11 @@ class LiveMatchTestCase(RpsTestCase):
         )
 
     def test_player_join_anon(self):
-        # Joining an anonymous user on an empty match does nothing
+        # Joining an anonymous user on an empty match throws an error
         lm = LiveMatch.objects.create(config=self.config)
-        self.assertEqual(lm.player_join(AnonymousUser()), False)
+        with self.assertRaises(ClientError) as cm:
+            lm.player_join(AnonymousUser())
+        self.assertEqual(cm.exception._error_type, ClientErrorType.CANNOT_JOIN)
         self.assertEqual(lm.player1, None)
         self.assertEqual(lm.player2, None)
 

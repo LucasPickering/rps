@@ -3,8 +3,8 @@ import { useCallback, useMemo, useReducer } from 'react';
 import { ApiState, ApiError, RequestConfig } from 'state/api';
 import useDeepMemo from './useDeepMemo';
 import useIsMounted from './useIsMounted';
-import snakeCaseKeys from 'snakecase-keys';
 import camelcaseKeys from 'camelcase-keys';
+import snakeCaseKeys from 'snakecase-keys';
 import { Dictionary } from 'lodash';
 
 enum ApiActionType {

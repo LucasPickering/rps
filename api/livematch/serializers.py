@@ -11,6 +11,7 @@ _CLIENT_MSG_SERIALIZERS = {}
 
 
 class ClientMessageType(Enum):
+    JOIN = "join"
     HEARTBEAT = "heartbeat"
     READY = "ready"
     MOVE = "move"
@@ -25,17 +26,18 @@ def get_client_msg_serializer(serializer_type):
     return _CLIENT_MSG_SERIALIZERS[serializer_type]
 
 
-class ClientMessageSerializer(serializers.Serializer):
-    type = serializers.CharField()
-
-
 @register_msg(
     ClientMessageType.HEARTBEAT,
     ClientMessageType.READY,
     ClientMessageType.REMATCH,
 )
-class EmptyClientMessageSerializer(ClientMessageSerializer):
-    pass
+class ClientMessageSerializer(serializers.Serializer):
+    type = serializers.CharField()
+
+
+@register_msg(ClientMessageType.JOIN)
+class ClientMessageJoinSerializer(ClientMessageSerializer):
+    is_participant = serializers.BooleanField()
 
 
 @register_msg(ClientMessageType.MOVE)

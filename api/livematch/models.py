@@ -122,14 +122,16 @@ class LiveMatch(models.Model):
         Arguments:
             player {Player} -- The player (user) to connect
 
-        Returns:
-            bool -- True if the player is now connected, False if the match is
-            already full or the player is not logged in
+        Raises:
+            ClientError: If the match is full or player is not logged in
         """
         current_player_count = self.players.count()
+
         # If the player isn't logged in or the match is full, they can't join
-        if not player.is_authenticated or current_player_count >= 2:
-            return False
+        if not player.is_authenticated:
+            raise ClientError(ClientErrorType.CANNOT_JOIN, "Not logged in")
+        if current_player_count >= 2:
+            raise ClientError(ClientErrorType.CANNOT_JOIN, "Match full")
         # We now know the match has an open slot
 
         # If the player isn't in the match, add them. If they are already, just
@@ -141,8 +143,6 @@ class LiveMatch(models.Model):
         if not created:
             player_match.update_last_activity()
         player_match.save()
-
-        return True
 
     def heartbeat(self, player):
         """
