@@ -2,6 +2,7 @@ import React from 'react';
 import { GameOutcome, MatchOutcome } from 'state/match';
 import { BaseRequestParams } from 'state/api';
 import { Query } from 'material-table';
+import { snakeCase } from 'lodash';
 
 /**
  * Wraps the given HoC in logic that will add a better name to all
@@ -75,6 +76,7 @@ export const tableToApiQuery = <T extends Record<string, any>>(
     ordering:
       query.orderBy &&
       query.orderBy.field &&
-      (query.orderDirection === 'desc' ? '-' : '') + query.orderBy.field,
+      (query.orderDirection === 'desc' ? '-' : '') +
+        snakeCase(query.orderBy.field.toString()),
   };
 };
