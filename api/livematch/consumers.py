@@ -25,13 +25,22 @@ def validate_content(content):
             ClientErrorType.MALFORMED_MESSAGE, detail="Missing type"
         )
 
-    # Look up the correct serializer for this type and try to deserialize
-    serializer_cls = get_client_msg_serializer(msg_type)
+    # Look up the correct serializer for this type
+    try:
+        serializer_cls = get_client_msg_serializer(msg_type)
+    except KeyError:
+        raise ClientError(
+            ClientErrorType.MALFORMED_MESSAGE,
+            f"Unknown message type: {msg_type}",
+        )
+
+    # Deserialize the message
     serializer = serializer_cls(data=content)
     if not serializer.is_valid():
         raise ClientError(
             ClientErrorType.MALFORMED_MESSAGE, detail=serializer.errors
         )
+
     return serializer.validated_data
 
 
@@ -75,16 +84,6 @@ class MatchConsumer(JsonWebsocketConsumer):
             ).data
         )
 
-    def handle_error(self, error):
-        """
-        Processes the given error. An error message is send over the socket,
-        but the socket is left open.
-
-        Arguments:
-            error {ClientError} -- The error
-        """
-        self.send_json(ErrorSerializer(error.to_dict()).data)
-
     def get_match(self, lock=True):
         qs = LiveMatch.objects
         if lock:
@@ -122,18 +121,39 @@ class MatchConsumer(JsonWebsocketConsumer):
         self.trigger_client_update()
 
     def process_msg(self, msg):
+        """
+        Processes the given message and performs the necessary model actions.
+        Assumes the message has already been completely validated.
+
+        Arguments:
+            msg {dict} -- validated message
+
+        Raises:
+            ClientError: for any possible state error
+        """
+
         msg_type = msg["type"]
 
-        valid_msg_types = set(cmt.value for cmt in ClientMessageType)
-        if msg_type not in valid_msg_types:
-            raise ClientError(
-                ClientErrorType.MALFORMED_MESSAGE,
-                f"Unknown message type: {msg_type}",
-            )
-
         with transaction.atomic():
-            # If live_match doesn't exist, tenemos problemos
-            live_match = self.get_match()
+            # Get the row and lock it
+            try:
+                live_match = self.get_match()
+            except LiveMatch.NotFound:
+                raise ClientError(ClientErrorType.UNKNOWN_MATCH_ID)
+
+            if msg_type == ClientMessageType.JOIN.value:
+                if msg["is_participant"]:
+                    # If the player is already in the game, this will update
+                    # their last_activity. If the join is invalid, an error
+                    # will be raised.
+                    live_match.player_join(self.player)
+
+                # Join the channel group for all sockets in this match. Make
+                # sure we do this BEFORE releasing the lock, to prevent missing
+                # messages
+                async_to_sync(self.channel_layer.group_add)(
+                    self.channel_group_name, self.channel_name
+                )
 
             # Make sure this player is allowed to be doing things
             if not live_match.is_participant(self.player):
@@ -157,13 +177,7 @@ class MatchConsumer(JsonWebsocketConsumer):
         self.match_id = self.scope["url_route"]["kwargs"]["match_id"]
         self.player = self.scope["user"]
         self.accept()
-        try:
-            logger.info(
-                f"Player {self.player} connecting to match {self.match_id}"
-            )
-            self.connect_player()
-        except ClientError as e:
-            self.handle_error(e)
+        logger.info(f"Player {self.player} connected to match {self.match_id}")
 
     def disconnect_json(self, close_code):
         logger.info(
@@ -180,4 +194,4 @@ class MatchConsumer(JsonWebsocketConsumer):
             msg = validate_content(content)
             self.process_msg(msg)
         except ClientError as e:
-            self.handle_error(e)
+            self.send_json(ErrorSerializer(e.to_dict()).data)
