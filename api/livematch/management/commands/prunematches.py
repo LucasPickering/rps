@@ -33,11 +33,9 @@ class Command(BaseCommand):
         ).filter(
             Q(npa=None) | Q(npa__lt=cutoff_time),
             start_time__lt=cutoff_time,
-            # We can't delete matches that have been rematched, because they
-            # are still needed to link child Match -> parent Match
-            # The leaf child will be deleted once it ages out, and that will
-            # cascade up the chain
-            rematch_id=None,
+            # Completed matches shouldn't be deleted, because they are needed
+            # for linking to Matches and other LiveMatches
+            permanent_match_id=None,
         )
 
         if dry_run:
