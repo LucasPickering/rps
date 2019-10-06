@@ -12,6 +12,10 @@ const useLocalStyles = makeStyles(({ spacing }) => ({
   },
   newMatchButton: {
     margin: spacing(1),
+    // Temporary fix until I move the nav into a sidebar for mobile
+    '& .MuiButton-label': {
+      whiteSpace: 'nowrap',
+    },
   },
 }));
 
