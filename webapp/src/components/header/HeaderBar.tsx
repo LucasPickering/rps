@@ -32,7 +32,7 @@ const HeaderBar: React.FC = () => {
             className={localClasses.newMatchButton}
             to="/matches/live/new"
             color="primary"
-            variant="contained"
+            variant="outlined"
           >
             New Match
           </ButtonLink>

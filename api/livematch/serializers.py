@@ -27,17 +27,13 @@ def get_client_msg_serializer(serializer_type):
 
 
 @register_msg(
+    ClientMessageType.JOIN,
     ClientMessageType.HEARTBEAT,
     ClientMessageType.READY,
     ClientMessageType.REMATCH,
 )
 class ClientMessageSerializer(serializers.Serializer):
     type = serializers.CharField()
-
-
-@register_msg(ClientMessageType.JOIN)
-class ClientMessageJoinSerializer(ClientMessageSerializer):
-    is_participant = serializers.BooleanField()
 
 
 @register_msg(ClientMessageType.MOVE)
