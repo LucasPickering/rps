@@ -67,11 +67,11 @@ class MatchConsumer(JsonWebsocketConsumer):
             self.channel_group_name, {"type": "match.update"}
         )
 
-    def match_update(self, event):
+    def match_update(self, event=None):
         """
-        Listener for match updates from other consumers on this match. Should
-        only be called by Django Channels. Triggered indirectly via
-        trigger_client_update
+        Listener for match updates from other consumers on this match. Can be
+        called directly to send the match state to only the connected player.
+        Also called by Django Channels, when triggered by trigger_client_update.
 
         Arguments:
             event {dict} -- The event received from the sender
@@ -89,36 +89,6 @@ class MatchConsumer(JsonWebsocketConsumer):
         if lock:
             qs = qs.select_for_update()
         return qs.get(id=self.match_id)
-
-    def connect_player(self):
-        """
-        Tries to add the authenticated player to this match.
-
-        Raises:
-            ClientError: If the game is full or this player is already in it
-        """
-
-        # Try to join the game
-        with transaction.atomic():
-            # Get the row and lock it
-            try:
-                live_match = self.get_match()
-            except LiveMatch.NotFound:
-                raise ClientError(ClientErrorType.UNKNOWN_MATCH_ID)
-
-            # If the player is already in the game, this will mark them as
-            # connected (if they were disconnected). If they were already
-            # connected, nothing happens here.
-            live_match.player_join(self.player)
-
-            # Join the channel group for all sockets in this match. Make sure
-            # we do this BEFORE releasing the lock, to prevent missing
-            # messages
-            async_to_sync(self.channel_layer.group_add)(
-                self.channel_group_name, self.channel_name
-            )
-
-        self.trigger_client_update()
 
     def process_msg(self, msg):
         """
@@ -142,18 +112,10 @@ class MatchConsumer(JsonWebsocketConsumer):
                 raise ClientError(ClientErrorType.UNKNOWN_MATCH_ID)
 
             if msg_type == ClientMessageType.JOIN.value:
-                if msg["is_participant"]:
-                    # If the player is already in the game, this will update
-                    # their last_activity. If the join is invalid, an error
-                    # will be raised.
-                    live_match.player_join(self.player)
-
-                # Join the channel group for all sockets in this match. Make
-                # sure we do this BEFORE releasing the lock, to prevent missing
-                # messages
-                async_to_sync(self.channel_layer.group_add)(
-                    self.channel_group_name, self.channel_name
-                )
+                # If the player is already in the game, this will update
+                # their last_activity. If the join is invalid, an error
+                # will be raised.
+                live_match.player_join(self.player)
 
             # Make sure this player is allowed to be doing things
             if not live_match.is_participant(self.player):
@@ -176,7 +138,14 @@ class MatchConsumer(JsonWebsocketConsumer):
     def connect(self):
         self.match_id = self.scope["url_route"]["kwargs"]["match_id"]
         self.player = self.scope["user"]
+
         self.accept()
+        # Join the channel group for all sockets in this match
+        async_to_sync(self.channel_layer.group_add)(
+            self.channel_group_name, self.channel_name
+        )
+        self.match_update()  # Send the match state to the user
+
         logger.info(f"Player {self.player} connected to match {self.match_id}")
 
     def disconnect_json(self, close_code):

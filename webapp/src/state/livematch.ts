@@ -102,9 +102,9 @@ export enum ClientMessageType {
 
 // More types will be added here
 export type ClientMessage =
-  | { type: ClientMessageType.Join; isParticipant: boolean }
   | {
       type:
+        | ClientMessageType.Join
         | ClientMessageType.Heartbeat
         | ClientMessageType.Ready
         | ClientMessageType.Rematch;

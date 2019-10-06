@@ -13,6 +13,9 @@ const useLocalStyles = makeStyles(({ spacing }) => ({
       width: '100%',
       marginBottom: spacing(1),
     },
+    '& .MuiButton-root + .MuiButton-root': {
+      marginTop: spacing(1),
+    },
   },
 }));
 

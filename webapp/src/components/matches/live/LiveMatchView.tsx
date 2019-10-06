@@ -1,7 +1,13 @@
-import React, { useReducer, useCallback, useEffect } from 'react';
+import React, { useReducer, useCallback, useEffect, useState } from 'react';
 import withRouteParams from 'hoc/withRouteParams';
 
-import { Typography, LinearProgress, makeStyles } from '@material-ui/core';
+import {
+  Typography,
+  LinearProgress,
+  makeStyles,
+  Modal,
+  Button,
+} from '@material-ui/core';
 import useFetch from 'hooks/useFetch';
 import {
   LiveMatchMetadata,
@@ -22,10 +28,18 @@ import ConnectionIndicator from './ConnectionIndicator';
 import PageLayout from 'components/common/PageLayout';
 import LiveMatchErrorDisplay from './LiveMatchErrorDisplay';
 import ApiErrorDisplay from 'components/common/ApiErrorDisplay';
+import useUser from 'hooks/useUser';
+import Form from 'components/common/Form';
 
 const useLocalStyles = makeStyles(() => ({
   loading: {
     width: '100%',
+  },
+  joinModal: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: `translate(-50%, -50%)`,
   },
 }));
 
@@ -40,12 +54,17 @@ const LiveMatchView: React.FC<{
   const classes = useStyles();
   const localClasses = useLocalStyles();
 
+  const { user } = useUser();
   const {
     loading: metadataLoading,
     data: metadata,
     error: metadataError,
   } = useFetch<LiveMatchMetadata>(`/api/matches/live/${matchId}/`);
   const [state, dispatch] = useReducer(liveMatchReducer, defaultLiveMatchState);
+
+  // Used to track if the play/spectate modal has been shown already
+  const [joinModalShown, setJoinModalShown] = useState(false);
+
   // Reset state when the match ID changes. Prevents weird flickering when
   // starting a rematch.
   useEffect(() => () => dispatch({ type: LiveMatchActionType.Reset }), [
@@ -56,12 +75,6 @@ const LiveMatchView: React.FC<{
     // We need to memoize the callbacks to prevent hook triggers
     // Ugly solution but it works (sorry Seth!)
     {
-      onOpen: useCallback<EventConsumer>(send => {
-        send({
-          type: ClientMessageType.Join,
-          isParticipant: true,
-        });
-      }, []),
       onMessage: useCallback<EventConsumer<MessageData>>((send, data) => {
         if (data.error) {
           dispatch({
@@ -80,8 +93,14 @@ const LiveMatchView: React.FC<{
     [matchId] // Create a new socket when the match ID changes
   );
 
-  // Set up an interval to ping the server
+  // Can this use join the game as a participant? Will be true if they are
+  // already participating
+  const canParticipate = Boolean(
+    user && state.data && state.data.players.length < 2
+  );
   const isParticipant = Boolean(state.data && state.data.isParticipant);
+
+  // Set up an interval to ping the server
   useEffect(() => {
     if (status === 'connected' && isParticipant) {
       const intervalId = setInterval(
@@ -124,9 +143,33 @@ const LiveMatchView: React.FC<{
     return <></>; // Shouldn't ever get here
   };
 
+  const closeJoinModal = useCallback(() => setJoinModalShown(true), [
+    setJoinModalShown,
+  ]);
   return (
     <PageLayout maxWidth="lg">
       {getContent()}
+      <Modal
+        open={Boolean(canParticipate && !isParticipant && !joinModalShown)}
+        onClose={closeJoinModal}
+      >
+        <Form className={localClasses.joinModal} size="small">
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              // Join the match as a participant
+              send({ type: ClientMessageType.Join });
+              closeJoinModal();
+            }}
+          >
+            Play
+          </Button>
+          <Button variant="contained" onClick={closeJoinModal}>
+            Spectate
+          </Button>
+        </Form>
+      </Modal>
       <ConnectionIndicator connectionStatus={status} />
       <LiveMatchErrorDisplay errors={state.errors} />
     </PageLayout>
