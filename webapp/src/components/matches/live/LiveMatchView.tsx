@@ -155,6 +155,9 @@ const LiveMatchView: React.FC<{
       >
         <div>
           <Form className={localClasses.joinModal} size="small">
+            <Button variant="outlined" onClick={closeJoinModal}>
+              Spectate
+            </Button>
             <Button
               variant="contained"
               color="primary"
@@ -165,9 +168,6 @@ const LiveMatchView: React.FC<{
               }}
             >
               Play
-            </Button>
-            <Button variant="contained" onClick={closeJoinModal}>
-              Spectate
             </Button>
           </Form>
         </div>

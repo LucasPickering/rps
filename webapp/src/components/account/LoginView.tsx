@@ -62,7 +62,7 @@ const LoginView: React.FC<RouteComponentProps> = ({ location }) => {
         />
         <LoadingButton
           type="submit"
-          variant="contained"
+          variant="outlined"
           color="primary"
           loading={loading || userLoading}
           disabled={!username || !password}
