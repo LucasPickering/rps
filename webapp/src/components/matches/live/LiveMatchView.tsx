@@ -146,29 +146,31 @@ const LiveMatchView: React.FC<{
   const closeJoinModal = useCallback(() => setJoinModalShown(true), [
     setJoinModalShown,
   ]);
+  // The div in the Modal is the easiest way to fix a ref error from react
   return (
     <PageLayout maxWidth="lg">
       {getContent()}
       <Modal
         open={Boolean(canParticipate && !isParticipant && !joinModalShown)}
-        onClose={closeJoinModal}
       >
-        <Form className={localClasses.joinModal} size="small">
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => {
-              // Join the match as a participant
-              send({ type: ClientMessageType.Join });
-              closeJoinModal();
-            }}
-          >
-            Play
-          </Button>
-          <Button variant="contained" onClick={closeJoinModal}>
-            Spectate
-          </Button>
-        </Form>
+        <div>
+          <Form className={localClasses.joinModal} size="small">
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                // Join the match as a participant
+                send({ type: ClientMessageType.Join });
+                closeJoinModal();
+              }}
+            >
+              Play
+            </Button>
+            <Button variant="contained" onClick={closeJoinModal}>
+              Spectate
+            </Button>
+          </Form>
+        </div>
       </Modal>
       <ConnectionIndicator connectionStatus={status} />
       <LiveMatchErrorDisplay errors={state.errors} />
