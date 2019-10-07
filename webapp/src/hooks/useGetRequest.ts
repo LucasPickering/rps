@@ -5,7 +5,7 @@ import useRequest from './useRequest';
 /**
  * Fetches from a URL with a GET request.
  */
-const useFetch = <R, E = {}, P = undefined>(
+const useGetRequest = <R, E = {}, P = undefined>(
   url: string,
   config?: RequestConfig<P, undefined>
 ): ApiState<R, E> => {
@@ -24,4 +24,4 @@ const useFetch = <R, E = {}, P = undefined>(
   return state;
 };
 
-export default useFetch;
+export default useGetRequest;

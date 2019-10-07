@@ -8,7 +8,7 @@ import {
   Modal,
   Button,
 } from '@material-ui/core';
-import useFetch from 'hooks/useFetch';
+import useGetRequest from 'hooks/useGetRequest';
 import {
   LiveMatchMetadata,
   liveMatchReducer,
@@ -59,7 +59,7 @@ const LiveMatchView: React.FC<{
     loading: metadataLoading,
     data: metadata,
     error: metadataError,
-  } = useFetch<LiveMatchMetadata>(`/api/matches/live/${matchId}/`);
+  } = useGetRequest<LiveMatchMetadata>(`/api/matches/live/${matchId}/`);
   const [state, dispatch] = useReducer(liveMatchReducer, defaultLiveMatchState);
 
   // Used to track if the play/spectate modal has been shown already

@@ -6,7 +6,7 @@ import {
   Typography,
   makeStyles,
 } from '@material-ui/core';
-import useFetch from 'hooks/useFetch';
+import useGetRequest from 'hooks/useGetRequest';
 import { PlayerHistory, getPlayerMatch } from 'state/player';
 import Paper from 'components/common/Paper';
 import useStyles from 'hooks/useStyles';
@@ -82,7 +82,7 @@ const PlayerView: React.FC<{
   username: string;
 }> = ({ username }) => {
   const classes = useStyles();
-  const { loading, data, error } = useFetch<PlayerHistory>(
+  const { loading, data, error } = useGetRequest<PlayerHistory>(
     `/api/players/${username}/`
   );
 
