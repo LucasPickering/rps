@@ -103,14 +103,14 @@ const MatchDataView: React.FC<{ match: Match }> = ({ match }) => {
 };
 
 const MatchView: React.FC<{
-  matchId: number;
+  matchId: string;
 }> = ({ matchId }) => {
   const { loading, data, error } = useFetch<Match>(`/api/matches/${matchId}/`);
 
   return (
     <PageLayout>
       {loading && <CircularProgress />}
-      {data && <MatchDataView match={data} />}
+      {data && data.id.toString() === matchId && <MatchDataView match={data} />}
       <ApiErrorDisplay error={error} resourceName="match" />
     </PageLayout>
   );
