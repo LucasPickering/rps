@@ -5,7 +5,7 @@ import createPalette, {
   PaletteOptions,
   PaletteColorOptions,
 } from '@material-ui/core/styles/createPalette';
-import { lightBlue, lightGreen } from '@material-ui/core/colors';
+import { lightBlue, lightGreen, red } from '@material-ui/core/colors';
 import { ThemeOptions } from '@material-ui/core/styles/createMuiTheme';
 
 interface CustomPalette extends Palette {
@@ -43,7 +43,7 @@ const theme: Theme = createCustomTheme({
   palette: {
     type: 'dark',
     primary: lightBlue,
-    secondary: lightGreen,
+    secondary: red,
   },
   customPalette: {
     success: lightGreen,
