@@ -53,6 +53,10 @@ class Player(User):
         Uses the NCAA Men's D1 Hockey weights (because hockey is best):
         https://www.uscho.com/rankings/rpi/d-i-men/
 
+        After some experimentation, this seems like not a great metric for our
+        purposes. Leaving this in for now, but if it's going to actually be
+        used, it needs to be seriously optimized in terms of queries.
+
         Returns:
             int -- the RPI for this player
         """
