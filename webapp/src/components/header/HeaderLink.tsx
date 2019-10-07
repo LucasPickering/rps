@@ -3,23 +3,32 @@ import { makeStyles } from '@material-ui/core';
 import clsx from 'clsx';
 import NavLink from 'components/common/NavLink';
 
-const useLocalStyles = makeStyles(({ palette, typography }) => ({
-  link: {
-    height: 48, // 100% doesn't work on chrome for some reason
-    backgroundColor: palette.grey[900],
-    color: palette.text.primary,
-    width: 80,
-    ...typography.body1,
-    '&:hover, &:active': {
-      backgroundColor: palette.action.hover,
-      textDecoration: 'none',
-    },
-  },
-  active: {
-    backgroundColor: palette.action.selected,
+const useLocalStyles = makeStyles(({ palette, typography }) => {
+  const activeStyles = {
     textDecoration: 'none',
-  },
-}));
+    borderBottomColor: palette.primary.main,
+  };
+  return {
+    linkContainer: {
+      minWidth: 80,
+      textAlign: 'center',
+    },
+    link: {
+      color: palette.text.primary,
+      borderBottom: '1px solid #00000000',
+      transitionProperty: 'border-bottom, color',
+      transitionDuration: '0.2s',
+      transitionTimingFunction: 'linear',
+      ...typography.body1,
+
+      '&:hover, &:active': {
+        ...activeStyles,
+        color: palette.text.hint,
+      },
+    },
+    active: activeStyles,
+  };
+});
 
 const HeaderLink: React.FC<React.ComponentProps<typeof NavLink>> = ({
   className,
@@ -28,11 +37,13 @@ const HeaderLink: React.FC<React.ComponentProps<typeof NavLink>> = ({
   // const linkClasses = useLinkStyles();
   const localClasses = useLocalStyles();
   return (
-    <NavLink
-      className={clsx(localClasses.link, className)}
-      activeClassName={localClasses.active}
-      {...rest}
-    />
+    <span className={localClasses.linkContainer}>
+      <NavLink
+        className={clsx(localClasses.link, className)}
+        activeClassName={localClasses.active}
+        {...rest}
+      />
+    </span>
   );
 };
 
