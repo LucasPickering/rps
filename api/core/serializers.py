@@ -65,7 +65,6 @@ class PlayerSummarySerializer(serializers.ModelSerializer):
     match_win_count = serializers.IntegerField()
     match_loss_count = serializers.IntegerField()
     match_win_pct = serializers.FloatField()
-    rpi = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Player
@@ -74,11 +73,7 @@ class PlayerSummarySerializer(serializers.ModelSerializer):
             "match_win_count",
             "match_loss_count",
             "match_win_pct",
-            "rpi",
         )
-
-    def get_rpi(self, obj):
-        return obj.rpi
 
 
 class PlayerSerializer(PlayerSummarySerializer):
