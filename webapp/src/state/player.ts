@@ -33,13 +33,17 @@ export const getPlayerMatch = (username: string, match: Match): PlayerMatch => {
   const otherPlayers = match.players.filter(name => name !== username);
   if (otherPlayers.length > 1) {
     throw new Error(
-      `Multiple opponents found for username=${username}; match=${match}`
+      `Multiple opponents found for username=${username}; match=${JSON.stringify(
+        match
+      )}`
     );
   }
   const opponentName = first(otherPlayers);
   if (!opponentName) {
     throw new Error(
-      `No opponent found for username=${username}; match=${match}`
+      `No opponent found for username=${username}; match=${JSON.stringify(
+        match
+      )}`
     );
   }
 

@@ -91,6 +91,7 @@ const PlayerView: React.FC<{
       <Typography className={classes.normalMessage}>{username}</Typography>
       {loading && <CircularProgress />}
       {data &&
+        data.username === username &&
         (data.matches.length ? (
           <Grid container direction="column" spacing={2}>
             {data.matches.map(match => (

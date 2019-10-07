@@ -14,9 +14,13 @@ const useFetch = <R, E = {}, P = undefined>(
     url,
     method: 'GET',
   });
+
+  // `request` changes whenever the URL (or other config) changes, triggers a
+  // new request
   useEffect(() => {
     request();
-  }, [url, request]);
+  }, [request]);
+
   return state;
 };
 
