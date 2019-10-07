@@ -13,11 +13,12 @@ import { sizeMq } from 'util/styles';
 const useLocalStyles = makeStyles(({ breakpoints, spacing }) => ({
   root: {
     height: '100%',
+    textAlign: 'center',
     display: 'grid',
     justifyItems: 'center',
-    gridTemplateColumns: 'repeat(6, 1fr)',
-    gridTemplateRows: 'repeat(4, auto) 1fr',
-    gridRowGap: spacing(2),
+    // 12 for both, to allow room to grow
+    gridTemplateColumns: 'repeat(12, 1fr)',
+    gridTemplateRows: 'repeat(11, auto) 1fr',
   },
   subBox: {
     display: 'flex',
@@ -26,17 +27,18 @@ const useLocalStyles = makeStyles(({ breakpoints, spacing }) => ({
   },
   status: {
     [sizeMq('small', breakpoints)]: {
-      gridColumn: '1 / span 6',
-      gridRow: 4,
+      gridColumn: '2 / span 10',
+      gridRow: 11,
     },
     [sizeMq('large', breakpoints)]: {
-      gridColumn: '2 / span 4',
-      gridRow: '3 / span 2',
+      gridColumn: '3 / span 8',
+      gridRow: 11,
     },
   },
   actions: {
-    gridColumn: '1 / span 6',
-    gridRow: 5,
+    marginTop: spacing(2),
+    gridColumn: '2 / span 10',
+    gridRow: 12,
     [sizeMq('small', breakpoints)]: {
       alignSelf: 'end',
     },
