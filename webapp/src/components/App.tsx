@@ -1,4 +1,4 @@
-import { createMuiTheme, CssBaseline } from '@material-ui/core';
+import { CssBaseline } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/styles';
 import React, { useReducer } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -8,16 +8,9 @@ import {
   userReducer,
   UserStateContext,
 } from 'state/user';
-import { lightBlue, lightGreen } from '@material-ui/core/colors';
-import PageContainer from './PageContainer';
+import theme from 'util/theme';
 
-const theme = createMuiTheme({
-  palette: {
-    type: 'dark',
-    primary: lightBlue,
-    secondary: lightGreen,
-  },
-});
+import PageContainer from './PageContainer';
 
 const App: React.FC = () => {
   const [userState, userDispatch] = useReducer(userReducer, defaultUserState);

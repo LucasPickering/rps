@@ -20,7 +20,7 @@ import PageLayout from 'components/common/PageLayout';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import clsx from 'clsx';
 
-const useLocalStyles = makeStyles(({ palette, typography }) => ({
+const useLocalStyles = makeStyles(({ palette, customPalette, typography }) => ({
   matchPanel: {
     display: 'grid',
     gridTemplateColumns: '4fr 1fr 1fr',
@@ -28,7 +28,7 @@ const useLocalStyles = makeStyles(({ palette, typography }) => ({
     alignItems: 'center',
   },
   win: {
-    backgroundColor: fade(palette.secondary.main, 0.2),
+    backgroundColor: fade(customPalette.success.main, 0.2),
   },
   loss: {
     backgroundColor: fade(palette.error.main, 0.2),
