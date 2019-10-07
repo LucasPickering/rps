@@ -83,7 +83,7 @@ const NewLiveMatchView: React.FC = () => {
         />
         <LoadingButton
           type="submit"
-          variant="contained"
+          variant="outlined"
           color="primary"
           loading={loading}
         >
