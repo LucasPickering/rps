@@ -37,6 +37,7 @@ const HeaderBar: React.FC = () => {
             to="/matches/live/new"
             color="primary"
             variant="outlined"
+            size="small"
           >
             New Match
           </ButtonLink>

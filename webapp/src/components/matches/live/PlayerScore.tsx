@@ -20,7 +20,7 @@ const useLocalStyles = makeStyles(({ palette, spacing }) => ({
     margin: `0 ${spacing(0.5)}px`,
   },
   self: {
-    color: palette.secondary.main,
+    color: palette.primary.main,
   },
 }));
 
