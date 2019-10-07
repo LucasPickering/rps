@@ -6,7 +6,7 @@ import {
   Typography,
   makeStyles,
 } from '@material-ui/core';
-import useFetch from 'hooks/useFetch';
+import useGetRequest from 'hooks/useGetRequest';
 import { Match } from 'state/match';
 import PlayerLink from 'components/players/PlayerLink';
 import Paper from 'components/common/Paper';
@@ -105,7 +105,9 @@ const MatchDataView: React.FC<{ match: Match }> = ({ match }) => {
 const MatchView: React.FC<{
   matchId: string;
 }> = ({ matchId }) => {
-  const { loading, data, error } = useFetch<Match>(`/api/matches/${matchId}/`);
+  const { loading, data, error } = useGetRequest<Match>(
+    `/api/matches/${matchId}/`
+  );
 
   return (
     <PageLayout>
