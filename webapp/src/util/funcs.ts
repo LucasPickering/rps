@@ -73,6 +73,7 @@ export const tableToApiQuery = <T extends Record<string, any>>(
   return {
     limit: query.pageSize,
     offset: query.page * query.pageSize,
+    search: query.search || undefined, // Replace '' with undefined
     ordering:
       query.orderBy &&
       query.orderBy.field &&

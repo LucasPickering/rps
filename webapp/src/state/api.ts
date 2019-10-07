@@ -27,6 +27,7 @@ export interface RequestConfig<P, D> extends AxiosRequestConfig {
 export interface BaseRequestParams {
   limit?: number;
   offset?: number;
+  search?: string;
   ordering?: string;
   q?: string;
 }

@@ -30,7 +30,8 @@ class MatchView(generics.RetrieveAPIView):
 class PlayersView(generics.ListAPIView):
     queryset = models.Player.objects.annotate_stats()
     serializer_class = serializers.PlayerSummarySerializer
-    filter_backends = [filters.OrderingFilter]
+    filter_backends = [filters.OrderingFilter, filters.SearchFilter]
+    search_fields = ["username"]
     ordering_fields = ["match_win_count", "match_loss_count", "match_win_pct"]
 
 
