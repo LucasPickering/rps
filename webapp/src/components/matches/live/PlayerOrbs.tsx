@@ -11,13 +11,13 @@ import { range } from 'lodash';
 
 const useLocalStyles = makeStyles(({ palette, spacing }) => ({
   orb: {
-    width: 16,
-    height: 16,
+    width: 8,
+    height: 8,
     borderRadius: '100%',
     borderWidth: 1,
     borderStyle: 'solid',
     borderColor: palette.secondary.dark,
-    margin: spacing(0.5),
+    margin: spacing(0.25),
     transition: 'background-color 0.2s linear',
   },
   filledOrb: {

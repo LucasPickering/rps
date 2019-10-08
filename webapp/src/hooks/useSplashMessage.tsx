@@ -3,6 +3,7 @@ import { ConnectionStatus } from 'hooks/useWebSocket';
 import { sample } from 'lodash';
 import { useEffect, useState } from 'react';
 import { MatchOutcome } from 'state/match';
+import { HotTub as IconHotTub } from '@material-ui/icons';
 import Link from 'components/common/Link';
 
 // TODO clean this up
@@ -48,6 +49,7 @@ export const connectionStatusSplashes: Splashes<ConnectionStatus> = {
       a great hockey team the soviets have. Screw &apos;em. This is your time.
       Now go out there and take it.
     </span>,
+    <IconHotTub />,
   ],
   closedError: [':sad_parrot:', "It's a feature"],
   closedNormal: ['Head aega!', 'Nägemist!', 'Nägemiseni!'],
