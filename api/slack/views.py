@@ -56,7 +56,7 @@ def leaderboard(request, cmd_args):
     ]
     table = Texttable()
     table.header(["Username", "Wins", "Losses", "Win%"])
-    table.set_cols_align(["l", "r", "r", "r", "r"])
+    table.set_cols_align(["l", "r", "r", "r"])
     table.add_rows(
         (
             [
