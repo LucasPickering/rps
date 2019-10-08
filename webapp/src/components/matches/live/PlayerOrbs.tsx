@@ -18,6 +18,7 @@ const useLocalStyles = makeStyles(({ palette, spacing }) => ({
     borderStyle: 'solid',
     borderColor: palette.secondary.dark,
     margin: spacing(0.5),
+    transition: 'background-color 0.2s linear',
   },
   filledOrb: {
     backgroundColor: palette.secondary.main,
