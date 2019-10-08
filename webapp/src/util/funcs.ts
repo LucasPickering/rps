@@ -81,3 +81,5 @@ export const tableToApiQuery = <T extends Record<string, any>>(
         snakeCase(query.orderBy.field.toString()),
   };
 };
+
+export const gamesToWin = (bestOf: number): number => Math.ceil(bestOf / 2);

@@ -9,18 +9,15 @@ import PlayerScore from './PlayerScore';
 import MoveIconCircle from './MoveIconCircle';
 import clsx from 'clsx';
 import { sizeMq } from 'util/styles';
-import PlayerOrbs from './PlayerOrbs';
 
 // Different classes based on screen size - responsive design!
 const useLocalClasses = makeStyles(({ breakpoints, spacing }) => ({
   // Scores
   score: {
     [sizeMq('small', breakpoints)]: {
-      // marginBottom: spacing(1),
       gridRow: 1,
     },
     [sizeMq('large', breakpoints)]: {
-      // marginBottom: spacing(2),
       gridRow: '1 / span 2',
     },
   },
@@ -123,10 +120,6 @@ const LiveMatchHeader: React.FC = () => {
         loading={!isParticipant && player1 && !player1.move}
         move={player1 && player1.move}
       />
-      <PlayerOrbs
-        className={clsx(localClasses.orbs, localClasses.p1Orbs)}
-        playerName={player1 && player1.username}
-      />
 
       {/* Neutral components */}
       <Typography
@@ -152,10 +145,6 @@ const LiveMatchHeader: React.FC = () => {
         className={clsx(localClasses.move, localClasses.p2Move)}
         loading={player2 && !player2.move}
         move={player2 && player2.move}
-      />
-      <PlayerOrbs
-        className={clsx(localClasses.orbs, localClasses.p2Orbs)}
-        playerName={player2 && player2.username}
       />
     </>
   );
