@@ -18,3 +18,8 @@ class PlayerQuerySet(QuerySet):
                 output_field=FloatField(),
             ),
         )
+
+
+class MatchQuerySet(QuerySet):
+    def annotate_losers(self):
+        return self  # TODO
