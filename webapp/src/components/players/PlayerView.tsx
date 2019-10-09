@@ -7,7 +7,7 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import useGetRequest from 'hooks/useGetRequest';
-import { PlayerHistory, getPlayerMatch } from 'state/player';
+import { Player, getPlayerMatch } from 'state/player';
 import Paper from 'components/common/Paper';
 import useStyles from 'hooks/useStyles';
 import { Match } from 'state/match';
@@ -19,6 +19,7 @@ import ApiErrorDisplay from 'components/common/ApiErrorDisplay';
 import PageLayout from 'components/common/PageLayout';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import clsx from 'clsx';
+import StaticTable from 'components/common/StaticTable';
 
 const useLocalStyles = makeStyles(({ palette, customPalette, typography }) => ({
   matchPanel: {
@@ -82,7 +83,7 @@ const PlayerView: React.FC<{
   username: string;
 }> = ({ username }) => {
   const classes = useStyles();
-  const { loading, data, error } = useGetRequest<PlayerHistory>(
+  const { loading, data, error } = useGetRequest<Player>(
     `/api/players/${username}/`
   );
 
@@ -90,19 +91,28 @@ const PlayerView: React.FC<{
     <PageLayout>
       <Typography className={classes.normalMessage}>{username}</Typography>
       {loading && <CircularProgress />}
-      {data &&
-        data.username === username &&
-        (data.matches.length ? (
-          <Grid container direction="column" spacing={2}>
-            {data.matches.map(match => (
-              <Grid key={match.id} item>
-                <MatchPanel username={username} match={match} />
-              </Grid>
-            ))}
+      {data && data.username === username && (
+        <Grid container direction="column" spacing={2}>
+          <Grid item xs={6}>
+            <Paper>
+              <Typography variant="h6">Record</Typography>
+              <StaticTable
+                size="small"
+                rows={[
+                  { title: 'Wins', value: data.matchWinCount },
+                  { title: 'Losses', value: data.matchLossCount },
+                  { title: 'Win%', value: data.matchWinPct },
+                ]}
+              />
+            </Paper>
           </Grid>
-        ) : (
-          <Typography className={classes.normalMessage}>No matches</Typography>
-        ))}
+          {data.matches.map(match => (
+            <Grid key={match.id} item>
+              <MatchPanel username={username} match={match} />
+            </Grid>
+          ))}
+        </Grid>
+      )}
       <ApiErrorDisplay error={error} resourceName="player" />
     </PageLayout>
   );

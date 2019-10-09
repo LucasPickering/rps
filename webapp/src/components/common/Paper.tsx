@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import React from 'react';
 
 const useLocalStyles = makeStyles(({ spacing }) => ({
-  root: {
+  paper: {
     padding: spacing(2),
   },
 }));
@@ -13,7 +13,7 @@ const Paper: React.FC<React.ComponentProps<typeof MuiPaper>> = ({
   ...rest
 }) => {
   const localClasses = useLocalStyles();
-  return <MuiPaper className={clsx(localClasses.root, className)} {...rest} />;
+  return <MuiPaper className={clsx(localClasses.paper, className)} {...rest} />;
 };
 
 export default Paper;

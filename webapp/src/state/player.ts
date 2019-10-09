@@ -9,8 +9,11 @@ export interface PlayerSummary {
   matchWinPct: number;
 }
 
-export interface PlayerHistory {
+export interface Player {
   username: string;
+  matchWinCount: number;
+  matchLossCount: number;
+  matchWinPct: number;
   matches: Match[];
 }
 
