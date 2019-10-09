@@ -1,23 +1,8 @@
-from django.utils import timezone
+from core.tests.factories import MatchConfigFactory, match_factory
 
-from core.tests.factories import MatchConfigFactory
-
-from ..models import Match, PlayerMatch, Player
+from ..models import Player
 from ..util import avg
 from .test_base import RpsTestCase
-
-
-def match_factory(player1, player2, winner):
-    # TODO make this a real factory class
-    m = Match.objects.create(
-        config=MatchConfigFactory(),
-        start_time=timezone.now(),
-        duration=10,
-        winner=winner,
-    )
-    PlayerMatch.objects.create(match=m, player=player1, player_num=0)
-    PlayerMatch.objects.create(match=m, player=player2, player_num=1)
-    return m
 
 
 class PlayerQuerySetTestCase(RpsTestCase):
