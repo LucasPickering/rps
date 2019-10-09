@@ -46,6 +46,14 @@ const RecentMatches: React.FC = () => {
             <PlayerLink username={row.winner}>{row.winner}</PlayerLink>
           ),
         },
+        {
+          title: 'Loser',
+          field: 'loser',
+          type: 'string',
+          render: row => (
+            <PlayerLink username={row.loser}>{row.loser}</PlayerLink>
+          ),
+        },
       ]}
       isLoading={loading}
       data={query =>

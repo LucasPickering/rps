@@ -35,6 +35,7 @@ export interface Match {
   games: Game[];
   players: [string, string];
   winner: string;
+  loser: string;
   parent?: number;
   rematch?: number;
 }

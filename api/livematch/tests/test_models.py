@@ -215,6 +215,7 @@ class LiveMatchTestCase(RpsTestCase):
         match = lm.permanent_match
         self.assertEqual(match.config, lm.config)
         self.assertEqual(match.winner, self.player2)
+        self.assertEqual(match.loser, self.player1)
 
         # rematch
         lm.accept_rematch(self.player1)

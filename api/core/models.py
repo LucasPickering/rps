@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-from .query import PlayerQuerySet, MatchQuerySet
+from .query import PlayerQuerySet
 from .util import avg, Move
 
 
@@ -132,8 +132,6 @@ class MatchConfig(models.Model):
 
 
 class Match(models.Model):
-    objects = MatchQuerySet.as_manager()
-
     start_time = models.DateTimeField()
     duration = models.PositiveIntegerField()  # Seconds
     config = models.ForeignKey(MatchConfig, on_delete=models.PROTECT)
@@ -151,14 +149,12 @@ class Match(models.Model):
     winner = models.ForeignKey(
         Player, related_name="match_wins", on_delete=models.PROTECT
     )
+    loser = models.ForeignKey(
+        Player, related_name="match_losses", on_delete=models.PROTECT
+    )
 
     class Meta:
         ordering = ("-start_time",)
-
-    @property
-    def loser(self):
-        # TODO put this on the queryset
-        return self.players.exclude(id=self.winner_id).first()
 
 
 class PlayerMatch(AbstractPlayerMatch):

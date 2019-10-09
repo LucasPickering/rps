@@ -259,6 +259,7 @@ class LiveMatch(models.Model):
             duration=(timezone.now() - self.start_time).total_seconds(),
             config=self.config,
             winner_id=winner_id,
+            loser=self.players.exclude(id=winner_id).first(),
         )
         self.permanent_match = match  # Connect the permanent match to this one
         self.save()
