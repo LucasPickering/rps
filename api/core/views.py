@@ -3,7 +3,7 @@ from rest_framework import generics, filters
 from . import models, serializers
 
 match_queryset = models.Match.objects.select_related(
-    "config", "winner"
+    "config", "winner", "loser", "rematch", "parent"
 ).prefetch_related(
     "players",
     "games",
@@ -42,6 +42,7 @@ class PlayerView(generics.RetrieveAPIView):
         "matches__config",
         "matches__parent",
         "matches__winner",
+        "matches__loser",
         "matches__players",
         "matches__games",
         "matches__games__winner",

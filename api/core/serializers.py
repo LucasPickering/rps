@@ -51,6 +51,7 @@ class MatchSerializer(serializers.ModelSerializer):
         slug_field="username", many=True, read_only=True
     )
     winner = serializers.SlugRelatedField(slug_field="username", read_only=True)
+    loser = serializers.SlugRelatedField(slug_field="username", read_only=True)
     parent = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
