@@ -92,7 +92,7 @@ const PlayerView: React.FC<{
       <Typography className={classes.pageSubtitle}>{username}</Typography>
       {loading && <CircularProgress />}
       {data && data.username === username && (
-        <Grid container direction="column" spacing={2}>
+        <Grid container spacing={2}>
           <Grid item xs={6}>
             <Paper>
               <Typography className={classes.panelTitle}>Record</Typography>
@@ -107,7 +107,7 @@ const PlayerView: React.FC<{
             </Paper>
           </Grid>
           {data.matches.map(match => (
-            <Grid key={match.id} item>
+            <Grid key={match.id} item xs={12}>
               <MatchPanel username={username} match={match} />
             </Grid>
           ))}
