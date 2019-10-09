@@ -1,14 +1,17 @@
 import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles(({ palette, spacing, typography }) => ({
-  minorMessage: {
-    ...typography.body1,
+  pageTitle: {
+    ...typography.h3,
   },
-  normalMessage: {
+  pageSubtitle: {
     ...typography.h5,
   },
-  majorMessage: {
-    ...typography.h3,
+  panelTitle: {
+    ...typography.h6,
+  },
+  caption: {
+    ...typography.body1,
   },
   errorMessage: {
     marginTop: spacing(1),

@@ -5,6 +5,7 @@ import useRequest from 'hooks/useRequest';
 import { PaginatedResponse, BaseRequestParams } from 'state/api';
 import { tableToApiQuery } from 'util/funcs';
 import PlayerLink from './PlayerLink';
+import { formatWinPct } from 'util/format';
 
 const tableOptions = {
   search: false,
@@ -46,7 +47,7 @@ const Leaderboard: React.FC = () => {
           title: 'Win%',
           field: 'matchWinPct',
           type: 'numeric',
-          render: row => row.matchWinPct.toFixed(3),
+          render: row => formatWinPct(row.matchWinPct),
         },
       ]}
       options={tableOptions}

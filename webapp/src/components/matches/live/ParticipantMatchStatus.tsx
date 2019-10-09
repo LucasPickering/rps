@@ -8,6 +8,7 @@ import useStyles from 'hooks/useStyles';
 import useNotifications from 'hooks/useNotifications';
 import { GameOutcome, Game } from 'state/match';
 import { User } from 'state/user';
+import useLiveMatchStyles from './useLiveMatchStyles';
 import MatchLink from '../MatchLink';
 
 /**
@@ -17,6 +18,7 @@ const ParticipantMatchStatus: React.FC<{
   user: User;
 }> = ({ user }) => {
   const classes = useStyles();
+  const liveMatchClasses = useLiveMatchStyles();
   const { players, games, permanentMatch, winner } = useContext(
     LiveMatchDataContext
   );
@@ -76,12 +78,14 @@ const ParticipantMatchStatus: React.FC<{
     return (
       <>
         <MatchLink matchId={permanentMatch}>
-          <Typography className={classes.normalMessage}>Match Over</Typography>
+          <Typography className={liveMatchClasses.normalMessage}>
+            Match Over
+          </Typography>
         </MatchLink>
-        <Typography className={classes.majorMessage}>
+        <Typography className={liveMatchClasses.majorMessage}>
           You {formatMatchOutcome(matchOutcome, 'past')}!
         </Typography>
-        <Typography className={classes.minorMessage}>
+        <Typography className={classes.caption}>
           {matchOutcomeSplash}
         </Typography>
       </>
@@ -92,7 +96,7 @@ const ParticipantMatchStatus: React.FC<{
   const lastGame = last(games);
   if (!self.isReady && lastGame) {
     return (
-      <Typography className={classes.normalMessage}>
+      <Typography className={liveMatchClasses.normalMessage}>
         {formatGameOutcome(getGameOutcome(lastGame))}
       </Typography>
     );

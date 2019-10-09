@@ -41,7 +41,7 @@ const PlayerName: React.FC<{ className?: string; username: string }> = ({
   const classes = useStyles();
   return (
     <Grid item xs={4}>
-      <Typography className={clsx(classes.normalMessage, className)}>
+      <Typography className={clsx(classes.pageSubtitle, className)}>
         <PlayerLink username={username}>
           <strong>{username}</strong>
         </PlayerLink>

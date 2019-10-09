@@ -22,10 +22,10 @@ const Home: React.FC = () => {
   return (
     <PageLayout maxWidth="md">
       <div className={localClasses.titleBox}>
-        <Typography className={classes.majorMessage}>
+        <Typography className={classes.pageTitle}>
           Rock Paper Scissors
         </Typography>
-        <Typography className={classes.minorMessage}>{welcome}</Typography>
+        <Typography className={classes.caption}>{welcome}</Typography>
       </div>
       <Grid container justify="center" spacing={2}>
         <Grid item xs={12} sm={6}>
