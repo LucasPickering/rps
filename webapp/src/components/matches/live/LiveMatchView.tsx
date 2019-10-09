@@ -21,15 +21,15 @@ import {
   LiveMatchDataContext,
   LiveMatchSendMessageContext,
 } from 'state/livematch';
-import useStyles from 'hooks/useStyles';
 import useWebSocket, { EventConsumer, MessageData } from 'hooks/useWebSocket';
-import LiveMatch from './LiveMatch';
-import ConnectionIndicator from './ConnectionIndicator';
 import PageLayout from 'components/common/PageLayout';
 import LiveMatchErrorDisplay from './LiveMatchErrorDisplay';
 import ApiErrorDisplay from 'components/common/ApiErrorDisplay';
 import useUser from 'hooks/useUser';
 import Form from 'components/common/Form';
+import useLiveMatchStyles from './useLiveMatchStyles';
+import LiveMatch from './LiveMatch';
+import ConnectionIndicator from './ConnectionIndicator';
 
 const useLocalStyles = makeStyles(() => ({
   loading: {
@@ -51,7 +51,7 @@ const useLocalStyles = makeStyles(() => ({
 const LiveMatchView: React.FC<{
   matchId: string;
 }> = ({ matchId }) => {
-  const classes = useStyles();
+  const liveMatchClasses = useLiveMatchStyles();
   const localClasses = useLocalStyles();
 
   const { user } = useUser();
@@ -115,7 +115,7 @@ const LiveMatchView: React.FC<{
     if (metadataLoading || status === 'connecting') {
       return (
         <>
-          <Typography className={classes.normalMessage}>
+          <Typography className={liveMatchClasses.normalMessage}>
             Connecting to server...
           </Typography>
           <LinearProgress className={localClasses.loading} />

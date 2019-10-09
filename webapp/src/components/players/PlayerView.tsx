@@ -11,7 +11,7 @@ import { Player, getPlayerMatch } from 'state/player';
 import Paper from 'components/common/Paper';
 import useStyles from 'hooks/useStyles';
 import { Match } from 'state/match';
-import { formatMatchOutcome, formatDateTime } from 'util/format';
+import { formatMatchOutcome, formatDateTime, formatWinPct } from 'util/format';
 import moment from 'moment';
 import PlayerLink from './PlayerLink';
 import MatchLink from 'components/matches/MatchLink';
@@ -89,19 +89,19 @@ const PlayerView: React.FC<{
 
   return (
     <PageLayout>
-      <Typography className={classes.normalMessage}>{username}</Typography>
+      <Typography className={classes.pageSubtitle}>{username}</Typography>
       {loading && <CircularProgress />}
       {data && data.username === username && (
         <Grid container direction="column" spacing={2}>
           <Grid item xs={6}>
             <Paper>
-              <Typography variant="h6">Record</Typography>
+              <Typography className={classes.panelTitle}>Record</Typography>
               <StaticTable
                 size="small"
                 rows={[
                   { title: 'Wins', value: data.matchWinCount },
                   { title: 'Losses', value: data.matchLossCount },
-                  { title: 'Win%', value: data.matchWinPct },
+                  { title: 'Win%', value: formatWinPct(data.matchWinPct) },
                 ]}
               />
             </Paper>

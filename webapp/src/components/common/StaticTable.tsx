@@ -7,6 +7,7 @@ import {
   TableBody,
 } from '@material-ui/core';
 import clsx from 'clsx';
+import { FieldType } from 'util/types';
 
 const useLocalStyles = makeStyles({
   cell: {
@@ -17,8 +18,32 @@ const useLocalStyles = makeStyles({
   },
 });
 
+interface RowProps {
+  title: string;
+  value: React.ReactNode;
+  align?: FieldType<React.ComponentProps<typeof TableCell>, 'align'>;
+}
+
+const Row = ({ title, value, align }: RowProps): React.ReactElement => {
+  const localClasses = useLocalStyles();
+  return (
+    <TableRow key={title}>
+      <TableCell className={clsx(localClasses.cell, localClasses.titleCell)}>
+        {title}
+      </TableCell>
+      <TableCell className={localClasses.cell} align={align}>
+        {value}
+      </TableCell>
+    </TableRow>
+  );
+};
+
+Row.defaultProps = {
+  align: 'right',
+};
+
 interface Props {
-  rows: { title: string; value: React.ReactNode }[];
+  rows: RowProps[];
 }
 
 /**
@@ -29,20 +54,11 @@ const StaticTable = ({
   rows,
   ...rest
 }: Props & React.ComponentProps<typeof Table>): React.ReactElement => {
-  const localClasses = useLocalStyles();
-
   return (
     <Table {...rest}>
       <TableBody>
-        {rows.map(({ title, value }) => (
-          <TableRow key={title}>
-            <TableCell
-              className={clsx(localClasses.cell, localClasses.titleCell)}
-            >
-              {title}
-            </TableCell>
-            <TableCell className={localClasses.cell}>{value}</TableCell>
-          </TableRow>
+        {rows.map(row => (
+          <Row key={row.title} {...row} />
         ))}
       </TableBody>
     </Table>

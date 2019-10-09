@@ -15,7 +15,7 @@ const WaitingMessage: React.FC<{ message: string }> = ({ message }) => {
   return (
     <>
       <CircularProgress />
-      <Typography className={classes.minorMessage}>
+      <Typography className={classes.caption}>
         Waiting for {message}...
       </Typography>
     </>
@@ -73,7 +73,7 @@ const ParticipantActions: React.FC<{
           </Button>
         )}
         {opponent.acceptedRematch && (
-          <Typography className={classes.minorMessage}>
+          <Typography className={classes.caption}>
             {opponent.username} wants to rematch
           </Typography>
         )}

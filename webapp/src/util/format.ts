@@ -57,3 +57,9 @@ export const formatDuration = (duration: Duration): string => {
   const durationSecFmt = `${duration.seconds()}s`;
   return `${durationHrsFmt}${durationMinFmt}${durationSecFmt}`;
 };
+
+/**
+ * Formats a win percentage [0-1] (yes... I know that's not a percentage) as
+ * a string.
+ */
+export const formatWinPct = (winPct: number): string => winPct.toFixed(3);

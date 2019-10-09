@@ -9,8 +9,8 @@ const NotFoundView: React.FC = () => {
   const message = useSplashMessage(notFoundSplashes);
   return (
     <PageLayout>
-      <Typography className={classes.majorMessage}>Not Found</Typography>
-      <Typography className={classes.normalMessage}>{message}</Typography>
+      <Typography className={classes.pageTitle}>Not Found</Typography>
+      <Typography className={classes.pageSubtitle}>{message}</Typography>
     </PageLayout>
   );
 };

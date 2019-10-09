@@ -7,6 +7,7 @@ import MaterialTable, { Options } from 'material-table';
 import { PaginatedResponse, BaseRequestParams } from 'state/api';
 import useRequest from 'hooks/useRequest';
 import { tableToApiQuery } from 'util/funcs';
+import { formatWinPct } from 'util/format';
 
 const tableOptions: Options = {
   pageSizeOptions: [],
@@ -21,7 +22,7 @@ const PlayersView: React.FC = () => {
   });
 
   return (
-    <PageLayout>
+    <PageLayout maxWidth="md">
       <MaterialTable
         title="Players"
         options={tableOptions}
@@ -49,7 +50,7 @@ const PlayersView: React.FC = () => {
             field: 'matchWinPct',
             type: 'numeric',
             defaultSort: 'desc',
-            render: row => row.matchWinPct.toFixed(3),
+            render: row => formatWinPct(row.matchWinPct),
           },
         ]}
         isLoading={loading}

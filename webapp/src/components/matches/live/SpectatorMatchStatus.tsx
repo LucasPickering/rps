@@ -1,14 +1,14 @@
 import React, { useContext } from 'react';
-import { LiveMatchDataContext } from 'state/livematch';
-import useStyles from 'hooks/useStyles';
 import { Typography } from '@material-ui/core';
+import { LiveMatchDataContext } from 'state/livematch';
+import useLiveMatchStyles from './useLiveMatchStyles';
 import MatchLink from '../MatchLink';
 
 /**
  * Game and match status messages for a spectator. Nothing interactive here.
  */
 const SpectatorMatchStatus: React.FC = () => {
-  const classes = useStyles();
+  const liveMatchClasses = useLiveMatchStyles();
   const { permanentMatch, winner } = useContext(LiveMatchDataContext);
 
   // Match is over
@@ -16,9 +16,13 @@ const SpectatorMatchStatus: React.FC = () => {
   return permanentMatch && winner ? (
     <>
       <MatchLink matchId={permanentMatch}>
-        <Typography className={classes.normalMessage}>Match Over</Typography>
+        <Typography className={liveMatchClasses.normalMessage}>
+          Match Over
+        </Typography>
       </MatchLink>
-      <Typography className={classes.majorMessage}>{winner} won!</Typography>
+      <Typography className={liveMatchClasses.majorMessage}>
+        {winner} won!
+      </Typography>
     </>
   ) : null;
 };
