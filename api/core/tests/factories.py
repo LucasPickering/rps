@@ -37,6 +37,7 @@ def match_factory(player1, player2, winner):
         start_time=timezone.now(),
         duration=10,
         winner=winner,
+        loser=player1 if player2 == winner else player2,
     )
     PlayerMatch.objects.create(match=m, player=player1, player_num=0)
     PlayerMatch.objects.create(match=m, player=player2, player_num=1)
