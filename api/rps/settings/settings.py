@@ -37,9 +37,8 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "rest_auth",
     "debug_toolbar",
-    "oauth2_provider",
     "social_django",
-    "rest_framework_social_oauth2",
+    "rest_social_auth",
 ]
 
 MIDDLEWARE = [
@@ -75,9 +74,8 @@ TEMPLATES = [
 
 # social auth
 AUTHENTICATION_BACKENDS = (
-    "social_core.backends.open_id.OpenIdAuth",
-    "social_core.backends.google.GoogleOpenId",
     "social_core.backends.google.GoogleOAuth2",
+    "django.contrib.auth.backends.ModelBackend",
 )
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "/"
@@ -90,10 +88,6 @@ REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend"
     ],
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
-        "rest_framework_social_oauth2.authentication.SocialAuthentication",
-    ],
 }
 
 REST_AUTH_SERIALIZERS = {
@@ -104,7 +98,9 @@ ASGI_APPLICATION = "rps.routing.application"
 
 APPEND_SLASH = True
 
-
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = "<KEY HERE>"
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = "<KEY HERRE>"
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ["email", "profile"]
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
