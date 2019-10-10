@@ -29,6 +29,10 @@ If you do a migration or want to add more data to the dev DB, you should update 
 ./managepy.sh dumpdata auth core > api/core/fixtures/init.json
 ```
 
+### Setup Google Auth
+You need to get an OAuth key and secret from [here](https://console.developers.google.com/apis/credentials). The OAuth consent authorized domains can be anything. 
+The authorized origin should include `http://localhost:3000` when running locally. The redirect URL should be `http://localhost:3000/What/ever/the/redirect/is`.
+
 ## Deployment
 
 ### Building & Pushing Images
