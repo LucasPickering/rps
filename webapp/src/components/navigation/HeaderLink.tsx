@@ -30,11 +30,13 @@ const useLocalStyles = makeStyles(({ palette, typography }) => {
   };
 });
 
+/**
+ * A link in the top header bar.
+ */
 const HeaderLink: React.FC<React.ComponentProps<typeof NavLink>> = ({
   className,
   ...rest
 }) => {
-  // const linkClasses = useLinkStyles();
   const localClasses = useLocalStyles();
   return (
     <span className={localClasses.linkContainer}>

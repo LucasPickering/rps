@@ -20,7 +20,6 @@ const useLocalStyles = makeStyles(({ spacing }) => ({
   large: {
     fontSize: 24,
     gridTemplateColumns: '1fr 1fr 3fr 1fr 1fr',
-    gridRowGap: spacing(0.5),
     gridColumnGap: spacing(1),
   },
   tie: {

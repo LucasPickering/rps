@@ -1,8 +1,8 @@
 import { makeStyles } from '@material-ui/core';
 import React, { useEffect } from 'react';
-import RootRoutes from './routes/RootRoutes';
-import HeaderBar from './header/HeaderBar';
 import useUser from 'hooks/useUser';
+import RootRoutes from './routes/RootRoutes';
+import Navigation from './navigation/Navigation';
 import PageFooter from './common/PageFooter';
 import FlexBox from './common/FlexBox';
 
@@ -32,7 +32,7 @@ const PageContainer: React.FC = () => {
   // Only render the page if user data is loaded
   return (
     <FlexBox className={localClasses.root} flexDirection="column">
-      <HeaderBar />
+      <Navigation />
       <RootRoutes />
       <PageFooter />
     </FlexBox>
