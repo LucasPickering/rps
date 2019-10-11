@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './components/App';
@@ -13,10 +12,6 @@ import {
 
 import './index.css';
 import * as serviceWorker from './serviceWorker';
-
-// axios setup to cooperate with Django's CSRF policy
-axios.defaults.xsrfCookieName = 'csrftoken';
-axios.defaults.xsrfHeaderName = 'X-CSRFTOKEN';
 
 library.add(faHandRock, faHandPaper, faHandScissors, faHandLizard, faHandSpock);
 

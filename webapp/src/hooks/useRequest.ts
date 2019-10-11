@@ -1,11 +1,14 @@
-import axios from 'axios';
-import { useCallback, useMemo, useReducer } from 'react';
+import axios, { CancelTokenSource, AxiosRequestConfig } from 'axios';
+import { useCallback, useMemo, useReducer, useRef, useEffect } from 'react';
 import { ApiState, ApiError, RequestConfig } from 'state/api';
 import useDeepMemo from './useDeepMemo';
-import useIsMounted from './useIsMounted';
 import camelcaseKeys from 'camelcase-keys';
 import snakeCaseKeys from 'snakecase-keys';
 import { Dictionary } from 'lodash';
+
+// axios setup to cooperate with Django's CSRF policy
+axios.defaults.xsrfCookieName = 'csrftoken';
+axios.defaults.xsrfHeaderName = 'X-CSRFTOKEN';
 
 enum ApiActionType {
   Request,
@@ -64,53 +67,62 @@ const defaultApiState = {
  * @typeparam D the type of POST data
  */
 const useRequest = <R, E = {}, P = undefined, D = undefined>(
-  config: RequestConfig<P, D>
+  baseRequestConfig: RequestConfig<P, D>
 ): {
   state: ApiState<R, E>;
-  request: (subConfig?: RequestConfig<P, D>) => Promise<R>;
+  request: (requestConfig?: RequestConfig<P, D>) => Promise<R>;
 } => {
   const [state, dispatch] = useReducer<
     React.Reducer<ApiState<R, E>, ApiAction<R, E>>
   >(apiReducer, defaultApiState);
 
-  // Prevent updates after unmounting
-  const isMounted = useIsMounted();
+  const cancelTokenSource = useRef<CancelTokenSource>(
+    axios.CancelToken.source()
+  );
+  // Auto-cancel requests on unmount
+  useEffect(() => () => cancelTokenSource.current.cancel(), []);
 
-  // Everything here is memoized to prevent unnecessary re-renders and
-  // effect triggers
-
-  const configMemo = useDeepMemo(config);
+  // This is memoized to prevent unnecessary effect triggers
+  const baseRequestConfigMemo = useDeepMemo(baseRequestConfig);
 
   const request = useCallback(
-    (subConfig?: RequestConfig<P, D>) => {
-      dispatch({ type: ApiActionType.Request });
+    (requestConfig?: RequestConfig<P, D>) => {
+      // Cancel any existing request and start a new one
+      cancelTokenSource.current.cancel();
+      cancelTokenSource.current = axios.CancelToken.source();
+
+      const fullRequestConfig: AxiosRequestConfig = {
+        cancelToken: cancelTokenSource.current.token,
+        ...baseRequestConfigMemo,
+        ...requestConfig,
+      };
       // Convert keys to snake case so the API can handle them
-      const data =
-        subConfig &&
-        subConfig.data &&
-        snakeCaseKeys((subConfig.data as unknown) as Dictionary<unknown>);
-      return new Promise<R>((resolve, reject) => {
-        axios
-          .request({ ...configMemo, ...subConfig, data })
-          .then(response => {
-            const camelData =
-              response.data &&
-              ((camelcaseKeys(response.data, { deep: true }) as unknown) as R);
-            if (isMounted.current) {
-              dispatch({ type: ApiActionType.Success, data: camelData });
-              resolve(camelData);
-            }
-          })
-          .catch(errorContainer => {
-            const error = errorContainer.response;
-            if (isMounted.current) {
-              dispatch({ type: ApiActionType.Error, error });
-              reject(error);
-            }
-          });
-      });
+      fullRequestConfig.data =
+        fullRequestConfig.data &&
+        snakeCaseKeys((fullRequestConfig.data as unknown) as Dictionary<
+          unknown
+        >);
+
+      dispatch({ type: ApiActionType.Request });
+      return axios
+        .request(fullRequestConfig)
+        .then(response => {
+          const camelData =
+            response.data &&
+            ((camelcaseKeys(response.data, { deep: true }) as unknown) as R);
+
+          dispatch({ type: ApiActionType.Success, data: camelData });
+          return camelData;
+        })
+        .catch(error => {
+          const errorData = error.response;
+          if (!axios.isCancel(error)) {
+            dispatch({ type: ApiActionType.Error, error: errorData });
+          }
+          throw error; // Caller will have to handle this
+        });
     },
-    [configMemo, dispatch, isMounted]
+    [baseRequestConfigMemo, dispatch]
   );
 
   return useMemo(
