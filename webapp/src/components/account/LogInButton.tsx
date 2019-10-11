@@ -1,6 +1,6 @@
 import { Button } from '@material-ui/core';
 import React from 'react';
-import { RouteComponentProps, withRouter } from 'react-router';
+import { useLocation } from 'react-router';
 import queryString from 'query-string';
 import ButtonLink from 'components/common/ButtonLink';
 
@@ -10,9 +10,9 @@ import ButtonLink from 'components/common/ButtonLink';
  * worth having its own component.
  */
 const LogInButton: React.FC<
-  RouteComponentProps &
-    Pick<React.ComponentProps<typeof Button>, 'variant' | 'color'>
-> = ({ location: { pathname }, variant, color }) => {
+  Pick<React.ComponentProps<typeof Button>, 'variant' | 'color'>
+> = ({ variant, color }) => {
+  const { pathname } = useLocation();
   const paramsStr =
     pathname !== 'login'
       ? '?' + queryString.stringify({ next: pathname }, { encode: false })
@@ -29,4 +29,4 @@ const LogInButton: React.FC<
   );
 };
 
-export default withRouter(LogInButton);
+export default LogInButton;

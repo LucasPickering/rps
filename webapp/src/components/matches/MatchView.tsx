@@ -1,5 +1,4 @@
 import React from 'react';
-import withRouteParams from 'hoc/withRouteParams';
 import {
   Grid,
   CircularProgress,
@@ -22,6 +21,10 @@ import {
   ChevronLeft as IconChevronLeft,
   ChevronRight as IconChevronRight,
 } from '@material-ui/icons';
+import { useParams } from 'react-router';
+interface RouteParams {
+  matchId: string;
+}
 
 const useLocalStyles = makeStyles(({ typography }) => ({
   configText: {
@@ -102,9 +105,8 @@ const MatchDataView: React.FC<{ match: Match }> = ({ match }) => {
   );
 };
 
-const MatchView: React.FC<{
-  matchId: string;
-}> = ({ matchId }) => {
+const MatchView: React.FC = () => {
+  const { matchId } = useParams<RouteParams>();
   const { loading, data, error } = useGetRequest<Match>(
     `/api/matches/${matchId}/`
   );
@@ -118,4 +120,4 @@ const MatchView: React.FC<{
   );
 };
 
-export default withRouteParams(MatchView);
+export default MatchView;

@@ -1,6 +1,4 @@
 import React, { useReducer, useCallback, useEffect, useState } from 'react';
-import withRouteParams from 'hoc/withRouteParams';
-
 import {
   Typography,
   LinearProgress,
@@ -8,6 +6,7 @@ import {
   Modal,
   Button,
 } from '@material-ui/core';
+import { useParams } from 'react-router';
 import useGetRequest from 'hooks/useGetRequest';
 import {
   LiveMatchMetadata,
@@ -31,6 +30,10 @@ import useLiveMatchStyles from './useLiveMatchStyles';
 import LiveMatch from './LiveMatch';
 import ConnectionIndicator from './ConnectionIndicator';
 
+interface RouteParams {
+  matchId: string;
+}
+
 const useLocalStyles = makeStyles(() => ({
   loading: {
     width: '100%',
@@ -48,12 +51,11 @@ const useLocalStyles = makeStyles(() => ({
  * will fetch the match config from the API, and establish a websocket
  * connection to participate in/spectate the match.
  */
-const LiveMatchView: React.FC<{
-  matchId: string;
-}> = ({ matchId }) => {
+const LiveMatchView: React.FC = () => {
   const liveMatchClasses = useLiveMatchStyles();
   const localClasses = useLocalStyles();
 
+  const { matchId } = useParams<RouteParams>();
   const { user } = useUser();
   const {
     loading: metadataLoading,
@@ -178,4 +180,4 @@ const LiveMatchView: React.FC<{
   );
 };
 
-export default withRouteParams(LiveMatchView);
+export default LiveMatchView;
