@@ -31,6 +31,12 @@ const useLocalStyles = makeStyles(({ breakpoints, palette, spacing }) => ({
   },
   self: {
     color: palette.secondary.main,
+    '& $orb': {
+      borderColor: palette.secondary.main,
+    },
+    '& $filledOrb': {
+      backgroundColor: palette.secondary.main,
+    },
   },
   orb: {
     borderRadius: '100%',
@@ -38,7 +44,7 @@ const useLocalStyles = makeStyles(({ breakpoints, palette, spacing }) => ({
     borderStyle: 'solid',
     transition: 'background-color 0.2s linear',
     margin: spacing(0.25),
-    borderColor: palette.secondary.dark,
+    borderColor: palette.text.primary,
 
     [sizeMq('small', breakpoints)]: {
       width: 8,
@@ -50,7 +56,7 @@ const useLocalStyles = makeStyles(({ breakpoints, palette, spacing }) => ({
     },
   },
   filledOrb: {
-    backgroundColor: palette.secondary.main,
+    backgroundColor: palette.text.primary,
   },
 }));
 
