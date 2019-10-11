@@ -3,7 +3,7 @@ import React, { useState, useContext } from 'react';
 import useUser from 'hooks/useUser';
 import { UserStateContext, User } from 'state/user';
 import useRequest from 'hooks/useRequest';
-import { Redirect, RouteComponentProps, withRouter } from 'react-router';
+import { Redirect, useLocation } from 'react-router';
 import LoadingButton from 'components/common/LoadingButton';
 import queryString from 'query-string';
 import Form from 'components/common/Form';
@@ -15,8 +15,9 @@ interface LoginFormData {
   password: string;
 }
 
-const LoginView: React.FC<RouteComponentProps> = ({ location }) => {
+const LoginView: React.FC = () => {
   const classes = useStyles();
+  const location = useLocation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const { user, requestUser } = useUser();
@@ -81,4 +82,4 @@ const LoginView: React.FC<RouteComponentProps> = ({ location }) => {
   );
 };
 
-export default withRouter(LoginView);
+export default LoginView;

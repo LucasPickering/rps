@@ -1,5 +1,4 @@
 import React from 'react';
-import withRouteParams from 'hoc/withRouteParams';
 import {
   Grid,
   CircularProgress,
@@ -20,6 +19,11 @@ import PageLayout from 'components/common/PageLayout';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import clsx from 'clsx';
 import StaticTable from 'components/common/StaticTable';
+import { useParams } from 'react-router';
+
+interface RouteParams {
+  username: string;
+}
 
 const useLocalStyles = makeStyles(({ palette, customPalette, typography }) => ({
   matchPanel: {
@@ -79,10 +83,9 @@ const MatchPanel: React.FC<{ username: string; match: Match }> = ({
   );
 };
 
-const PlayerView: React.FC<{
-  username: string;
-}> = ({ username }) => {
+const PlayerView: React.FC = () => {
   const classes = useStyles();
+  const { username } = useParams<RouteParams>();
   const { loading, data, error } = useGetRequest<Player>(
     `/api/players/${username}/`
   );
@@ -118,4 +121,4 @@ const PlayerView: React.FC<{
   );
 };
 
-export default withRouteParams(PlayerView);
+export default PlayerView;

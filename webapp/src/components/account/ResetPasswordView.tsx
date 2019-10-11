@@ -1,13 +1,17 @@
 import { TextField, makeStyles, Typography } from '@material-ui/core';
 import React, { useState } from 'react';
-import { RouteComponentProps, withRouter } from 'react-router';
+import { useHistory, useParams } from 'react-router';
 import { User } from 'state/user';
 import useRequest from 'hooks/useRequest';
 import LoadingButton from 'components/common/LoadingButton';
-import withRouteParams from 'hoc/withRouteParams';
 import { validatePassword, formatValidationError } from 'util/password';
 import Form from 'components/common/Form';
 import PageLayout from 'components/common/PageLayout';
+
+interface RouteProps {
+  uid: string;
+  token: string;
+}
 
 interface ResetApiError {
   uid?: string[];
@@ -27,10 +31,10 @@ const useLocalStyles = makeStyles(({ spacing, palette }) => ({
   },
 }));
 
-const ResetPasswordView: React.FC<
-  RouteComponentProps & { uid: string; token: string }
-> = ({ history, uid, token }) => {
+const ResetPasswordView: React.FC = () => {
   const localClasses = useLocalStyles();
+  const history = useHistory();
+  const { uid, token } = useParams<RouteProps>();
   const [password1, setPassword1] = useState('');
   const [password2, setPassword2] = useState('');
   const {
@@ -97,4 +101,4 @@ const ResetPasswordView: React.FC<
   );
 };
 
-export default withRouteParams(withRouter(ResetPasswordView));
+export default ResetPasswordView;
