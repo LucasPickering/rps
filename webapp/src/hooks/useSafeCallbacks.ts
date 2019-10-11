@@ -1,13 +1,6 @@
 import { useRef } from 'react';
 import { isEqual } from 'lodash';
 
-export enum ConnectionStatus {
-  Connecting,
-  Connected,
-  ClosedError,
-  ClosedNormal,
-}
-
 /**
  * Hook that provides a safety check on an object of callbacks, making sure
  * none of them changed. We want to prevent bugs where sockets get re-opened

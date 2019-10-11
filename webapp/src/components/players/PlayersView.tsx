@@ -55,21 +55,15 @@ const PlayersView: React.FC = () => {
         ]}
         isLoading={loading}
         data={query =>
-          new Promise((resolve, reject) =>
-            request({
-              params: {
-                ...tableToApiQuery(query),
-              },
-            })
-              .then(response =>
-                resolve({
-                  data: response.results,
-                  page: query.page,
-                  totalCount: response.count,
-                })
-              )
-              .catch(error => reject(error))
-          )
+          request({
+            params: {
+              ...tableToApiQuery(query),
+            },
+          }).then(response => ({
+            data: response.results,
+            page: query.page,
+            totalCount: response.count,
+          }))
         }
       />
       <ApiErrorDisplay error={error} resourceName="player" />
