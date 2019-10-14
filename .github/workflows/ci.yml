@@ -10,7 +10,7 @@ jobs:
       - name: Build API image
         run: docker-compose -f docker-compose.ci.yml build api
       - name: Test API
-        run: docker-compose -f docker-compose.ci.yml run api ./run_checks.sh
+        run: docker-compose -f docker-compose.ci.yml run api ./docker/run_checks.sh
       - name: Push API image
         if: github.ref == 'refs/heads/master'
         run: |
