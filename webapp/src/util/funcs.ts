@@ -4,14 +4,6 @@ import { BaseRequestParams } from 'state/api';
 import { Query } from 'material-table';
 import { snakeCase } from 'lodash';
 
-export const getEnv = (key: string): string => {
-  const val = process.env[key]; // eslint-disable-line no-undef
-  if (val === undefined) {
-    throw Error(`Undefined env variable: ${key}`);
-  }
-  return val;
-};
-
 /**
  * Counts the number of occurrences of an element in an array.
  * @param arr the array to count in
