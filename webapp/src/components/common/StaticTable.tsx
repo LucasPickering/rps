@@ -9,14 +9,17 @@ import {
 import clsx from 'clsx';
 import { FieldType } from 'util/types';
 
-const useLocalStyles = makeStyles({
+const useLocalStyles = makeStyles(({ spacing }) => ({
   cell: {
     border: 'none',
+    '&.MuiTableCell-sizeSmall': {
+      padding: spacing(1),
+    },
   },
   titleCell: {
     fontWeight: 'bold',
   },
-});
+}));
 
 interface RowProps {
   title: string;
