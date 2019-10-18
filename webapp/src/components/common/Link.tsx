@@ -24,15 +24,19 @@ export const useLinkStyles = makeStyles(({ palette }) => ({
   },
 }));
 
-const Link: React.FC<
-  React.ComponentProps<typeof RouterLink> & { sameTab?: boolean }
-> = ({ className, to, children, sameTab, ...rest }) => {
+const Link: React.FC<React.ComponentProps<typeof RouterLink>> = ({
+  className,
+  to,
+  children,
+  ...rest
+}) => {
   const localClasses = useLinkStyles();
   return to.toString().match(/^https?:/) ? (
     <a
       className={clsx(localClasses.link, className)}
       href={to.toString()}
-      {...(sameTab ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
+      target="_blank"
+      rel="noopener noreferrer"
       {...rest}
     >
       {children}

@@ -13,15 +13,11 @@ const useLocalStyles = makeStyles({
 
 const ButtonLink: React.FC<
   React.ComponentProps<typeof Button> &
-    Pick<React.ComponentProps<typeof Link>, 'to' | 'sameTab'>
-> = ({ className, to, sameTab, ...rest }) => {
+    Pick<React.ComponentProps<typeof Link>, 'to'>
+> = ({ className, to, ...rest }) => {
   const localClasses = useLocalStyles();
   return (
-    <Link
-      className={clsx(localClasses.link, className)}
-      to={to}
-      sameTab={sameTab}
-    >
+    <Link className={clsx(localClasses.link, className)} to={to}>
       <Button {...rest} />
     </Link>
   );
