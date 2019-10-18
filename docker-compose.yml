@@ -22,8 +22,7 @@ services:
     build: ./api/
     command: sh -c "dockerize -wait tcp://db:5432 && ./manage.py runserver 0.0.0.0:8000"
     environment:
-      - RPS_GOOGLE_CLIENT_ID
-      - RPS_GOOGLE_CLIENT_SECRET
+      - RPS_HOSTNAME
     volumes:
       - ./api/:/app/api:rw
     depends_on:

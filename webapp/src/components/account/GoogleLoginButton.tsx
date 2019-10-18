@@ -9,7 +9,7 @@ const GoogleLoginButton: React.FC = () => {
   const query = queryString.stringify({
     /* eslint-disable @typescript-eslint/camelcase */
     client_id: CLIENT_ID,
-    response_type: 'token',
+    response_type: 'code',
     redirect_uri: `${window.origin}/account/login/redirect/google`,
     prompt: 'select_account',
     scope: 'profile email',

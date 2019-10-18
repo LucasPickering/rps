@@ -37,7 +37,8 @@ If you do a migration or want to add more data to the dev DB, you should update 
   - If you develop on non-`localhost`, you'll have to make a hosts file rule for a bogus domain name, and use that.
 - To expose the client ID to the browser:
   - `cp .env.example .env`
-  - Copy the client ID into `.env`
+  - If you're not using localhost, change the value for `RPS_HOSTNAME`
+  - Set `RPS_GOOGLE_CLIENT_ID` to the client ID from Google
 
 ## Deployment
 
