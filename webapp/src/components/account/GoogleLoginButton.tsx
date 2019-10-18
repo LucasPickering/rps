@@ -1,21 +1,20 @@
 import React from 'react';
-import { getEnv } from 'util/funcs';
 import queryString from 'query-string';
 import { GoogleLogo } from 'components/common/icons';
 import { Button } from '@material-ui/core';
 
-const CLIENT_ID = getEnv('REACT_APP_GOOGLE_CLIENT_ID');
+const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
 const GoogleLoginButton: React.FC = () => {
-  /* eslint-disable @typescript-eslint/camelcase */
   const query = queryString.stringify({
+    /* eslint-disable @typescript-eslint/camelcase */
     client_id: CLIENT_ID,
     response_type: 'token',
     redirect_uri: `${window.origin}/account/login/redirect/google`,
     prompt: 'select_account',
     scope: 'profile email',
+    /* eslint-enable */
   });
-  /* eslint-enable */
 
   return (
     <Button
