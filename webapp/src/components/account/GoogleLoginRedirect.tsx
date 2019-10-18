@@ -11,7 +11,7 @@ import LoadingButton from 'components/common/LoadingButton';
 import Form from 'components/common/Form';
 
 interface RequestData {
-  accessToken: string;
+  code: string;
   username?: string;
 }
 
@@ -21,9 +21,9 @@ const GoogleLoginRedirect: React.FC = () => {
   // the username form code in for now though, might be able to use it later.
 
   const { requestUser } = useUser();
-  const { hash } = useLocation();
-  const query = queryString.parse(hash);
-  const accessToken = (query.access_token || '').toString();
+  const { search } = useLocation();
+  const query = queryString.parse(search);
+  const code = (query.code || '').toString();
   const [requireUsername, setRequireUsername] = useState(false);
   const [username, setUsername] = useState('');
 
@@ -36,13 +36,13 @@ const GoogleLoginRedirect: React.FC = () => {
   });
 
   useEffect(() => {
-    request({ data: { accessToken } })
+    request({ data: { code } })
       .then(requestUser)
       .catch(() => {
         // TODO better error checking
         setRequireUsername(true);
       });
-  }, [request, accessToken, requestUser]);
+  }, [request, code, requestUser]);
 
   return (
     <PageLayout maxWidth="xs">
@@ -50,7 +50,7 @@ const GoogleLoginRedirect: React.FC = () => {
       {requireUsername ? (
         <Form
           onSubmit={() => {
-            request({ data: { accessToken, username } }).then(requestUser);
+            request({ data: { code, username } }).then(requestUser);
           }}
         >
           <TextField
