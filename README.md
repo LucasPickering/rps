@@ -31,14 +31,13 @@ If you do a migration or want to add more data to the dev DB, you should update 
 
 ### Setup Google Auth
 
-- `cp .env.example .env`
-- [Go here](https://console.developers.google.com/apis/credentials)
-- Select OAuth client ID
-  - Select Web application
-  - Name: Literally anything
-  - Authorized origins: `https://localhost:3000` (or whatever host you develop on)
-  - Redirect URIs: `https://localhost:3000/account/login/redirect`
-- Copy the client key and secret into `.env`
+- Follow [these steps](https://django-allauth.readthedocs.io/en/latest/providers.html#google) to set up your OAuth client
+  - For the authorized origin, use `https://localhost:3000`
+  - For the callback URI, use `https://localhost:3000/account/login/redirect/google`
+  - If you develop on non-`localhost`, you'll have to make a hosts file rule for a bogus domain name, and use that.
+- To expose the client ID to the browser:
+  - `cp .env.example .env`
+  - Copy the client ID into `.env`
 
 ## Deployment
 
