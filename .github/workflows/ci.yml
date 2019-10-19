@@ -40,5 +40,5 @@ jobs:
         if: github.ref == 'refs/heads/master'
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          RPS_GOOGLE_CLIENT_ID=${{ secrets.RPS_GOOGLE_CLIENT_ID }} docker-compose -f docker-compose.ci.yml build static
+          env RPS_GOOGLE_CLIENT_ID=${{ secrets.RPS_GOOGLE_CLIENT_ID }} docker-compose -f docker-compose.ci.yml build static
           docker-compose -f docker-compose.ci.yml push static
