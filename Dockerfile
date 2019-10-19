@@ -4,7 +4,7 @@ RUN ./manage.py collectstatic --no-input
 
 # Build the JS artifact
 FROM lucaspickering/rps-webapp:latest as js-builder
-RUN npm run build
+RUN npm run build && rm build/static/js/*.map
 
 # Build the static file image
 FROM alpine:latest
