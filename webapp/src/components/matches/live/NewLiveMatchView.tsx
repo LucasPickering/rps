@@ -48,7 +48,7 @@ const NewLiveMatchView: React.FC = () => {
   }
 
   return (
-    <PageLayout maxWidth="xs">
+    <PageLayout maxWidth="xs" restriction="loggedIn">
       <Form
         className={localClasses.form}
         size="small"

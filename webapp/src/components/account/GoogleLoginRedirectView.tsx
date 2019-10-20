@@ -6,7 +6,6 @@ import useRequest from 'hooks/useRequest';
 import { CircularProgress, TextField } from '@material-ui/core';
 import ApiErrorDisplay from 'components/common/ApiErrorDisplay';
 import useUser from 'hooks/useUser';
-import LoginRedirect from './LoginRedirect';
 import LoadingButton from 'components/common/LoadingButton';
 import Form from 'components/common/Form';
 
@@ -15,7 +14,7 @@ interface RequestData {
   username?: string;
 }
 
-const GoogleLoginRedirect: React.FC = () => {
+const GoogleLoginRedirectView: React.FC = () => {
   // NOTE: A lot of this is dead code, because right now I haven't figured out
   // how to make django-allauth require a username input from the user. Leaving
   // the username form code in for now though, might be able to use it later.
@@ -45,8 +44,7 @@ const GoogleLoginRedirect: React.FC = () => {
   }, [request, code, requestUser]);
 
   return (
-    <PageLayout maxWidth="xs">
-      <LoginRedirect />
+    <PageLayout maxWidth="xs" restriction="notLoggedIn">
       {requireUsername ? (
         <Form
           onSubmit={() => {
@@ -77,4 +75,4 @@ const GoogleLoginRedirect: React.FC = () => {
   );
 };
 
-export default GoogleLoginRedirect;
+export default GoogleLoginRedirectView;

@@ -3,8 +3,8 @@ import { Route, Switch } from 'react-router-dom';
 import LoginView from 'components/account/LoginView';
 import SocialConnectView from 'components/account/SocialConnectView';
 import NotFoundView from 'components/NotFoundView';
-import GoogleLoginRedirect from 'components/account/GoogleLoginRedirect';
-import GoogleConnectRedirect from 'components/account/GoogleConnectRedirect';
+import GoogleLoginRedirectView from 'components/account/GoogleLoginRedirectView';
+import GoogleConnectRedirectView from 'components/account/GoogleConnectRedirectView';
 
 const AccountRoutes: React.FC = () => {
   return (
@@ -14,12 +14,12 @@ const AccountRoutes: React.FC = () => {
 
       <Route
         path="/account/login/redirect/google"
-        component={GoogleLoginRedirect}
+        component={GoogleLoginRedirectView}
         exact
       />
       <Route
         path="/account/connect/redirect/google"
-        component={GoogleConnectRedirect}
+        component={GoogleConnectRedirectView}
         exact
       />
 
