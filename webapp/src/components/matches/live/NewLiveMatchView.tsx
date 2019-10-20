@@ -10,6 +10,7 @@ import SelectControl from 'components/common/SelectControl';
 import PageLayout from 'components/common/PageLayout';
 import SwitchControl from 'components/common/SwitchControl';
 import ApiErrorDisplay from 'components/common/ApiErrorDisplay';
+import { makeLiveMatchRoute } from 'util/routes';
 
 const bestOfOptions = range(1, 23, 2);
 
@@ -37,7 +38,7 @@ const NewLiveMatchView: React.FC = () => {
 
   // Once a response has come in, redirect based on the match ID
   if (data) {
-    return <Redirect to={`/matches/live/${data.id}`} push />;
+    return <Redirect to={makeLiveMatchRoute(data.id)} push />;
   }
 
   return (

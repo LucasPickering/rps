@@ -9,7 +9,8 @@ import useNotifications from 'hooks/useNotifications';
 import { GameOutcome, Game } from 'state/match';
 import { User } from 'state/user';
 import useLiveMatchStyles from './useLiveMatchStyles';
-import MatchLink from '../MatchLink';
+import { makeMatchLink } from 'util/routes';
+import Link from 'components/common/Link';
 
 /**
  * Game and match status messages for a participant. Nothing interactive here.
@@ -77,11 +78,11 @@ const ParticipantMatchStatus: React.FC<{
   if (permanentMatch && winner) {
     return (
       <>
-        <MatchLink matchId={permanentMatch}>
+        <Link to={makeMatchLink(permanentMatch)}>
           <Typography className={liveMatchClasses.normalMessage}>
             Match Over
           </Typography>
-        </MatchLink>
+        </Link>
         <Typography className={liveMatchClasses.majorMessage}>
           You {formatMatchOutcome(matchOutcome, 'past')}!
         </Typography>

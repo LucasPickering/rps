@@ -12,8 +12,8 @@ import useStyles from 'hooks/useStyles';
 import { Match } from 'state/match';
 import { formatMatchOutcome, formatDateTime, formatWinPct } from 'util/format';
 import moment from 'moment';
-import PlayerLink from './PlayerLink';
-import MatchLink from 'components/matches/MatchLink';
+import { makeMatchLink, makePlayerRoute } from 'util/routes';
+import Link from 'components/common/Link';
 import ApiErrorDisplay from 'components/common/ApiErrorDisplay';
 import PageLayout from 'components/common/PageLayout';
 import { fade } from '@material-ui/core/styles/colorManipulator';
@@ -64,14 +64,14 @@ const MatchPanel: React.FC<{ username: string; match: Match }> = ({
     >
       <Typography>
         vs{' '}
-        <PlayerLink username={playerMatch.opponentName}>
+        <Link to={makePlayerRoute(playerMatch.opponentName)}>
           <strong>{playerMatch.opponentName}</strong>
-        </PlayerLink>
+        </Link>
       </Typography>
       <Typography className={localClasses.matchStartTime}>
-        <MatchLink matchId={match.id}>
+        <Link to={makeMatchLink(match.id)}>
           {formatDateTime(moment(match.startTime))}
-        </MatchLink>
+        </Link>
       </Typography>
       <Typography className={localClasses.rightText}>
         {playerMatch.wins}-{playerMatch.losses}

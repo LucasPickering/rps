@@ -4,7 +4,8 @@ import { PlayerSummary } from 'state/player';
 import useRequest from 'hooks/useRequest';
 import { PaginatedResponse, BaseRequestParams } from 'state/api';
 import { tableToApiQuery } from 'util/funcs';
-import PlayerLink from './PlayerLink';
+import { makePlayerRoute } from 'util/routes';
+import Link from 'components/common/Link';
 import { formatWinPct } from 'util/format';
 
 const tableOptions = {
@@ -30,7 +31,7 @@ const Leaderboard: React.FC = () => {
           field: 'username',
           sorting: false,
           render: row => (
-            <PlayerLink username={row.username}>{row.username}</PlayerLink>
+            <Link to={makePlayerRoute(row.username)}>{row.username}</Link>
           ),
         },
         {

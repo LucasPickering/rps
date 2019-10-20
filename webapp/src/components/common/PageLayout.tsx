@@ -4,7 +4,7 @@ import { useLocation, Redirect } from 'react-router';
 import { Container, makeStyles, CircularProgress } from '@material-ui/core';
 import { sizeMq } from 'util/styles';
 import useUser from 'hooks/useUser';
-import usePathAsQuery from 'hooks/usePathAsQuery';
+import { makeLoginRoute } from 'util/routes';
 
 const useLocalStyles = makeStyles(({ breakpoints, spacing }) => ({
   root: {
@@ -41,8 +41,7 @@ const PageLayout = ({
 }: PropsWithChildren<Props>): React.ReactElement => {
   const localClasses = useLocalStyles();
   const { loading: userLoading, user } = useUser();
-  const { search } = useLocation();
-  const nextQuery = usePathAsQuery();
+  const location = useLocation();
 
   // Check if we need to render anything related to route restrictions. If so,
   // this content will override the children
@@ -53,14 +52,14 @@ const PageLayout = ({
       return userLoading ? (
         <CircularProgress />
       ) : (
-        <Redirect to={`/account/login${nextQuery}`} />
+        <Redirect to={makeLoginRoute(location)} />
       );
     }
 
     // If this page should only be shown to not-logged-in users and the user is
     // logged in, redirect to another page based on the next= param
     if (restriction === 'notLoggedIn' && user) {
-      const { next } = queryString.parse(search);
+      const { next } = queryString.parse(location.search);
       const nextString = (Array.isArray(next) ? next[0] : next) || '';
       // This will default to the home page if next= is empty
       return <Redirect to={nextString} />;

@@ -9,6 +9,7 @@ import MoveButtons from './MoveButtons';
 import useStyles from 'hooks/useStyles';
 import { User } from 'state/user';
 import { Redirect } from 'react-router';
+import { makeLiveMatchRoute } from 'util/routes';
 
 const WaitingMessage: React.FC<{ message: string }> = ({ message }) => {
   const classes = useStyles();
@@ -53,7 +54,7 @@ const ParticipantActions: React.FC<{
 
   // If self and opponent have been accept a rematch, go to it
   if (rematch && self.acceptedRematch) {
-    return <Redirect to={`/matches/live/${rematch}`} push />;
+    return <Redirect to={makeLiveMatchRoute(rematch)} push />;
   }
 
   // Match is over (these two will always be defined together)

@@ -24,7 +24,7 @@ export const useLinkStyles = makeStyles(({ palette }) => ({
   },
 }));
 
-interface Props {
+interface Props extends React.ComponentProps<typeof RouterLink> {
   styled: boolean;
 }
 
@@ -34,7 +34,7 @@ const Link = ({
   children,
   styled,
   ...rest
-}: React.ComponentProps<typeof RouterLink> & Props): React.ReactElement => {
+}: Props): React.ReactElement => {
   const localClasses = useLinkStyles();
   return to.toString().match(/^https?:/) ? (
     <a
@@ -59,6 +59,6 @@ const Link = ({
 
 Link.defaultProps = {
   styled: true,
-};
+} as Partial<Props>;
 
 export default Link;

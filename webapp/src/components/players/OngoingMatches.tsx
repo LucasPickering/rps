@@ -4,7 +4,8 @@ import useRequest from 'hooks/useRequest';
 import { PaginatedResponse, BaseRequestParams } from 'state/api';
 import { tableToApiQuery } from 'util/funcs';
 import { LiveMatchMetadata } from 'state/livematch';
-import LiveMatchLink from 'components/matches/LiveMatchLink';
+import { makeLiveMatchRoute } from 'util/routes';
+import Link from 'components/common/Link';
 
 const tableOptions = {
   search: false,
@@ -30,7 +31,7 @@ const OngoingMatches: React.FC = () => {
           title: 'Link',
           field: 'id',
           sorting: false,
-          render: row => <LiveMatchLink matchId={row.id}>Link</LiveMatchLink>,
+          render: row => <Link to={makeLiveMatchRoute(row.id)}>Link</Link>,
         },
       ]}
       options={tableOptions}

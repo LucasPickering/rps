@@ -7,14 +7,14 @@ import {
 } from '@material-ui/core';
 import useGetRequest from 'hooks/useGetRequest';
 import { Match } from 'state/match';
-import PlayerLink from 'components/players/PlayerLink';
 import Paper from 'components/common/Paper';
 import { formatDateTime, formatDuration } from 'util/format';
 import moment from 'moment';
 import ApiErrorDisplay from 'components/common/ApiErrorDisplay';
 import PageLayout from 'components/common/PageLayout';
 import useStyles from 'hooks/useStyles';
-import MatchLink from './MatchLink';
+import { makeMatchLink, makePlayerRoute } from 'util/routes';
+import Link from 'components/common/Link';
 import GameLog from './GameLog';
 import clsx from 'clsx';
 import {
@@ -22,6 +22,7 @@ import {
   ChevronRight as IconChevronRight,
 } from '@material-ui/icons';
 import { useParams } from 'react-router';
+
 interface RouteParams {
   matchId: string;
 }
@@ -45,9 +46,9 @@ const PlayerName: React.FC<{ className?: string; username: string }> = ({
   return (
     <Grid item xs={4}>
       <Typography className={clsx(classes.pageSubtitle, className)}>
-        <PlayerLink username={username}>
+        <Link to={makePlayerRoute(username)}>
           <strong>{username}</strong>
-        </PlayerLink>
+        </Link>
       </Typography>
     </Grid>
   );
@@ -78,17 +79,17 @@ const MatchDataView: React.FC<{ match: Match }> = ({ match }) => {
         </Grid>
         <Grid item xs={6}>
           {match.parent && (
-            <MatchLink matchId={match.parent}>
+            <Link to={makeMatchLink(match.parent)}>
               <IconChevronLeft fontSize="small" />
               Rematch of
-            </MatchLink>
+            </Link>
           )}
         </Grid>
         <Grid item xs={6} container justify="flex-end">
           {match.rematch && (
-            <MatchLink matchId={match.rematch}>
+            <Link to={makeMatchLink(match.rematch)}>
               Rematch <IconChevronRight fontSize="small" />
-            </MatchLink>
+            </Link>
           )}
         </Grid>
 

@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { AccountCircle as IconAccountCircle } from '@material-ui/icons';
 import Link from 'components/common/Link';
 import useUser from 'hooks/useUser';
+import { makePlayerRoute } from 'util/routes';
 
 const AccountMenu: React.FC = () => {
   const { user, logOut } = useUser();
@@ -34,13 +35,13 @@ const AccountMenu: React.FC = () => {
       >
         <MenuItem
           component={Link}
-          to={`/players/${user.username}`}
+          to={makePlayerRoute(user.username)}
           styled={false}
         >
           My Profile
         </MenuItem>
         <MenuItem component={Link} to="/account/connect" styled={false}>
-          Connect Account
+          Connect Social
         </MenuItem>
         <MenuItem onClick={logOut}>Log Out</MenuItem>
       </Menu>

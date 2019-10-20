@@ -4,8 +4,8 @@ import useRequest from 'hooks/useRequest';
 import { PaginatedResponse, BaseRequestParams } from 'state/api';
 import { tableToApiQuery } from 'util/funcs';
 import { Match } from 'state/match';
-import PlayerLink from 'components/players/PlayerLink';
-import MatchLink from './MatchLink';
+import { makeMatchLink, makePlayerRoute } from 'util/routes';
+import Link from 'components/common/Link';
 import moment from 'moment';
 
 const tableOptions: Options = {
@@ -33,9 +33,9 @@ const RecentMatches: React.FC = () => {
           field: 'startTime',
           type: 'string',
           render: row => (
-            <MatchLink matchId={row.id}>
+            <Link to={makeMatchLink(row.id)}>
               {moment(row.startTime).fromNow()}
-            </MatchLink>
+            </Link>
           ),
         },
         {
@@ -43,7 +43,7 @@ const RecentMatches: React.FC = () => {
           field: 'winner',
           type: 'string',
           render: row => (
-            <PlayerLink username={row.winner}>{row.winner}</PlayerLink>
+            <Link to={makePlayerRoute(row.winner)}>{row.winner}</Link>
           ),
         },
         {
@@ -51,7 +51,7 @@ const RecentMatches: React.FC = () => {
           field: 'loser',
           type: 'string',
           render: row => (
-            <PlayerLink username={row.loser}>{row.loser}</PlayerLink>
+            <Link to={makePlayerRoute(row.loser)}>{row.loser}</Link>
           ),
         },
       ]}
