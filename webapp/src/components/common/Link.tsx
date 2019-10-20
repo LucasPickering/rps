@@ -24,16 +24,21 @@ export const useLinkStyles = makeStyles(({ palette }) => ({
   },
 }));
 
-const Link: React.FC<React.ComponentProps<typeof RouterLink>> = ({
+interface Props {
+  styled: boolean;
+}
+
+const Link = ({
   className,
   to,
   children,
+  styled,
   ...rest
-}) => {
+}: React.ComponentProps<typeof RouterLink> & Props): React.ReactElement => {
   const localClasses = useLinkStyles();
   return to.toString().match(/^https?:/) ? (
     <a
-      className={clsx(localClasses.link, className)}
+      className={clsx(styled && localClasses.link, className)}
       href={to.toString()}
       target="_blank"
       rel="noopener noreferrer"
@@ -43,13 +48,17 @@ const Link: React.FC<React.ComponentProps<typeof RouterLink>> = ({
     </a>
   ) : (
     <RouterLink
-      className={clsx(localClasses.link, className)}
+      className={clsx(styled && localClasses.link, className)}
       to={to}
       {...rest}
     >
       {children}
     </RouterLink>
   );
+};
+
+Link.defaultProps = {
+  styled: true,
 };
 
 export default Link;
