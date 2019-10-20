@@ -1,8 +1,7 @@
 import { Button } from '@material-ui/core';
 import React from 'react';
-import { useLocation } from 'react-router';
-import queryString from 'query-string';
 import ButtonLink from 'components/common/ButtonLink';
+import usePathAsQuery from 'hooks/usePathAsQuery';
 
 /**
  * Just a link component to the login page. But, because this is used in
@@ -12,18 +11,9 @@ import ButtonLink from 'components/common/ButtonLink';
 const LogInButton: React.FC<
   Pick<React.ComponentProps<typeof Button>, 'variant' | 'color'>
 > = ({ variant, color }) => {
-  const { pathname } = useLocation();
-  const paramsStr =
-    pathname !== 'login'
-      ? '?' + queryString.stringify({ next: pathname }, { encode: false })
-      : '';
+  const query = usePathAsQuery();
   return (
-    // TODO include query params here
-    <ButtonLink
-      to={`/account/login${paramsStr}`}
-      variant={variant}
-      color={color}
-    >
+    <ButtonLink to={`/account/login${query}`} variant={variant} color={color}>
       Log In
     </ButtonLink>
   );

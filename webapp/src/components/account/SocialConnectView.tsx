@@ -5,7 +5,7 @@ import Form from 'components/common/Form';
 
 const SocialConnectView: React.FC = () => {
   return (
-    <PageLayout maxWidth="xs">
+    <PageLayout maxWidth="xs" restriction="loggedIn">
       <Form>
         <GoogleLoginButton connect />
       </Form>
