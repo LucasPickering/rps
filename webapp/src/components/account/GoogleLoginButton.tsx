@@ -5,11 +5,11 @@ import { Button } from '@material-ui/core';
 
 const CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
-const GoogleLoginButton = ({
-  connect,
-}: {
+interface Props extends React.ComponentProps<typeof Button> {
   connect: boolean;
-}): React.ReactElement => {
+}
+
+const GoogleLoginButton = ({ connect, ...rest }: Props): React.ReactElement => {
   const redirectRoute = connect
     ? '/account/connect/redirect/google'
     : '/account/login/redirect/google';
@@ -28,6 +28,7 @@ const GoogleLoginButton = ({
       startIcon={<GoogleLogo />}
       variant="contained"
       href={`https://accounts.google.com/o/oauth2/v2/auth?${query}`}
+      {...rest}
     >
       {connect ? 'Connect to Google' : 'Sign in with Google'}
     </Button>

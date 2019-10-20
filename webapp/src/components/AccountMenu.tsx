@@ -41,7 +41,7 @@ const AccountMenu: React.FC = () => {
           My Profile
         </MenuItem>
         <MenuItem component={Link} to="/account/connect" styled={false}>
-          Connect Social
+          Manage Social Accounts
         </MenuItem>
         <MenuItem onClick={logOut}>Log Out</MenuItem>
       </Menu>
