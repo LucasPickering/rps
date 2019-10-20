@@ -5,6 +5,7 @@ import {
   SwipeableDrawer,
   IconButton,
   List,
+  CircularProgress,
 } from '@material-ui/core';
 import { Menu as IconMenu } from '@material-ui/icons';
 import React, { useState } from 'react';
@@ -40,6 +41,22 @@ const useLocalStyles = makeStyles(({ spacing }) => ({
     margin: spacing(1),
   },
 }));
+
+/**
+ * Small component to render the proper control in the top-right, related to
+ * the user (either a loading icon, log in button, or account menu)
+ */
+const UserControl: React.FC = () => {
+  const { user, loading } = useUser();
+
+  if (loading) {
+    return <CircularProgress size={24} />;
+  }
+  if (user) {
+    return <AccountMenu />;
+  }
+  return <LogInButton />;
+};
 
 const Navigation: React.FC = () => {
   const localClasses = useLocalStyles();
@@ -81,7 +98,7 @@ const Navigation: React.FC = () => {
             New Match
           </ButtonLink>
         )}
-        {user ? <AccountMenu /> : <LogInButton />}
+        <UserControl />
       </Toolbar>
       {drawerNavEnabled && (
         <SwipeableDrawer
