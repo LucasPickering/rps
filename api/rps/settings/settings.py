@@ -14,7 +14,7 @@ import os
 
 # ===== GENERAL =====
 
-APPEND_SLASH = True
+APPEND_SLASH = False
 ASGI_APPLICATION = "rps.routing.application"
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
