@@ -12,12 +12,13 @@ import useRequest from './useRequest';
  * Hook for getting current user data and a function to request new user data.
  */
 const useUser = (): {
+  loading: boolean;
   user: User | undefined;
   requestUser: () => void;
   logOut: () => void;
 } => {
   const history = useHistory();
-  const { user } = useContext(UserStateContext);
+  const { loading, user } = useContext(UserStateContext);
   const userDispatch = useContext(UserDispatchContext);
 
   // Function to fetch user data and store it
@@ -45,11 +46,12 @@ const useUser = (): {
 
   return useMemo(
     () => ({
+      loading,
       user,
       requestUser,
       logOut,
     }),
-    [user, requestUser, logOut]
+    [loading, user, requestUser, logOut]
   );
 };
 
