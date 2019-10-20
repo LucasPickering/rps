@@ -5,10 +5,15 @@ import Link from 'components/common/Link';
 import useUser from 'hooks/useUser';
 
 const AccountMenu: React.FC = () => {
-  const { logOut } = useUser();
+  const { user, logOut } = useUser();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | undefined>(
     undefined
   );
+
+  // This should only render when the user is logged in
+  if (!user) {
+    return null;
+  }
 
   return (
     <>
@@ -27,9 +32,13 @@ const AccountMenu: React.FC = () => {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         onClose={() => setAnchorEl(undefined)}
       >
-        <Link to="/account/connect">
-          <MenuItem>Connect Account</MenuItem>
-        </Link>
+        <MenuItem>
+          <Link to={`/players/${user.username}`}>My Profile</Link>
+        </MenuItem>
+
+        <MenuItem>
+          <Link to="/account/connect">Connect Account</Link>
+        </MenuItem>
         <MenuItem onClick={logOut}>Log Out</MenuItem>
       </Menu>
     </>
