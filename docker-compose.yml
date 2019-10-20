@@ -40,6 +40,6 @@ services:
     environment:
       - NODE_ENV=development
       - RPS_API_HOST=http://api:8000/
-      - REACT_APP_GOOGLE_CLIENT_ID=${RPS_GOOGLE_CLIENT_ID}
+      - REACT_APP_GOOGLE_CLIENT_ID
     ports:
       - "3000:3000"

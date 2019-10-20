@@ -38,7 +38,7 @@ If you do a migration or want to add more data to the dev DB, you should update 
 - To expose the client ID to the browser:
   - `cp .env.example .env`
   - If you're not using localhost, change the value for `RPS_HOSTNAME`
-  - Set `RPS_GOOGLE_CLIENT_ID` to the client ID from Google
+  - Set `REACT_APP_GOOGLE_CLIENT_ID` to the client ID from Google
 
 ## Deployment
 
