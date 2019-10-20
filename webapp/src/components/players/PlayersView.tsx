@@ -1,6 +1,5 @@
 import React from 'react';
 import { PlayerSummary } from 'state/player';
-import PlayerLink from './PlayerLink';
 import ApiErrorDisplay from 'components/common/ApiErrorDisplay';
 import PageLayout from 'components/common/PageLayout';
 import MaterialTable, { Options } from 'material-table';
@@ -8,6 +7,8 @@ import { PaginatedResponse, BaseRequestParams } from 'state/api';
 import useRequest from 'hooks/useRequest';
 import { tableToApiQuery } from 'util/funcs';
 import { formatWinPct } from 'util/format';
+import { makePlayerRoute } from 'util/routes';
+import Link from 'components/common/Link';
 
 const tableOptions: Options = {
   pageSizeOptions: [],
@@ -32,7 +33,7 @@ const PlayersView: React.FC = () => {
             field: 'username',
             sorting: false,
             render: row => (
-              <PlayerLink username={row.username}>{row.username}</PlayerLink>
+              <Link to={makePlayerRoute(row.username)}>{row.username}</Link>
             ),
           },
           {
