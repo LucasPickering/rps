@@ -32,12 +32,15 @@ const AccountMenu: React.FC = () => {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         onClose={() => setAnchorEl(undefined)}
       >
-        <MenuItem>
-          <Link to={`/players/${user.username}`}>My Profile</Link>
+        <MenuItem
+          component={Link}
+          to={`/players/${user.username}`}
+          styled={false}
+        >
+          My Profile
         </MenuItem>
-
-        <MenuItem>
-          <Link to="/account/connect">Connect Account</Link>
+        <MenuItem component={Link} to="/account/connect" styled={false}>
+          Connect Account
         </MenuItem>
         <MenuItem onClick={logOut}>Log Out</MenuItem>
       </Menu>
