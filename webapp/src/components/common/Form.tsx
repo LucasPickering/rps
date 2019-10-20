@@ -6,6 +6,9 @@ import { noop } from 'lodash';
 import clsx from 'clsx';
 
 const useLocalStyles = makeStyles(({ spacing }) => ({
+  formPaper: {
+    alignSelf: 'center',
+  },
   small: { width: 200 },
   medium: { width: 300 },
   innerBox: {
@@ -33,7 +36,9 @@ const Form = ({
   const localClasses = useLocalStyles();
 
   return (
-    <Paper className={clsx(localClasses[size], className)}>
+    <Paper
+      className={clsx(localClasses.formPaper, localClasses[size], className)}
+    >
       <form
         onSubmit={
           onSubmit &&

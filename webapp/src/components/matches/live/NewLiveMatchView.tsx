@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
-import { MenuItem, makeStyles } from '@material-ui/core';
+import { MenuItem } from '@material-ui/core';
 import { range } from 'lodash';
 import useRequest from 'hooks/useRequest';
 import { LiveMatchMetadata } from 'state/livematch';
@@ -13,18 +13,11 @@ import ApiErrorDisplay from 'components/common/ApiErrorDisplay';
 
 const bestOfOptions = range(1, 23, 2);
 
-const useLocalStyles = makeStyles({
-  form: {
-    alignSelf: 'center',
-  },
-});
-
 /**
  * Initiates a GET request for a new match ID. When the response comes back,
  * this will redirect to the match page for that new ID.
  */
 const NewLiveMatchView: React.FC = () => {
-  const localClasses = useLocalStyles();
   const [bestOf, setBestOf] = useState(5);
   const [extendedMode, setExtendedMode] = useState(false);
   const [isPublic, setIsPublic] = useState(true);
@@ -50,7 +43,6 @@ const NewLiveMatchView: React.FC = () => {
   return (
     <PageLayout maxWidth="xs" restriction="loggedIn">
       <Form
-        className={localClasses.form}
         size="small"
         onSubmit={() =>
           request({
