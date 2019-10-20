@@ -30,7 +30,7 @@ const GoogleLoginRedirectView: React.FC = () => {
     request,
     state: { loading, error },
   } = useRequest<{}, {}, undefined, RequestData>({
-    url: '/api/auth/google/',
+    url: '/api/auth/google/login/',
     method: 'POST',
   });
 

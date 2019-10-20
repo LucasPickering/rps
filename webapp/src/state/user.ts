@@ -9,6 +9,14 @@ export interface User {
   lastName: string;
 }
 
+export interface SocialAccount {
+  id: number;
+  provider: string;
+  uid: string;
+  lastLogin: string;
+  dateJoined: string;
+}
+
 export interface UserState {
   loading: boolean;
   user?: User;
