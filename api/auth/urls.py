@@ -1,6 +1,6 @@
 from django.urls import include, path
 
-from .views import GoogleLoginView
+from .views import GoogleConnectView, GoogleLoginView
 
 urlpatterns = [
     path("", include("rest_auth.urls")),
@@ -9,5 +9,13 @@ urlpatterns = [
         include("allauth.socialaccount.urls"),
         name="socialaccount_signup",
     ),
-    path("google/", GoogleLoginView.as_view()),
+    path(
+        "google/",
+        include(
+            [
+                path("", GoogleLoginView.as_view()),
+                path("connect/", GoogleConnectView.as_view()),
+            ]
+        ),
+    ),
 ]
