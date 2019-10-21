@@ -3,8 +3,7 @@ import { useLocation, Redirect } from 'react-router';
 import PageLayout from 'components/common/PageLayout';
 import queryString from 'query-string';
 import useRequest from 'hooks/useRequest';
-import { CircularProgress } from '@material-ui/core';
-import ApiErrorDisplay from 'components/common/ApiErrorDisplay';
+import ApiDisplay from 'components/common/ApiDisplay';
 
 interface RequestData {
   code: string;
@@ -16,10 +15,7 @@ const GoogleConnectRedirectView: React.FC = () => {
   const query = queryString.parse(search);
   const code = (query.code || '').toString();
 
-  const {
-    request,
-    state: { loading, data, error },
-  } = useRequest<{}, {}, undefined, RequestData>({
+  const { request, state } = useRequest<{}, {}, undefined, RequestData>({
     url: '/api/auth/google/connect/',
     method: 'POST',
   });
@@ -30,9 +26,9 @@ const GoogleConnectRedirectView: React.FC = () => {
 
   return (
     <PageLayout maxWidth="xs">
-      {loading && <CircularProgress />}
-      {data && <Redirect to="/account/connect" />}
-      <ApiErrorDisplay error={error} />
+      <ApiDisplay state={state}>
+        {() => <Redirect to="/account/connect" />}
+      </ApiDisplay>
     </PageLayout>
   );
 };
