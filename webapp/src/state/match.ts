@@ -1,10 +1,4 @@
-export enum Move {
-  Rock = 'rock',
-  Paper = 'paper',
-  Scissors = 'scissors',
-  Lizard = 'lizard',
-  Spock = 'spock',
-}
+export type Move = 'rock' | 'paper' | 'scissors' | 'lizard' | 'spock';
 
 export type GameOutcome = 'win' | 'loss' | 'tie';
 

@@ -85,7 +85,7 @@ const ParticipantActions: React.FC<{
   // Match is running
   if (!self.move) {
     // Player is ready, show moves
-    return <MoveButtons disabled={!opponent} />;
+    return <MoveButtons />;
   }
 
   // Not ready yet, show a ready button
