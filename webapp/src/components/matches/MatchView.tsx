@@ -1,16 +1,10 @@
 import React from 'react';
-import {
-  Grid,
-  CircularProgress,
-  Typography,
-  makeStyles,
-} from '@material-ui/core';
+import { Grid, Typography, makeStyles } from '@material-ui/core';
 import useGetRequest from 'hooks/useGetRequest';
 import { Match } from 'state/match';
 import Paper from 'components/common/Paper';
 import { formatDateTime, formatDuration } from 'util/format';
 import moment from 'moment';
-import ApiErrorDisplay from 'components/common/ApiErrorDisplay';
 import PageLayout from 'components/common/PageLayout';
 import useStyles from 'hooks/useStyles';
 import { makeMatchLink, makePlayerRoute } from 'util/routes';
@@ -22,6 +16,7 @@ import {
   ChevronRight as IconChevronRight,
 } from '@material-ui/icons';
 import { useParams } from 'react-router';
+import ApiDisplay from 'components/common/ApiDisplay';
 
 interface RouteParams {
   matchId: string;
@@ -108,15 +103,15 @@ const MatchDataView: React.FC<{ match: Match }> = ({ match }) => {
 
 const MatchView: React.FC = () => {
   const { matchId } = useParams<RouteParams>();
-  const { loading, data, error } = useGetRequest<Match>(
-    `/api/matches/${matchId}/`
-  );
+  const state = useGetRequest<Match>(`/api/matches/${matchId}/`);
 
   return (
     <PageLayout>
-      {loading && <CircularProgress />}
-      {data && data.id.toString() === matchId && <MatchDataView match={data} />}
-      <ApiErrorDisplay error={error} resourceName="match" />
+      <ApiDisplay resourceName="match" state={state}>
+        {data =>
+          data.id.toString() === matchId && <MatchDataView match={data} />
+        }
+      </ApiDisplay>
     </PageLayout>
   );
 };

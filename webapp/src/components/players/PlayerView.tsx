@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  Grid,
-  CircularProgress,
-  Typography,
-  makeStyles,
-} from '@material-ui/core';
+import { Grid, Typography, makeStyles } from '@material-ui/core';
 import useGetRequest from 'hooks/useGetRequest';
 import { Player, getPlayerMatch } from 'state/player';
 import Paper from 'components/common/Paper';
@@ -14,12 +9,12 @@ import { formatMatchOutcome, formatDateTime, formatWinPct } from 'util/format';
 import moment from 'moment';
 import { makeMatchLink, makePlayerRoute } from 'util/routes';
 import Link from 'components/common/Link';
-import ApiErrorDisplay from 'components/common/ApiErrorDisplay';
 import PageLayout from 'components/common/PageLayout';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import clsx from 'clsx';
 import StaticTable from 'components/common/StaticTable';
 import { useParams } from 'react-router';
+import ApiDisplay from 'components/common/ApiDisplay';
 
 interface RouteParams {
   username: string;
@@ -86,37 +81,37 @@ const MatchPanel: React.FC<{ username: string; match: Match }> = ({
 const PlayerView: React.FC = () => {
   const classes = useStyles();
   const { username } = useParams<RouteParams>();
-  const { loading, data, error } = useGetRequest<Player>(
-    `/api/players/${username}/`
-  );
+  const state = useGetRequest<Player>(`/api/players/${username}/`);
 
   return (
     <PageLayout>
       <Typography className={classes.pageSubtitle}>{username}</Typography>
-      {loading && <CircularProgress />}
-      {data && data.username === username && (
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <Paper>
-              <Typography className={classes.panelTitle}>Record</Typography>
-              <StaticTable
-                size="small"
-                rows={[
-                  { title: 'Wins', value: data.matchWinCount },
-                  { title: 'Losses', value: data.matchLossCount },
-                  { title: 'Win%', value: formatWinPct(data.matchWinPct) },
-                ]}
-              />
-            </Paper>
-          </Grid>
-          {data.matches.map(match => (
-            <Grid key={match.id} item xs={12}>
-              <MatchPanel username={username} match={match} />
+      <ApiDisplay resourceName="player" state={state}>
+        {data =>
+          data.username === username && (
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <Paper>
+                  <Typography className={classes.panelTitle}>Record</Typography>
+                  <StaticTable
+                    size="small"
+                    rows={[
+                      { title: 'Wins', value: data.matchWinCount },
+                      { title: 'Losses', value: data.matchLossCount },
+                      { title: 'Win%', value: formatWinPct(data.matchWinPct) },
+                    ]}
+                  />
+                </Paper>
+              </Grid>
+              {data.matches.map(match => (
+                <Grid key={match.id} item xs={12}>
+                  <MatchPanel username={username} match={match} />
+                </Grid>
+              ))}
             </Grid>
-          ))}
-        </Grid>
-      )}
-      <ApiErrorDisplay error={error} resourceName="player" />
+          )
+        }
+      </ApiDisplay>
     </PageLayout>
   );
 };
