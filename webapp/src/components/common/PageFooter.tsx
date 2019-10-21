@@ -1,13 +1,21 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles, Typography } from '@material-ui/core';
 import Link from './Link';
 
-const useLocalStyles = makeStyles(({ spacing }) => ({
-  root: {
+const useLocalStyles = makeStyles(({ palette, spacing }) => ({
+  pageFooter: {
     marginTop: 'auto',
     padding: spacing(2),
     display: 'flex',
     justifyContent: 'center',
+    '& > *': {
+      padding: `0px ${spacing(0.5)}px`,
+    },
+    '& > * + *': {
+      borderLeftWidth: 1,
+      borderLeftStyle: 'solid',
+      borderLeftColor: palette.divider,
+    },
   },
 }));
 
@@ -18,7 +26,8 @@ const useLocalStyles = makeStyles(({ spacing }) => ({
 const PageFooter: React.FC = () => {
   const localClasses = useLocalStyles();
   return (
-    <footer className={localClasses.root}>
+    <footer className={localClasses.pageFooter}>
+      <Typography variant="body2">Created by Lucas Pickering</Typography>
       <Link to="https://github.com/LucasPickering/rps">GitHub</Link>
     </footer>
   );
