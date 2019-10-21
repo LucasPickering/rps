@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import useSafeCallbacks from './useSafeCallbacks';
 import useIsMounted from './useIsMounted';
-import camelcaseKeys from 'camelcase-keys';
 import snakeCaseKeys from 'snakecase-keys';
 import { Dictionary } from 'lodash';
+import { objToCamelCase } from 'util/funcs';
 
 const RECONNECT_TIMEOUT = 5000;
 
@@ -73,11 +73,7 @@ const useWebSocket = (
     };
     ws.onmessage = event => {
       if (isMounted.current && onMessage) {
-        // This is probably safe, right?
-        const camelData = (camelcaseKeys(JSON.parse(event.data), {
-          deep: true,
-        }) as unknown) as MessageData;
-        onMessage(send, camelData);
+        onMessage(send, objToCamelCase<MessageData>(JSON.parse(event.data)));
       }
     };
     ws.onerror = event => {

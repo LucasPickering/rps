@@ -108,7 +108,6 @@ CHANNEL_LAYERS = {
 
 
 # ===== AUTH =====
-# Some of this shit needs to be cleaned up
 
 # Django core
 AUTH_PASSWORD_VALIDATORS = [

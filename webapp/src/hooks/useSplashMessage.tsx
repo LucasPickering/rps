@@ -6,9 +6,8 @@ import { MatchOutcome } from 'state/match';
 import { HotTub as IconHotTub } from '@material-ui/icons';
 import Link from 'components/common/Link';
 
-// TODO clean this up
-
-type Splashes<K extends string = string> = Record<K, React.ReactNode[]>;
+type SplashMessage = string | React.ReactElement;
+type Splashes<K extends string = string> = Record<K, SplashMessage[]>;
 
 /* eslint-disable react/jsx-key */
 
@@ -20,6 +19,15 @@ export const welcomeSplashes: Splashes = {
     'Wilkommen!',
     'пожалуйста',
     '欢迎',
+  ],
+};
+
+export const unknownErrorSplashes: Splashes = {
+  '': [
+    'Well shit. Something went wrong.',
+    "Something broke. Sounds like you're really up shit creek.",
+    '¯\\_(ツ)_/¯',
+    "Something's busted. You're on your own.",
   ],
 };
 
@@ -86,8 +94,8 @@ export const matchOutcomeSplashes: Splashes<MatchOutcome> = {
 const useSplashMessage = (
   splashes: Splashes,
   key: string = ''
-): React.ReactNode => {
-  const [splash, setSplash] = useState<React.ReactNode>('');
+): SplashMessage => {
+  const [splash, setSplash] = useState<SplashMessage>('');
   useEffect(() => setSplash(sample(splashes[key]) || ''), [splashes, key]);
   return splash;
 };

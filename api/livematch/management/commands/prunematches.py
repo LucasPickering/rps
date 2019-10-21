@@ -22,7 +22,7 @@ class Command(BaseCommand):
             help="How long since a match was active (in seconds) to prune it",
         )
         parser.add_argument(
-            "--dry-run", action="store_true", help="Don't actuall delete shit"
+            "--dry-run", action="store_true", help="Don't actually delete shit"
         )
 
     def handle(self, *args, ttl, dry_run, **options):
