@@ -1,5 +1,5 @@
 import React from 'react';
-import { GameOutcome, MatchOutcome } from 'state/match';
+import camelcaseKeys from 'camelcase-keys';
 import { BaseRequestParams } from 'state/api';
 import { Query } from 'material-table';
 import { snakeCase } from 'lodash';
@@ -12,18 +12,6 @@ import { snakeCase } from 'lodash';
  */
 export const freq = <T>(arr: T[], el: T): number =>
   arr.filter(e => e === el).length;
-
-export const countGameOutcomes = (
-  games: { outcome: GameOutcome }[],
-  outcome: GameOutcome
-): number => freq(games.map(game => game.outcome), outcome);
-
-export const getMatchOutcome = (
-  selfName: string,
-  winner: string
-): MatchOutcome => {
-  return winner === selfName ? 'win' : 'loss';
-};
 
 /**
  * Creates a pair of contexts for the state and dispatch of a useReducer.
@@ -59,3 +47,12 @@ export const tableToApiQuery = <T extends Record<string, any>>(
 };
 
 export const gamesToWin = (bestOf: number): number => Math.ceil(bestOf / 2);
+
+/**
+ * Recursively convert the keys in the gievn object to camel case.
+ */
+export const objToCamelCase = <T>(obj: object): T =>
+  // This is probably safe, right?
+  (camelcaseKeys(obj, {
+    deep: true,
+  }) as unknown) as T;

@@ -1,9 +1,11 @@
 import { AxiosRequestConfig } from 'axios';
 
-export interface ApiError<T> {
+export interface ApiError<T = {}> {
   status: number;
-  data: T;
-  // TODO
+  data: {
+    detail?: string;
+    nonFieldErrors?: string[];
+  } & T;
 }
 
 export interface ApiState<T, E> {

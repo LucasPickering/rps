@@ -2,9 +2,9 @@ import axios, { CancelTokenSource, AxiosRequestConfig } from 'axios';
 import { useCallback, useMemo, useReducer, useRef, useEffect } from 'react';
 import { ApiState, ApiError, RequestConfig } from 'state/api';
 import useDeepMemo from './useDeepMemo';
-import camelcaseKeys from 'camelcase-keys';
 import snakeCaseKeys from 'snakecase-keys';
 import { Dictionary } from 'lodash';
+import { objToCamelCase } from 'util/funcs';
 
 // axios setup to cooperate with Django's CSRF policy
 axios.defaults.xsrfCookieName = 'csrftoken';
@@ -108,17 +108,17 @@ const useRequest = <R, E = {}, P = undefined, D = undefined>(
       return axios
         .request(fullRequestConfig)
         .then(response => {
-          const camelData =
-            response.data &&
-            ((camelcaseKeys(response.data, { deep: true }) as unknown) as R);
+          const camelData = response.data && objToCamelCase<R>(response.data);
 
           dispatch({ type: ApiActionType.Success, data: camelData });
           return camelData;
         })
         .catch(error => {
-          const errorData = error.response;
           if (!axios.isCancel(error)) {
-            dispatch({ type: ApiActionType.Error, error: errorData });
+            dispatch({
+              type: ApiActionType.Error,
+              error: objToCamelCase<ApiError<E>>(error.response),
+            });
           }
           throw error; // Caller will have to handle this
         });
