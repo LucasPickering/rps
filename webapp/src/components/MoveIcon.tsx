@@ -8,11 +8,11 @@ import { IconName } from '@fortawesome/fontawesome-svg-core';
  * icons names are always valid.
  */
 const moveIcons: { [move: string]: IconName } = {
-  [Move.Rock]: 'hand-rock',
-  [Move.Paper]: 'hand-paper',
-  [Move.Scissors]: 'hand-scissors',
-  [Move.Lizard]: 'hand-lizard',
-  [Move.Spock]: 'hand-spock',
+  rock: 'hand-rock',
+  paper: 'hand-paper',
+  scissors: 'hand-scissors',
+  lizard: 'hand-lizard',
+  spock: 'hand-spock',
 };
 
 /**
@@ -22,7 +22,7 @@ const MoveIcon: React.FC<{
   className?: string;
   move: Move;
 }> = ({ className, move }) => (
-  <FontAwesomeIcon className={className} icon={moveIcons[move]} />
+  <FontAwesomeIcon className={className} icon={moveIcons[move]} title={move} />
 );
 
 export default MoveIcon;

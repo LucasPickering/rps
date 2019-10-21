@@ -14,8 +14,8 @@ const useLocalStyles = makeStyles(({ spacing }) => ({
   },
 }));
 
-const baseMoves = [Move.Rock, Move.Paper, Move.Scissors];
-const extendedMoves = [Move.Lizard, Move.Spock];
+const baseMoves: Move[] = ['rock', 'paper', 'scissors'];
+const extendedMoves: Move[] = ['lizard', 'spock'];
 
 interface Props {
   disabled: boolean;
@@ -31,10 +31,9 @@ const MoveButtons = ({ disabled }: Props): React.ReactElement => {
   const MoveButton: React.FC<{ move: Move }> = ({ move }) => (
     <IconButton
       className={localClasses.button}
+      title={move}
       disabled={disabled}
-      onClick={() => {
-        sendMessage({ type: ClientMessageType.Move, move });
-      }}
+      onClick={() => sendMessage({ type: ClientMessageType.Move, move })}
     >
       <MoveIconCircle move={move} />
     </IconButton>
@@ -44,13 +43,13 @@ const MoveButtons = ({ disabled }: Props): React.ReactElement => {
     <Grid item container justify="center">
       {/* Break these up into two subcontainers to get the wrapping correct */}
       <Grid item>
-        {baseMoves.map((move: Move) => (
+        {baseMoves.map(move => (
           <MoveButton key={move} move={move} />
         ))}
       </Grid>
       {extendedMode && (
         <Grid item>
-          {extendedMoves.map((move: Move) => (
+          {extendedMoves.map(move => (
             <MoveButton key={move} move={move} />
           ))}
         </Grid>
