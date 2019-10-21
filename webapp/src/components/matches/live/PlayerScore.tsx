@@ -18,47 +18,49 @@ import { Check as IconCheck, Clear as IconClear } from '@material-ui/icons';
 import FlexBox from 'components/common/FlexBox';
 import useUser from 'hooks/useUser';
 
-const useLocalStyles = makeStyles(({ breakpoints, palette, spacing }) => ({
-  playerScore: { width: '100%' },
-  leftSide: {
-    textAlign: 'left',
-  },
-  rightSide: {
-    textAlign: 'right',
-  },
-  statusIcon: {
-    margin: `0 ${spacing(0.5)}px`,
-  },
-  self: {
-    color: palette.secondary.main,
-    '& $orb': {
-      borderColor: palette.secondary.main,
+const useLocalStyles = makeStyles(
+  ({ breakpoints, palette, spacing, transitions }) => ({
+    playerScore: { width: '100%' },
+    leftSide: {
+      textAlign: 'left',
     },
-    '& $filledOrb': {
-      backgroundColor: palette.secondary.main,
+    rightSide: {
+      textAlign: 'right',
     },
-  },
-  orb: {
-    borderRadius: '100%',
-    borderWidth: 1,
-    borderStyle: 'solid',
-    transition: 'background-color 0.2s linear',
-    margin: spacing(0.25),
-    borderColor: palette.text.primary,
+    statusIcon: {
+      margin: `0 ${spacing(0.5)}px`,
+    },
+    self: {
+      color: palette.secondary.main,
+      '& $orb': {
+        borderColor: palette.secondary.main,
+      },
+      '& $filledOrb': {
+        backgroundColor: palette.secondary.main,
+      },
+    },
+    orb: {
+      borderRadius: '100%',
+      borderWidth: 1,
+      borderStyle: 'solid',
+      transition: `background-color ${transitions.duration.short}ms linear`,
+      margin: spacing(0.25),
+      borderColor: palette.text.primary,
 
-    [sizeMq('small', breakpoints)]: {
-      width: 8,
-      height: 8,
+      [sizeMq('small', breakpoints)]: {
+        width: 8,
+        height: 8,
+      },
+      [sizeMq('large', breakpoints)]: {
+        width: 12,
+        height: 12,
+      },
     },
-    [sizeMq('large', breakpoints)]: {
-      width: 12,
-      height: 12,
+    filledOrb: {
+      backgroundColor: palette.text.primary,
     },
-  },
-  filledOrb: {
-    backgroundColor: palette.text.primary,
-  },
-}));
+  })
+);
 
 const PopulatedPlayerScore: React.FC<{
   isSelf: boolean;

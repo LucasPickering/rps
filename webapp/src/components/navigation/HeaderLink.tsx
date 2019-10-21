@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core';
 import clsx from 'clsx';
 import NavLink from 'components/common/NavLink';
 
-const useLocalStyles = makeStyles(({ palette, typography }) => {
+const useLocalStyles = makeStyles(({ palette, transitions, typography }) => {
   const activeStyles = {
     textDecoration: 'none',
     borderBottomColor: palette.primary.main,
@@ -17,7 +17,7 @@ const useLocalStyles = makeStyles(({ palette, typography }) => {
       color: palette.text.primary,
       borderBottom: '1px solid #00000000',
       transitionProperty: 'border-bottom, color',
-      transitionDuration: '0.2s',
+      transitionDuration: `${transitions.duration.short}ms`,
       transitionTimingFunction: 'linear',
       ...typography.body1,
 
