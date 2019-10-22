@@ -6,6 +6,7 @@ from rest_framework.response import Response
 
 from core.models import Player
 from core.serializers import PlayerSummarySerializer
+from core.filters import PlayerFilter
 from livematch.serializers import LiveMatchSerializer
 from .parser import SlackArgumentParser, ArgumentParserError
 
@@ -51,13 +52,21 @@ def leaderboard(request, cmd_args):
     first release, using .ljust() to make sure each section of strings have the
     same length.
     """
-    blocks = [
-        {"type": "section", "text": {"type": "mrkdwn", "text": "*Leaderboard*"}}
-    ]
+
+    # Table init
     table = Texttable()
     table.header(["Username", "Wins", "Losses", "Win%"])
     table.set_cols_align(["l", "r", "r", "r"])
     table.set_cols_dtype(["t", "i", "i", "t"])
+
+    players = Player.objects.annotate_stats().order_by(
+        "-match_win_pct", "-match_count"
+    )
+
+    # If a group was specified, filter by it
+    group_name = request.GET.get("group__name")
+    if group_name:
+        players = PlayerFilter.filter_group(players, None, group_name)
 
     table.add_rows(
         (
@@ -67,32 +76,22 @@ def leaderboard(request, cmd_args):
                 player_data["match_loss_count"],
                 "{:.3f}".format(player_data["match_win_pct"]),
             ]
-            for player_data in PlayerSummarySerializer(
-                Player.objects.annotate_stats().order_by(
-                    "-match_win_pct", "-match_count"
-                ),
-                many=True,
-            ).data
+            for player_data in PlayerSummarySerializer(players, many=True).data
         ),
         header=False,
     )
-    blocks.append(
+
+    blocks = [
+        {
+            "type": "section",
+            "text": {"type": "mrkdwn", "text": "*Leaderboard*"},
+        },
         {
             "type": "section",
             "text": {"type": "mrkdwn", "text": f"```{table.draw()}```"},
-        }
-    )
+        },
+    ]
     return {"response_type": "in_channel", "blocks": blocks}
-
-
-def error_response(request, *args, **kwargs):
-    """
-    Return a slack error message
-    """
-    return {
-        "response_type": "in_channel",
-        "text": "Sorry, that operation is not supported. Please try again.",
-    }
 
 
 def run_cmd(request, *args, **kwargs):

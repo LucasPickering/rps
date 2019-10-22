@@ -1,4 +1,5 @@
-from core.tests.factories import MatchConfigFactory, match_factory
+from django.contrib.auth.models import Group
+from core.tests.factories import match_factory
 
 from ..models import Player
 from ..util import avg
@@ -8,7 +9,6 @@ from .test_base import RpsTestCase
 class PlayerQuerySetTestCase(RpsTestCase):
     def setUp(self):
         super().setUp()
-        self.match_config = MatchConfigFactory()
         for i in range(5):
             match_factory(
                 self.player1,
@@ -29,6 +29,30 @@ class PlayerQuerySetTestCase(RpsTestCase):
         self.assertAlmostEqual(
             qs.get(id=self.player2.id).match_win_pct, 0.6, delta=0.001
         )
+
+    def test_annotate_stats_group_filter(self):
+        self.group = Group.objects.create()
+        self.group.user_set.add(self.player1, self.player2)
+        match_factory(self.player1, self.player3, self.player1)
+        qs = Player.objects.annotate_stats(group_id=self.group.id)
+
+        player1 = qs.get(id=self.player1.id)
+        self.assertEqual(player1.match_count, 5)
+        self.assertEqual(player1.match_win_count, 2)
+        self.assertEqual(player1.match_loss_count, 3)
+        self.assertEqual(player1.match_win_pct, 0.4)
+
+        player2 = qs.get(id=self.player2.id)
+        self.assertEqual(player2.match_count, 5)
+        self.assertEqual(player2.match_win_count, 3)
+        self.assertEqual(player2.match_loss_count, 2)
+        self.assertEqual(player2.match_win_pct, 0.6)
+
+        player3 = qs.get(id=self.player3.id)
+        self.assertEqual(player3.match_count, 0)
+        self.assertEqual(player3.match_win_count, 0)
+        self.assertEqual(player3.match_loss_count, 0)
+        self.assertEqual(player3.match_win_pct, 0)
 
     def test_rpi_no_matches(self):
         p3 = Player.objects.annotate_stats().get(id=self.player3.id)
