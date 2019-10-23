@@ -29,10 +29,10 @@ const Home: React.FC = () => {
       </div>
       <Grid container justify="center" spacing={2}>
         <Grid item xs={12} sm={6}>
-          <RecentMatches />
+          <Leaderboard />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <Leaderboard />
+          <RecentMatches />
         </Grid>
         {/* <Grid item xs={12} sm={6}>
           <OngoingMatches />
