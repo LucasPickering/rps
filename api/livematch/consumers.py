@@ -78,11 +78,10 @@ class MatchConsumer(JsonWebsocketConsumer):
         """
         # No need to lock for read-only operation
         live_match = self.get_match(lock=False)
-        self.send_json(
-            LiveMatchStateSerializer(
-                live_match, context={"player": self.player}
-            ).data
-        )
+        data = LiveMatchStateSerializer(
+            live_match, context={"player": self.player}
+        ).data
+        self.send_json(data)
 
     def get_match(self, lock=True):
         qs = LiveMatch.objects

@@ -1,4 +1,5 @@
-FROM python:3-alpine
+# channels-redis has a mystical bug on python 3.8.0
+FROM python:3.7-alpine
 
 ENV PYTHONUNBUFFERED=1
 
