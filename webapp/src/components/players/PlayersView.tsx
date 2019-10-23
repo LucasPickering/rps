@@ -11,6 +11,7 @@ import { makePlayerRoute } from 'util/routes';
 import Link from 'components/common/Link';
 
 const tableOptions: Options = {
+  pageSize: 10,
   pageSizeOptions: [],
 };
 
