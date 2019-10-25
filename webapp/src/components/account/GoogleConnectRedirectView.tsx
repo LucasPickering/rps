@@ -16,7 +16,7 @@ const GoogleConnectRedirectView: React.FC = () => {
   const code = (query.code || '').toString();
 
   const { request, state } = useRequest<{}, {}, undefined, RequestData>({
-    url: '/api/auth/google/connect/',
+    url: '/api/mgt/google/connect/',
     method: 'POST',
   });
 

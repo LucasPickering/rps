@@ -10,7 +10,7 @@ import GoogleLoginButton from './GoogleLoginButton';
 
 const AccountManageView: React.FC = () => {
   const socialAccountsState = useGetRequest<PaginatedResponse<SocialAccount[]>>(
-    '/api/auth/socialaccounts/'
+    '/api/mgt/socialaccounts/'
   );
 
   return (

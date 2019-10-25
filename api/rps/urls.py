@@ -7,7 +7,7 @@ urlpatterns = [
         "api/",
         include(
             [
-                path("auth/", include("auth.urls")),
+                path("mgt/", include("mgt.urls")),
                 path("admin/", admin.site.urls),
                 path("slack/", include("slack.urls")),
                 path("", include("core.urls")),

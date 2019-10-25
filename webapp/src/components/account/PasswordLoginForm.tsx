@@ -23,7 +23,7 @@ const PasswordLoginForm: React.FC = ({ children }) => {
     state: { loading, error },
     request,
   } = useRequest<{}, {}, undefined, LoginFormData>({
-    url: '/api/auth/login/',
+    url: '/api/mgt/login/',
     method: 'POST',
   });
 

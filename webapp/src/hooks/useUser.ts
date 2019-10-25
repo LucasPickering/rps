@@ -22,7 +22,7 @@ const useUser = (): {
   const userDispatch = useContext(UserDispatchContext);
 
   // Function to fetch user data and store it
-  const { request } = useRequest<User>({ url: '/api/auth/user/' });
+  const { request } = useRequest<User>({ url: '/api/mgt/user/' });
   const requestUser = useCallback(() => {
     request()
       .then(data => userDispatch({ type: UserActionType.Login, user: data }))
@@ -32,7 +32,7 @@ const useUser = (): {
 
   // Function to log out
   const { request: logOutRequest } = useRequest<{}>({
-    url: '/api/auth/logout/',
+    url: '/api/mgt/logout/',
     method: 'POST',
   });
   const logOut = useCallback(() => {
