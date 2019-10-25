@@ -6,10 +6,6 @@ from . import models
 # For /api/matches/
 
 
-class NewMatchSerializer(serializers.Serializer):
-    match_id = serializers.CharField()
-
-
 class PlayerGameSerializer(serializers.ModelSerializer):
     username = serializers.SlugRelatedField(
         source="player", slug_field="username", read_only=True
