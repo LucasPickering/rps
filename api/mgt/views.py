@@ -8,28 +8,27 @@ from rest_framework import generics, permissions
 from . import serializers
 
 
-class ReadOnly(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return request.method in permissions.SAFE_METHODS
-
-
 class GroupsView(generics.ListCreateAPIView):
     queryset = Group.objects.all()
     serializer_class = serializers.GroupSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.DjangoModelPermissionsOrAnonReadOnly]
 
 
 class GroupView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = "id"
     queryset = Group.objects.all()
     serializer_class = serializers.GroupSerializer
-    permission_classes = [ReadOnly | permissions.DjangoObjectPermissions]
+    permission_classes = [permissions.DjangoModelPermissionsOrAnonReadOnly]
 
 
 class GroupPlayerView(generics.RetrieveAPIView):
     lookup_field = "name"
     queryset = Group.objects.all()
-    serializer_class = serializers.GroupSerializer
+    serializer_class = serializers.GroupUserSerializer
+
+    def destroy(self, instance):
+        # TODO check if user is last group admin
+        return super().destroy(instance)
 
 
 class GoogleLoginView(SocialLoginView):
