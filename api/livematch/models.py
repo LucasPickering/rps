@@ -301,6 +301,9 @@ class LiveMatch(models.Model):
             self.rematch = rematch
             self.save()
 
+    def __str__(self):
+        return f"LiveMatch {self.id} ({self.start_time})"
+
 
 class LivePlayerMatch(AbstractPlayerMatch):
     """
