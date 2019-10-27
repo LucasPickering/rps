@@ -156,6 +156,9 @@ class Match(models.Model):
     class Meta:
         ordering = ("-start_time",)
 
+    def __str__(self):
+        return f"Match {self.id} ({self.start_time})"
+
 
 class PlayerMatch(AbstractPlayerMatch):
     match = models.ForeignKey(Match, on_delete=models.CASCADE)
