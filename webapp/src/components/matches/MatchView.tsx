@@ -2,11 +2,10 @@ import React from 'react';
 import { Grid, Typography, makeStyles } from '@material-ui/core';
 import useGetRequest from 'hooks/useGetRequest';
 import { Match } from 'state/match';
-import Paper from 'components/common/Paper';
+import Panel from 'components/common/Panel';
 import { formatDateTime, formatDuration } from 'util/format';
 import moment from 'moment';
 import PageLayout from 'components/common/PageLayout';
-import useStyles from 'hooks/useStyles';
 import { makeMatchLink, makePlayerRoute } from 'util/routes';
 import Link from 'components/common/Link';
 import GameLog from './GameLog';
@@ -28,19 +27,30 @@ const useLocalStyles = makeStyles(({ typography }) => ({
       ...typography.body2,
     },
   },
+  playerName: {
+    ...typography.h5,
+  },
   rightText: {
     textAlign: 'right',
   },
 }));
 
-const PlayerName: React.FC<{ className?: string; username: string }> = ({
-  className,
+const PlayerName = ({
   username,
-}) => {
-  const classes = useStyles();
+  rightSide,
+}: {
+  username: string;
+  rightSide: boolean;
+}): React.ReactElement => {
+  const localClasses = useLocalStyles();
   return (
     <Grid item xs={4}>
-      <Typography className={clsx(classes.pageSubtitle, className)}>
+      <Typography
+        className={clsx(
+          localClasses.playerName,
+          rightSide && localClasses.rightText
+        )}
+      >
         <Link to={makePlayerRoute(username)}>
           <strong>{username}</strong>
         </Link>
@@ -49,17 +59,21 @@ const PlayerName: React.FC<{ className?: string; username: string }> = ({
   );
 };
 
+PlayerName.defaultProps = {
+  rightSide: false,
+};
+
 const MatchDataView: React.FC<{ match: Match }> = ({ match }) => {
   const localClasses = useLocalStyles();
   const [player1, player2] = match.players;
 
   return (
-    <Paper>
+    <Panel>
       <Grid container spacing={1}>
         <Grid item container justify="space-between">
           <PlayerName username={player1} />
           <Typography>vs</Typography>
-          <PlayerName className={localClasses.rightText} username={player2} />
+          <PlayerName username={player2} rightSide />
         </Grid>
 
         <Grid className={localClasses.configText} item xs={12}>
@@ -97,7 +111,7 @@ const MatchDataView: React.FC<{ match: Match }> = ({ match }) => {
           />
         </Grid>
       </Grid>
-    </Paper>
+    </Panel>
   );
 };
 
@@ -106,7 +120,7 @@ const MatchView: React.FC = () => {
   const state = useGetRequest<Match>(`/api/matches/${matchId}/`);
 
   return (
-    <PageLayout>
+    <PageLayout title="Match Details">
       <ApiDisplay resourceName="match" state={state}>
         {data =>
           data.id.toString() === matchId && <MatchDataView match={data} />

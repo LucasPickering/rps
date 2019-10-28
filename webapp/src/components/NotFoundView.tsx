@@ -1,18 +1,10 @@
-import { Typography } from '@material-ui/core';
 import React from 'react';
 import useSplashMessage, { notFoundSplashes } from 'hooks/useSplashMessage';
-import useStyles from 'hooks/useStyles';
 import PageLayout from './common/PageLayout';
 
 const NotFoundView: React.FC = () => {
-  const classes = useStyles();
   const message = useSplashMessage(notFoundSplashes);
-  return (
-    <PageLayout>
-      <Typography className={classes.pageTitle}>Not Found</Typography>
-      <Typography className={classes.pageSubtitle}>{message}</Typography>
-    </PageLayout>
-  );
+  return <PageLayout title="Not Found" subtitle={message} />;
 };
 
 export default NotFoundView;

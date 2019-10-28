@@ -2,8 +2,7 @@ import React from 'react';
 import { Grid, Typography, makeStyles } from '@material-ui/core';
 import useGetRequest from 'hooks/useGetRequest';
 import { Player, getPlayerMatch } from 'state/player';
-import Paper from 'components/common/Paper';
-import useStyles from 'hooks/useStyles';
+import Panel from 'components/common/Panel';
 import { Match } from 'state/match';
 import { formatMatchOutcome, formatDateTime, formatWinPct } from 'util/format';
 import moment from 'moment';
@@ -51,7 +50,7 @@ const MatchPanel: React.FC<{ username: string; match: Match }> = ({
   const localClasses = useLocalStyles();
   const playerMatch = getPlayerMatch(username, match);
   return (
-    <Paper
+    <Panel
       className={clsx(
         localClasses.matchPanel,
         playerMatch.outcome === 'win' ? localClasses.win : localClasses.loss
@@ -74,25 +73,22 @@ const MatchPanel: React.FC<{ username: string; match: Match }> = ({
       <Typography className={localClasses.rightText}>
         {formatMatchOutcome(playerMatch.outcome, 'abbreviation')}
       </Typography>
-    </Paper>
+    </Panel>
   );
 };
 
 const PlayerView: React.FC = () => {
-  const classes = useStyles();
   const { username } = useParams<RouteParams>();
   const state = useGetRequest<Player>(`/api/players/${username}/`);
 
   return (
-    <PageLayout>
-      <Typography className={classes.pageSubtitle}>{username}</Typography>
+    <PageLayout title={`Profile for ${username}`}>
       <ApiDisplay resourceName="player" state={state}>
         {data =>
           data.username === username && (
             <Grid container spacing={2}>
               <Grid item xs={6}>
-                <Paper>
-                  <Typography className={classes.panelTitle}>Record</Typography>
+                <Panel title="Record">
                   <StaticTable
                     size="small"
                     rows={[
@@ -101,7 +97,7 @@ const PlayerView: React.FC = () => {
                       { title: 'Win%', value: formatWinPct(data.matchWinPct) },
                     ]}
                   />
-                </Paper>
+                </Panel>
               </Grid>
               {data.matches.map(match => (
                 <Grid key={match.id} item xs={12}>
