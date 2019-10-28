@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core';
 import React, { PropsWithChildren } from 'react';
 import FlexBox from 'components/common/FlexBox';
-import Paper from 'components/common/Paper';
+import Panel from 'components/common/Panel';
 import { noop } from 'lodash';
 import clsx from 'clsx';
 
@@ -29,15 +29,19 @@ interface Props {
 
 const Form = ({
   className,
+  title,
   size,
   onSubmit,
   children,
-}: PropsWithChildren<Props>): React.ReactElement => {
+}: PropsWithChildren<
+  Props & Pick<React.ComponentProps<typeof Panel>, 'title'>
+>): React.ReactElement => {
   const localClasses = useLocalStyles();
 
   return (
-    <Paper
+    <Panel
       className={clsx(localClasses.formPaper, localClasses[size], className)}
+      title={title}
     >
       <form
         onSubmit={
@@ -56,7 +60,7 @@ const Form = ({
           {children}
         </FlexBox>
       </form>
-    </Paper>
+    </Panel>
   );
 };
 

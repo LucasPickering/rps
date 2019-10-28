@@ -6,17 +6,17 @@ import {
   LiveMatchSendMessageContext,
 } from 'state/livematch';
 import MoveButtons from './MoveButtons';
-import useStyles from 'hooks/useStyles';
 import { User } from 'state/user';
 import { Redirect } from 'react-router';
 import { makeLiveMatchRoute } from 'util/routes';
+import useLiveMatchStyles from './useLiveMatchStyles';
 
 const WaitingMessage: React.FC<{ message: string }> = ({ message }) => {
-  const classes = useStyles();
+  const liveMatchClasses = useLiveMatchStyles();
   return (
     <>
       <CircularProgress />
-      <Typography className={classes.caption}>
+      <Typography className={liveMatchClasses.caption}>
         Waiting for {message}...
       </Typography>
     </>
@@ -31,7 +31,7 @@ const WaitingMessage: React.FC<{ message: string }> = ({ message }) => {
 const ParticipantActions: React.FC<{
   user: User;
 }> = ({ user }) => {
-  const classes = useStyles();
+  const liveMatchClasses = useLiveMatchStyles();
   const { players, permanentMatch, winner, rematch } = useContext(
     LiveMatchDataContext
   );
@@ -74,7 +74,7 @@ const ParticipantActions: React.FC<{
           </Button>
         )}
         {opponent.acceptedRematch && (
-          <Typography className={classes.caption}>
+          <Typography className={liveMatchClasses.caption}>
             {opponent.username} wants to rematch
           </Typography>
         )}

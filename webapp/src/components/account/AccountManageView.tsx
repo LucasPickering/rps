@@ -1,7 +1,6 @@
 import React from 'react';
-import { Grid, Typography } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import PageLayout from 'components/common/PageLayout';
-import useStyles from 'hooks/useStyles';
 import useGetRequest from 'hooks/useGetRequest';
 import { PaginatedResponse } from 'state/api';
 import { SocialAccount } from 'state/user';
@@ -10,7 +9,6 @@ import Form from 'components/common/Form';
 import GoogleLoginButton from './GoogleLoginButton';
 
 const AccountManageView: React.FC = () => {
-  const classes = useStyles();
   const socialAccountsState = useGetRequest<PaginatedResponse<SocialAccount[]>>(
     '/api/auth/socialaccounts/'
   );
@@ -21,10 +19,7 @@ const AccountManageView: React.FC = () => {
         <Grid item xs={12}>
           <ApiDisplay state={socialAccountsState}>
             {data => (
-              <Form>
-                <Typography className={classes.panelTitle}>
-                  Social Accounts
-                </Typography>
+              <Form title="Social Accounts">
                 <GoogleLoginButton
                   connect
                   disabled={data.results.some(acc => acc.provider === 'google')}

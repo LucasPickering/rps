@@ -4,7 +4,6 @@ import { last } from 'lodash';
 import React, { useContext, useEffect } from 'react';
 import { LiveMatchDataContext } from 'state/livematch';
 import { formatGameOutcome, formatMatchOutcome } from 'util/format';
-import useStyles from 'hooks/useStyles';
 import useNotifications from 'hooks/useNotifications';
 import { GameOutcome, Game } from 'state/match';
 import { User } from 'state/user';
@@ -18,7 +17,6 @@ import Link from 'components/common/Link';
 const ParticipantMatchStatus: React.FC<{
   user: User;
 }> = ({ user }) => {
-  const classes = useStyles();
   const liveMatchClasses = useLiveMatchStyles();
   const { players, games, permanentMatch, winner } = useContext(
     LiveMatchDataContext
@@ -86,7 +84,7 @@ const ParticipantMatchStatus: React.FC<{
         <Typography className={liveMatchClasses.majorMessage}>
           You {formatMatchOutcome(matchOutcome, 'past')}!
         </Typography>
-        <Typography className={classes.caption}>
+        <Typography className={liveMatchClasses.caption}>
           {matchOutcomeSplash}
         </Typography>
       </>
