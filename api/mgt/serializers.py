@@ -1,6 +1,6 @@
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
+from guardian import shortcuts
 from rest_framework import serializers
-from rest_framework_guardian.serializers import ObjectPermissionsAssignmentMixin
 
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -17,12 +17,28 @@ class GroupSerializer(serializers.ModelSerializer):
         obj.user_set.add(self.context["request"].user)
         return obj
 
-    def get_permissions_map(self, created):
-        current_user = self.context["request"].user
-        return {"change_group": []}
+
+class PermissionsSerializer(serializers.Serializer):
+    def to_representation(self, obj):
+        return shortcuts.get_perms(obj, self.context["group"])
+
+    def update(self, instance, validated_data):
+        for permission in validated_data["permissions"]:
+            shortcuts.assign_perm(permission, instance, self.context["group"])
 
 
 class GroupUserSerializer(serializers.ModelSerializer):
+    # permissions = serializers.SerializerMethodField()
+    permissions = PermissionsSerializer()
+
     class Meta:
-        model = Group
-        fields = ()
+        model = User
+        fields = ("permissions",)
+
+    # def get_permissions(self, obj):
+    #     return shortcuts.get_perms(obj, self.context["group"])
+
+    def update(self, instance, validated_data):
+        print(validated_data)
+        for permission in validated_data["permissions"]:
+            shortcuts.assign_perm(permission, instance, self.context["group"])

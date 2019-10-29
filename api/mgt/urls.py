@@ -10,9 +10,10 @@ urlpatterns = [
         include(
             [
                 path("", views.GroupsView.as_view()),
-                path("<int:id>/", views.GroupView.as_view()),
+                path("<str:name>/", views.GroupView.as_view()),
                 path(
-                    "<int:group_id>/<str:username>/", views.GroupView.as_view()
+                    "<str:group_name>/<str:username>/",
+                    views.GroupUserView.as_view(),
                 ),
             ]
         ),
