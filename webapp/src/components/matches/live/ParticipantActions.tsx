@@ -66,7 +66,7 @@ const ParticipantActions: React.FC<{
           <WaitingMessage message={`${opponent.username} to accept`} />
         ) : (
           <Button
-            variant="contained"
+            variant="outlined"
             color="primary"
             onClick={() => sendMessage({ type: ClientMessageType.Rematch })}
           >
