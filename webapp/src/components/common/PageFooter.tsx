@@ -27,7 +27,9 @@ const PageFooter: React.FC = () => {
   const localClasses = useLocalStyles();
   return (
     <footer className={localClasses.pageFooter}>
-      <Typography variant="body2">Created by Lucas Pickering</Typography>
+      <Typography variant="body2">
+        Created by <Link to="https://lucaspickering.me">Lucas Pickering</Link>
+      </Typography>
       <Link to="https://github.com/LucasPickering/rps">GitHub</Link>
     </footer>
   );
