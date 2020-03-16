@@ -30,7 +30,7 @@ const GoogleLoginButton = ({ connect, ...rest }: Props): React.ReactElement => {
       href={`https://accounts.google.com/o/oauth2/v2/auth?${query}`}
       {...rest}
     >
-      {connect ? 'Connect to Google' : 'Sign in with Google'}
+      {connect ? 'Connect Google Account' : 'Sign in with Google'}
     </Button>
   );
 };

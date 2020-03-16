@@ -1,5 +1,6 @@
 import React from 'react';
-import { Grid } from '@material-ui/core';
+import { makeStyles, Grid, Typography } from '@material-ui/core';
+import { countBy } from 'lodash';
 import PageLayout from 'components/common/PageLayout';
 import useGetRequest from 'hooks/useGetRequest';
 import { PaginatedResponse } from 'state/api';
@@ -8,7 +9,19 @@ import ApiDisplay from 'components/common/ApiDisplay';
 import Form from 'components/common/Form';
 import GoogleLoginButton from './GoogleLoginButton';
 
+enum SocialProvider {
+  Google = 'google',
+}
+
+const useLocalStyles = makeStyles({
+  socialAccountWrapper: {
+    display: 'flex',
+    justifyContent: 'center',
+  },
+});
+
 const AccountManageView: React.FC = () => {
+  const localClasses = useLocalStyles();
   const socialAccountsState = useGetRequest<PaginatedResponse<SocialAccount[]>>(
     '/api/auth/socialaccounts/'
   );
@@ -16,16 +29,19 @@ const AccountManageView: React.FC = () => {
   return (
     <PageLayout restriction="loggedIn">
       <Grid container>
-        <Grid item xs={12}>
+        <Grid className={localClasses.socialAccountWrapper} item xs={12}>
           <ApiDisplay state={socialAccountsState}>
-            {data => (
-              <Form title="Social Accounts">
-                <GoogleLoginButton
-                  connect
-                  disabled={data.results.some(acc => acc.provider === 'google')}
-                />
-              </Form>
-            )}
+            {data => {
+              const counts = countBy(data.results, 'provider');
+              return (
+                <Form title="Social Accounts">
+                  <GoogleLoginButton connect />
+                  <Typography>
+                    {counts[SocialProvider.Google] || 0} accounts connected
+                  </Typography>
+                </Form>
+              );
+            }}
           </ApiDisplay>
         </Grid>
       </Grid>
