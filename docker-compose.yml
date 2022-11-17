@@ -1,10 +1,5 @@
 version: "3"
 
-# Use these instead of the local directory for building the projects
-# to prevent the containers from fighting with external build tools
-volumes:
-  node_modules:
-
 services:
   db:
     image: postgres:10-alpine
@@ -29,17 +24,3 @@ services:
       - db
     ports:
       - "8000:8000"
-
-  webapp:
-    image: node:10-alpine
-    working_dir: /app/webapp
-    command: sh -c "npm i && HTTPS=true npm start"
-    volumes:
-      - ./webapp:/app/webapp:rw
-      - node_modules:/app/webapp/node_modules
-    environment:
-      - NODE_ENV=development
-      - RPS_API_HOST=http://api:8000/
-      - REACT_APP_GOOGLE_CLIENT_ID
-    ports:
-      - "3000:3000"
