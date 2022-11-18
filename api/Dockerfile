@@ -1,27 +1,27 @@
+# Wheels don't work on alpine which makes builds super slow, so we use debian
+# https://discuss.python.org/t/wheels-for-musl-alpine/7084
 # channels-redis has a mystical bug on python 3.8.0
-FROM python:3.7-alpine
+FROM python:3.9.5-slim
 
 ENV PYTHONUNBUFFERED=1
 
-RUN apk add --no-cache \
+RUN apt-get update && \
+    apt-get install -y \
+    cron \
     gcc \
-    libmagic \
+    libmagic-dev \
     libffi-dev \
-    linux-headers \
-    musl-dev \
     openssl \
-    postgresql-dev \
-    zlib-dev
-
-ENV DOCKERIZE_VERSION v0.6.1
-RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-    && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-    && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+    libpq-dev \
+    && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app/api/
 
-COPY requirements.txt .
-RUN pip install -U -r requirements.txt
+RUN pip install poetry
+ADD pyproject.toml poetry.lock ./
+RUN poetry install
+
 COPY . .
 RUN crontab docker/crontab
 

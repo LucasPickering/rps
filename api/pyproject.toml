@@ -1,3 +1,32 @@
+[tool.poetry]
+authors = ["Lucas Pickering <lucas@lucaspickering.me>"]
+description = "Rock Paper Scissors API"
+license = "MIT"
+name = "rps"
+version = "0.1.0"
+
+[tool.poetry.dependencies]
+Django = "2.2.28"
+channels = "2.3.0"
+channels-redis = "2.4.0"
+daphne = "2.3.0"
+django-allauth = "0.40.0"
+django-debug-toolbar = "2.0"
+django-filter = "2.2.0"
+django-rest-auth = "0.9.5"
+djangorestframework = "3.10.3"
+factory-boy = "2.12.0"
+psycopg2 = "2.9.5"
+python = "3.9.5"
+texttable = "1.6.2"
+
+[tool.poetry.dev-dependencies]
+flake8-black = "0.3.4"
+
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0"]
+
 [tool.black]
 line-length = 80
 target-version = ["py36"]
