@@ -2,6 +2,10 @@
 
 from django.db import models
 
+# These models are for Slack auth only. They don't link to any of the `core`
+# models, because that requires more effort and I don't see any benefit right
+# now. You can do a manual join on them if you need to know something.
+
 
 class SlackBot(models.Model):
     client_id = models.CharField(null=False, max_length=32)

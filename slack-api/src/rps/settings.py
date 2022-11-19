@@ -144,7 +144,7 @@ LOGGING = {
 
 # Slack app settings
 # What actions can we perform as a bot?
-SLACK_SCOPES = ["channels:read", "chat:write", "commands"]
+SLACK_SCOPES = ["chat:write", "commands"]
 # What actions can we perform as a user that has authorized us?
 SLACK_USER_SCOPES = []
 # Credentials
