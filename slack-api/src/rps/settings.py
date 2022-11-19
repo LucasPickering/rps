@@ -28,7 +28,7 @@ SECRET_KEY = (
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["b0a5-130-44-166-195.ngrok.io"]
+ALLOWED_HOSTS = ["762c-130-44-166-195.ngrok.io"]
 
 
 # Application definition
@@ -112,12 +112,51 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "simple": {
+            "format": "{levelname} {name} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "django.db": {
+            # Change to DEBUG to log queries
+            "level": "INFO",
+        },
+        "slack_bolt": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}
+
 # Slack app settings
 # What actions can we perform as a bot?
-SLACK_SCOPES = ["app_mentions:read", "chat:write"]
+SLACK_SCOPES = ["channels:read", "chat:write", "commands"]
 # What actions can we perform as a user that has authorized us?
 SLACK_USER_SCOPES = []
 # Credentials
-SLACK_CLIENT_ID = os.environ.get("SLACK_CLIENT_ID")
-SLACK_CLIENT_SECRET = os.environ.get("SLACK_CLIENT_SECRET")
-SLACK_SIGNING_SECRET = os.environ.get("SLACK_SIGNING_SECRET")
+SLACK_CLIENT_ID = os.getenv("SLACK_CLIENT_ID")
+SLACK_CLIENT_SECRET = os.getenv("SLACK_CLIENT_SECRET")
+SLACK_SIGNING_SECRET = os.getenv("SLACK_SIGNING_SECRET")

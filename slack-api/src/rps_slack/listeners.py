@@ -3,9 +3,10 @@
 
 import logging
 from rps import settings
-from slack_bolt import App
+from slack_bolt import Ack, App, Respond
 from slack_bolt.oauth.oauth_settings import OAuthSettings
 from .datastores import DjangoInstallationStore, DjangoOAuthStateStore
+from pprint import pprint
 
 logger = logging.getLogger(__name__)
 app = App(
@@ -28,29 +29,28 @@ app = App(
 
 
 class Action:
+    CREATE_MATCH = "create_match"
     JOIN_MATCH = "join_match"
 
 
+state = {"kind": "none"}
+
+
 @app.command("/rps")
-def command_rps(ack, respond, command):
+def command_rps(ack: Ack, respond: Respond):
     ack()
-    print(command)
     respond(
         text="TODO",
         blocks=[
-            {
-                "type": "section",
-                "text": {"type": "mrkdwn", "text": "Do you wanna throw down?"},
-            },
-            {"type": "divider"},
+            # TODO add match config
             {
                 "type": "actions",
                 "elements": [
                     {
                         "type": "button",
                         "style": "primary",
-                        "action_id": Action.JOIN_MATCH,
-                        "text": {"type": "plain_text", "text": "Join"},
+                        "action_id": Action.CREATE_MATCH,
+                        "text": {"type": "plain_text", "text": "Create Match"},
                     }
                 ],
             },
@@ -58,7 +58,46 @@ def command_rps(ack, respond, command):
     )
 
 
-@app.action(Action.JOIN_MATCH)
-def action_join_match(ack, body, logger):
+@app.action(Action.CREATE_MATCH)
+def action_create_match(ack: Ack, respond: Respond, body):
+    pprint(body)
     ack()
-    print(body)
+    global state
+    sender_id = body["user"]["id"]
+    state = {"kind": "waiting_for_opponent", "player": sender_id}
+    respond(
+        text="TODO",
+        blocks=[
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": f"Who wants to throw down with <@{sender_id}>?",
+                },
+            },
+            {
+                "type": "actions",
+                "elements": [
+                    {
+                        "type": "button",
+                        "style": "primary",
+                        "action_id": Action.JOIN_MATCH,
+                        "text": {
+                            "type": "plain_text",
+                            "text": "Join Match",
+                        },
+                    }
+                ],
+            },
+        ],
+        response_type="in_channel",
+        # Replacing original doesn't work with in_channel, so we have to delete
+        delete_original=True,
+        replace_original=False,
+    )
+
+
+@app.action(Action.JOIN_MATCH)
+def action_join_match(ack: Ack, respond: Respond):
+    ack()
+    respond(text="")
