@@ -1,0 +1,21 @@
+[tool.poetry]
+authors = ["Lucas Pickering <lucas@lucaspickering.me>"]
+description = "Rock Paper Scissors API"
+license = "MIT"
+name = "rps"
+version = "0.1.0"
+
+[tool.poetry.dependencies]
+python = "3.9.5"
+slack-bolt = "1.15.5"
+
+[tool.poetry.dev-dependencies]
+flake8-black = "0.3.4"
+
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0"]
+
+[tool.black]
+line-length = 80
+target-version = ["py36"]
