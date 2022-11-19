@@ -1,9 +1,29 @@
-import os
-from slack_bolt import App
+# Slack API listeners
+# This is where the magic happens
 
+import logging
+from rps import settings
+from slack_bolt import App
+from slack_bolt.oauth.oauth_settings import OAuthSettings
+from .datastores import DjangoInstallationStore, DjangoOAuthStateStore
+
+logger = logging.getLogger(__name__)
 app = App(
-    token=os.environ.get("SLACK_BOT_TOKEN"),
-    signing_secret=os.environ.get("SLACK_SIGNING_SECRET"),
+    signing_secret=settings.SLACK_SIGNING_SECRET,
+    oauth_settings=OAuthSettings(
+        client_id=settings.SLACK_CLIENT_ID,
+        client_secret=settings.SLACK_CLIENT_SECRET,
+        scopes=settings.SLACK_SCOPES,
+        user_scopes=settings.SLACK_USER_SCOPES,
+        installation_store=DjangoInstallationStore(
+            client_id=settings.SLACK_CLIENT_ID,
+            logger=logger,
+        ),
+        state_store=DjangoOAuthStateStore(
+            expiration_seconds=120,
+            logger=logger,
+        ),
+    ),
 )
 
 
@@ -42,8 +62,3 @@ def command_rps(ack, respond, command):
 def action_join_match(ack, body, logger):
     ack()
     print(body)
-
-
-# Start your app
-if __name__ == "__main__":
-    app.start(port=int(os.environ.get("PORT", 3000)))

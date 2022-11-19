@@ -7,24 +7,23 @@ volumes:
 
 services:
   db:
-    image: postgres:10-alpine
+    image: postgres:14-alpine
     environment:
       - POSTGRES_DB=rps
       - POSTGRES_USER=rps
       - POSTGRES_PASSWORD=rps
 
-  redis:
-    image: redis:5-alpine
-    ports:
-      - "6379:6379"
-
   api:
-    build: ./api/
+    build: ./slack-api/
     command: sh -c "poetry install && ./m.sh runserver 0.0.0.0:8000"
+    init: true # Faster shutdown
     environment:
-      - RPS_HOSTNAME
+      - SLACK_CLIENT_ID
+      - SLACK_CLIENT_SECRET
+      - SLACK_SIGNING_SECRET
     volumes:
-      - ./api/:/app/api:rw
+      - ./slack-api/:/app/api:rw
+      - api_poetry_cache:/root/.cache/poetry
     depends_on:
       - db
     ports:
