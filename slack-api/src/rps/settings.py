@@ -28,7 +28,7 @@ SECRET_KEY = (
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["762c-130-44-166-195.ngrok.io"]
+ALLOWED_HOSTS = ["localhost", "rps-dev.lucaspickering.me"]
 
 
 # Application definition

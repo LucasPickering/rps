@@ -1,9 +1,7 @@
-import re
 import uuid
 from enum import Enum
 
 LIVEMATCH_ID_LENGTH = 7  # In hex characters
-LIVEMATCH_ID_RGX = re.compile(r"[0-9a-f]{7}")
 
 
 class DbEnum(Enum):
